@@ -4,17 +4,15 @@ import { fileURLToPath } from 'node:url';
 const nextConfig = {
   reactStrictMode: true,
   distDir: process.env.OBSERVANCE_NEXT_DIST_DIR || '.next',
+  typescript: { tsconfigPath: process.env.OBSERVANCE_TSCONFIG || 'tsconfig.json' },
+  async rewrites() {
+    return [
+      { source: '/~:user', destination: '/u/:user' },
+      { source: '/~:user/:path*', destination: '/u/:user/:path*' },
+    ];
+  },
   turbopack: {
     root: fileURLToPath(new URL('..', import.meta.url)),
-  },
-  outputFileTracingIncludes: {
-    '/the-hold/the-hold.zip': [
-      './content/the-hold-v5/the-hold.zip',
-      './content/the-hold-v5/the-hold.sha1',
-    ],
-    '/support/cases/mossfield-recovery/media/[mediaKey]': [
-      './src/lib/morrow-media-assets/*.ogg',
-    ],
   },
 };
 

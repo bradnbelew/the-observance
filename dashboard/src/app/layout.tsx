@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SiteChrome from "./site-chrome";
 
 export const metadata: Metadata = {
   title: "Copperline Hosting Archive",
@@ -15,8 +14,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-ash text-neutral-100 antialiased">
-        <SiteChrome>{children}</SiteChrome>
+      <body className="min-h-screen antialiased">
+        {children}
       </body>
     </html>
   );

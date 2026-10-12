@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import ciphers, forum, irc, layout, logblock, people, records, serverlog
+from . import ciphers, forum, irc, layout, logblock, media, people, records, serverlog
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "morrow" / "canon" / "out"
@@ -50,7 +50,19 @@ def full_canon() -> dict:
                      "KIT_EMAIL", "THEO_CHANGELOG_2016", "CRONTAB", "BRIDGE_CONFIG"]},
         "forum": {"members": forum.MEMBERS, "threads": forum.THREADS, "archivist_notes": forum.ARCHIVIST_NOTES},
         "private_msgs": serverlog.PRIVATE_MSGS,
+        "media": {"june_shots": media.JUNE_SHOTS, "forged_shots": media.FORGED_SHOTS, "recordings": media.RECORDINGS},
     }
+
+
+def dynmap_markers() -> list[dict]:
+    """markers.json as Dynmap exported it in 2011. Positions are the 2011 ones."""
+    a = layout.ANCHORS
+    pick = [("spawn", "spawn"), ("rookery_house", "rook's"), ("cairn_storehouse_door_2011", "storehouse"),
+            ("cairn_farm", "the farms"), ("sheep_pen", "sheep"), ("june_house", "june's point"),
+            ("june_tower", "the tower (wip)"), ("patchcord_relay_hut", "patch's hut"), ("finch_hub", "rail hub")]
+    out = [{"label": label, "x": a[k][0], "y": a[k][1], "z": a[k][2], "type": "house"} for k, label in pick]
+    out.append({"label": "low path", "x": 150, "y": 74, "z": 36, "type": "path"})
+    return out
 
 
 def site_bundle(act: int) -> dict:
@@ -76,6 +88,8 @@ def site_bundle(act: int) -> dict:
         "motd": ciphers.motd_codes(ciphers.MOTD_BY_ACT[act]),
         "server_logs": {d: serverlog.render(d) for d in serverlog.DAYS if act >= 4 or d == "2011-05-12"},
         "logblock": logblock.rows_for_act(act),
+        "june_shots": [x for x in media.JUNE_SHOTS + media.FORGED_SHOTS if x["act"] <= act],
+        "dynmap_markers": dynmap_markers() if act >= 2 else [],
     }
     if act >= 4:
         bundle["asset_sale"] = records.ASSET_SALE
@@ -98,6 +112,11 @@ def main() -> None:
     (OUT / "logblock.json").write_text(json.dumps(logblock.all_rows()), encoding="utf-8")
     (OUT / "6118-checklist.txt").write_text(records.checklist(), encoding="utf-8")
     (OUT / "robots.txt").write_text(records.ROBOTS_TXT, encoding="utf-8")
+    folders = {"juni_lantern": {"password": people.by_handle("juni_lantern").lwc_password, "act": 3,
+                                "paths": ["/~juni_lantern", "/u/juni_lantern", "/media/june"]},
+               "patchcord": {"password": people.by_handle("patchcord").lwc_password, "act": 5,
+                             "paths": ["/~patchcord", "/u/patchcord", "/media/patchcord"]}}
+    (SITE / "folders.json").write_text(json.dumps(folders), encoding="utf-8")
     for act in range(1, 11):
         (SITE / ("act-%02d.json" % act)).write_text(json.dumps(site_bundle(act)), encoding="utf-8")
     print("canon written:", OUT)

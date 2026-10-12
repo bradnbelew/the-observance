@@ -1,25 +1,35 @@
 import type { Metadata } from "next";
-import { getPublicProjectionClient } from "@/lib/supabase/public-projection";
-import type { HealthView } from "@/lib/database.types";
+import Link from "next/link";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
+import { bundle } from "@/lib/morrow/canon";
 
-export const metadata: Metadata = { title: "Network Status - Copperline Hosting", description: "Copperline legacy network status." };
+export const metadata: Metadata = { title: "Network Status - Copperline Hosting" };
 export const dynamic = "force-dynamic";
 
 export default async function StatusPage() {
-  const supabase = getPublicProjectionClient();
-  const result = supabase
-    ? await supabase.from("v_health").select("*").maybeSingle()
-    : { data: null, error: new Error('projection unavailable') };
-  const health = result.data as HealthView | null;
-  const mirrorReachable = !result.error;
-  const lastContact = health?.last_beat_at
-    ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(health.last_beat_at)) + " UTC"
-    : "No contact retained";
-
-  return <LegacyShell active="support"><Breadcrumbs>Network Status</Breadcrumbs><OldPageTitle sub="Last updated from the legacy monitoring cache.">Network Status</OldPageTitle>
-    <div className="old-alert"><b>Legacy notice:</b> Automated monitoring has been retired. Status values below may be delayed or incomplete.</div>
-    <table className="old-data-table status-old-table"><thead><tr><th>Service</th><th>Location</th><th>Status</th><th>Last Update</th></tr></thead><tbody><tr><td>Client web archive</td><td>Chicago, IL</td><td><span className={`old-status ${mirrorReachable ? "online" : "offline"}`}>{mirrorReachable ? "online" : "offline"}</span></td><td>Automatic</td></tr><tr><td>Retired Minecraft accounts</td><td>Chicago, IL</td><td><span className="old-status expired">partial archive</span></td><td>{lastContact}</td></tr><tr><td>TCAdmin 1 panel</td><td>All locations</td><td><span className="old-status offline">read only</span></td><td>Nov 3, 2014</td></tr><tr><td>New order system</td><td>All locations</td><td><span className="old-status offline">closed</span></td><td>Dec 1, 2014</td></tr></tbody></table>
-    <h2 className="old-rule-title status-history-title">Incident History</h2><table className="old-data-table"><tbody><tr><td>Nov 03, 2014</td><td>Legacy game panel changed to read-only access.</td><td>Resolved</td></tr><tr><td>Jul 20, 2014</td><td>Billing database maintenance completed.</td><td>Resolved</td></tr><tr><td>Sep 08, 2012</td><td>Chicago game nodes migrated to replacement rack.</td><td>Resolved</td></tr></tbody></table>
-  </LegacyShell>;
+  const b = await bundle();
+  const incident = b.status_incident.morrow_rewrite ?? b.status_incident.original;
+  return (
+    <LegacyShell active="support">
+      <Breadcrumbs>Network Status</Breadcrumbs>
+      <OldPageTitle sub="Retained status board. Live checks run only for services still hosted on this mirror.">Network Status</OldPageTitle>
+      <table className="old-data-table">
+        <thead><tr><th>Service</th><th>Location</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Web hosting (archive mirror)</td><td>-</td><td><span className="old-status online">online</span></td></tr>
+          <tr><td>Game panel (TCAdmin 1)</td><td>Chicago</td><td><span className="old-status offline">read only</span></td></tr>
+          <tr><td>Game node CHI-07</td><td>Chicago</td><td><span className="old-status online">online</span></td></tr>
+          <tr><td><code>{b.heartbeat.process}</code></td><td>CHI-07</td><td>heartbeat {b.heartbeat.heartbeat} · <Link href="/status/heartbeat.json">json</Link></td></tr>
+        </tbody>
+      </table>
+      <h2 className="old-rule-title">Past Incidents</h2>
+      <table className="old-data-table">
+        <tbody>
+          <tr><td>{incident.posted}</td><td><Link href="/status/incident-6118">#6118 {incident.title}</Link></td></tr>
+          <tr><td>2011-04-21 03:15 CDT</td><td>Chicago storage array degraded (game nodes CHI-05 to CHI-07)</td></tr>
+          <tr><td>2012-09-08 01:00 CDT</td><td>Chicago node migration</td></tr>
+        </tbody>
+      </table>
+    </LegacyShell>
+  );
 }

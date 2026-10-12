@@ -15,11 +15,11 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
   return (
     <div className="legacy-site">
       <div className="legacy-preservation" role="note">
-        Preserved customer-site snapshot · interactive account functions disabled · last complete mirror 03 Nov 2014
+        Preserved customer-site mirror · ordering and payments disabled · last complete snapshot 03 Nov 2014
       </div>
       <div className="legacy-utility">
         <div><span>Copperline customer archive</span><span>Chicago · Dallas · Atlanta</span></div>
-        <div><Link href="/clientarea.php">Client Area</Link><Link href="/support/index.php">Support</Link><Link href="/status">Network Status</Link></div>
+        <div><Link href="/clientarea.php">Client Area</Link><Link href="/support/index.php">Archive Desk</Link><Link href="/status">Network Status</Link></div>
       </div>
       <header className="legacy-header">
         <Link href="/" className="copperline-logo" aria-label="Copperline Hosting home">
@@ -36,12 +36,12 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
         <aside className="legacy-left">
           <section className="legacy-box account-box">
             <h2>Client Login</h2>
-            <div className="legacy-box-body">
-              <label>Username<input disabled aria-label="Username" /></label>
-              <label>Password<input disabled type="password" aria-label="Password" /></label>
-              <button type="button" disabled>Login</button>
-              <p>Billing authentication retired 01 Dec 2014.</p>
-            </div>
+            <form className="legacy-box-body" method="post" action="/dologin.php">
+              <label>Username<input name="username" aria-label="Username" autoComplete="off" /></label>
+              <label>Password<input name="password" type="password" aria-label="Password" /></label>
+              <button type="submit">Login</button>
+              <p><Link href="/pwreset.php">Forgot password?</Link></p>
+            </form>
           </section>
           <section className="legacy-box">
             <h2>Service Status</h2>

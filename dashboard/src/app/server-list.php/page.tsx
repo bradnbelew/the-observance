@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { publicServers } from '@/lib/legacy-content';
 import { Breadcrumbs, LegacyShell, OldPageTitle } from '@/components/legacy/LegacyShell';
 
@@ -16,7 +15,7 @@ export default function ServerListPage() {
         <tbody>{publicServers.map((server) => (
           <tr key={server.id}>
             <td><span className={`old-status ${server.status}`}>{server.status}</span></td>
-            <td><Link href={`/server.php?id=${server.id}`} prefetch={false}>{server.name}</Link><small>{server.listingLabel ?? `Listing #${server.id}`}</small></td>
+            <td><b>{server.name}</b><small>{server.listingLabel ?? `Listing #${server.id}`}</small></td>
             <td>{server.version}</td><td>{server.players}</td><td>{server.location}</td>
           </tr>
         ))}</tbody>

@@ -480,3 +480,57 @@ button, input, select, textarea { font: inherit; }
   .morrow-review-investigations,.morrow-review-subheading,.morrow-review-web-layers,.morrow-review-media-slate,.morrow-review-format-atlas ul { grid-template-columns:1fr; }
   .morrow-review-subheading .morrow-review-label { grid-row:auto; }.morrow-review-investigations dl div { grid-template-columns:1fr;gap:3px; }
 }
+
+/* ---- Morrow v2: client area, forum import, customer web space ---- */
+.old-form { display:grid; gap:10px; max-width:420px; margin:12px 0; }
+.old-form label { display:grid; gap:4px; font-weight:bold; font-size:11px; color:#3f6475; }
+.old-form input, .old-form textarea { font:12px Verdana, sans-serif; padding:4px 6px; border:1px solid #9ea7ac; background:#fff; color:#222; }
+.old-form button { justify-self:start; padding:4px 14px; border:1px solid #2d5367; background:linear-gradient(#5b8aa1,#2d5367); color:#fff; font-weight:bold; cursor:pointer; }
+.legacy-box-body input { width:100%; }
+.whmcs-tabs { display:flex; flex-wrap:wrap; gap:2px; margin:6px 0 12px; border-bottom:2px solid #2d5367; }
+.whmcs-tabs a { padding:5px 10px; background:#e3e8ea; border:1px solid #c3ccd0; border-bottom:0; font-size:11px; }
+.whmcs-tabs a.active { background:#2d5367; color:#fff !important; }
+.whmcs-reply { margin:10px 0; border:1px solid #cdd3d6; }
+.whmcs-reply-head { display:flex; justify-content:space-between; padding:5px 8px; background:#eef3f5; font-size:11px; }
+.whmcs-reply-body { margin:0; padding:8px; white-space:pre-wrap; font:12px Verdana, sans-serif; color:#222; }
+.mc-motd { display:inline-block; padding:3px 6px; background:#1d1d1d; font:13px "Courier New", monospace; letter-spacing:-1px; }
+.mc-motd-name { color:#aaaaaa; letter-spacing:0; }
+
+.vb { min-height:100vh; padding:10px; background:#e1e4f2; color:#000; font:10pt Verdana, Arial, sans-serif; }
+.vb a { color:#22229c; } .vb a:hover { color:#ff4400; }
+.vb-top { display:flex; justify-content:space-between; align-items:flex-end; padding:12px 14px; background:linear-gradient(#5c7099,#3a4b72); color:#fff; border:1px solid #0b198c; }
+.vb-logo { color:#fff !important; font:bold 20px Tahoma, sans-serif; text-decoration:none; } .vb-logo span { font-weight:normal; color:#cdd7ff; }
+.vb-note { font-size:8pt; color:#dfe6ff; }
+.vb-nav { display:flex; gap:14px; padding:5px 10px; background:#738fbf; border:1px solid #0b198c; border-top:0; }
+.vb-nav a { color:#fff !important; font-weight:bold; font-size:8pt; }
+.vb-crumbs { margin:10px 0; padding:6px 8px; background:#f5f5ff; border:1px solid #0b198c; font-size:8pt; }
+.vb-notice { margin:8px 0; padding:8px; background:#f5f5ff; border:1px solid #0b198c; }
+.vb-table { width:100%; border-collapse:collapse; margin:8px 0; background:#f5f5ff; border:1px solid #0b198c; }
+.vb-table th { padding:5px; background:#5c7099; color:#fff; font-size:8pt; text-align:left; }
+.vb-table td { padding:6px; border-top:1px solid #d1d1e1; vertical-align:top; font-size:9pt; }
+.vb-cat td { background:#869bbf; color:#fff; font-weight:bold; }
+.vb-desc { color:#555; font-size:8pt; }
+.vb-thread-title { margin:10px 0; font:bold 13pt Verdana, sans-serif; }
+.vb-post { width:100%; margin:0 0 8px; border-collapse:collapse; border:1px solid #0b198c; background:#f5f5ff; }
+.vb-post-head td { padding:4px 6px; background:#738fbf; color:#fff; font-size:8pt; }
+.vb-postno { text-align:right; }
+.vb-userinfo { width:170px; padding:8px; border-right:1px solid #d1d1e1; vertical-align:top; font-size:8pt; }
+.vb-userinfo > a { font-weight:bold; font-size:10pt; } .vb-staff { color:#b30000 !important; }
+.vb-usertitle { color:#555; margin:2px 0 6px; } .vb-userstats { color:#333; }
+.vb-message { padding:8px 10px; vertical-align:top; }
+.vb-body { white-space:pre-wrap; line-height:1.45; }
+.vb-edited { margin-top:10px; color:#666; font-style:italic; font-size:8pt; }
+.vb-sig { margin-top:12px; color:#444; font-size:8pt; }
+.vb-subhead { margin:14px 0 4px; font-size:10pt; } .vb-postlist { margin:0; padding-left:18px; }
+.vb-foot { margin-top:14px; text-align:center; color:#555; font-size:7pt; }
+@media (max-width: 640px) { .vb-userinfo { width:96px; } .vb-top { flex-direction:column; align-items:flex-start; gap:4px; } }
+
+.plain-2011 { min-height:100vh; padding:8px 12px; background:#fff; color:#000; font:16px "Times New Roman", serif; overflow-wrap:anywhere; }
+.plain-2011 a { color:#00e; text-decoration:underline; } .plain-2011 a:visited { color:#551a8b; }
+.plain-2011 h1 { font-size:2em; margin:.6em 0; }
+.plain-table { border-collapse:collapse; font:13px monospace; }
+.plain-table th, .plain-table td { padding:2px 10px 2px 0; text-align:left; border-bottom:1px solid #ddd; }
+.plain-form { font:13px monospace; margin:10px 0; }
+.plain-form input, .plain-form button { font:13px monospace; background:#fff; color:#000; border:2px inset #ddd; padding:1px 3px; }
+.plain-form button { border-style:outset; background:#eee; }
+.plain-pre { font:13px monospace; white-space:pre-wrap; }
