@@ -1,5 +1,8 @@
 # The Observance
 
+> **Current authority: `morrow/v2/README.md`** (Morrow v2, approved 2026-10-12). Everything below
+> this banner, including the G01-G15 "Morrow reboot" material, is history.
+
 The active project is the **Morrow / Copperline reboot**: a traditional layered Minecraft ARG and
 found-footage mystery built around an old hosting company, a recovered survival world, Discord
 fragments, authored media, and one terminal shutdown ending.
