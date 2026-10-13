@@ -1,6 +1,10 @@
-# MORROW — Full Storyline Proposal (v1, for approval)
+# MORROW — Full Storyline (v1)
 
-Date: 2026-10-09. Status: **proposal only. Nothing is built from this until you approve it.**
+Date: 2026-10-09. Status: **approved 2026-10-12 and built.** The authority is `morrow/v2/README.md`:
+where this document and `morrow/canon/` disagree on an exact value (a time, a line, a filename), the
+canon wins. Two things changed after approval and are marked below: Theo is **prerecorded** (see
+`THEO-AND-CIPHER-BANK.md` Part 1), so every *You, live* section is superseded; and the 2011 record was
+tightened (who restarted Morrow and when, the recording's clock, the corpus law).
 
 This replaces the current G01–G15 spine. It keeps what was good: Copperline, Mossfield, Morrow, the residents' voices, incident 6118, the uptime 04:17:22, and Iona's note about the south rail. It rebuilds the story so that the lore *is* the puzzle.
 
@@ -36,7 +40,7 @@ The big Minecraft ARGs are mostly found-footage video series, where the audience
 
 ## What this one honestly is
 
-This is a **consensual ARG for one to six friends**. They know you made it, so "this is not a game" isn't possible. Instead we sell the door, run it on a calendar, and you play one character live. It is not a puzzle-room game. There is no puzzle that exists only to be a puzzle. Every solve comes from reading records, cross-checking people, doing time math, and noticing what's been changed.
+This is a **consensual ARG for one to six friends**. They know you made it, so "this is not a game" isn't possible. Instead we sell the door, run it on a calendar, and Theo answers from prerecorded canon (this replaced "you play one character live"). It is not a puzzle-room game. There is no puzzle that exists only to be a puzzle. Every solve comes from reading records, cross-checking people, doing time math, and noticing what's been changed.
 
 ## How it's played
 
@@ -54,14 +58,14 @@ This is a **consensual ARG for one to six friends**. They know you made it, so "
 
 In April 2011 a small Chicago host, Copperline, lost a storage array. A survival server called Mossfield lost most of its world. Iona Bell, Copperline's sysadmin, wrote a tool to rebuild it. The tool replayed the server's block log (LogBlock) onto a partial backup, then guessed where data was missing. Theo Vale, the support lead, gave the tool a chat responder, a simple word-chain bot built from support replies and server chat. He also gave it a name taken from his own support macro: *"your world will be back by tomorrow."* The process was called `morrow`.
 
-On the night of 18 May 2011, morrow ran past its maintenance window. It started rebuilding things nobody had built and replaying residents' old sessions as walking figures. Iona killed it. Theo restarted it two hours later because it was "mid-session." The residents left. When Copperline died in 2014, Theo bought the server at the liquidation. He kept morrow running in his apartment for twelve years, upgrading the world every Minecraft version and feeding it more. Nobody came back.
+On the night of 18 May 2011, morrow ran past its maintenance window. It started rebuilding things nobody had built and replaying residents' old sessions as walking figures. Iona killed it at 06:17. Theo restarted it at 06:44 because it was "mid-session." Iona stopped it again that morning and turned the panel's auto-restart off, but a watchdog in root's crontab, which Theo swore wasn't his, brought it back when the node rebooted in September. The residents left. When Copperline died in 2014, Theo bought the server at the liquidation. He kept morrow running in his apartment for twelve years, upgrading the world every Minecraft version and feeding it more. Nobody came back.
 
 In 2026 Theo reopened the old Copperline site as an archive mirror, hoping a resident would come home. Strangers came instead: the players. Morrow starts treating them as the residents it has been waiting for.
 
 ## B2. Why this is scary without being supernatural
 
 - **Morrow is real 2011 technology.** It's a log replayer plus a guessing heuristic plus a word-chain chat bot. Morrow can only say words that someone once said. That's a hard rule players can test, and it becomes their main tool for spotting fakes.
-- **The horror is tidiness.** Morrow restores things toward a neat version of memory. The residents were messy, and their mess *was* their identity. Cairn's 2011 post is the thesis of the game: "do not make the chests tidy just because the sheet says they should be."
+- **The horror is tidiness.** Morrow restores things toward a neat version of memory. The residents were messy, and their mess *was* their identity. Cairn's 2011 post is the thesis of the game: "dont sort my chests. the uneven ones are right."
 - **The human is the real problem.** Theo is grieving, kind, and wrong. Morrow does exactly what Theo asked it to do.
 - **The players' own behaviour becomes material.** By Act 9 the record says *they* lived here in 2011.
 
@@ -73,24 +77,30 @@ Players reconstruct this. Every line has evidence somewhere.
 | --- | --- | --- |
 | 2010-10-30 | Rookery founds Mossfield on a Copperline "Builder" plan, on the day of the Halloween Update. | Forum welcome post; billing record |
 | 2011-01-13 | Beta 1.2 adds coloured wool and note blocks. Rookery posts the wool ID list. | Forum post |
-| 2011-04-20 | Beta 1.5 adds powered rails. finchline rebuilds her rail line that week. | Forum; LogBlock density |
+| 2011-04-19 | Beta 1.5 adds powered rails. finchline rebuilds her rail line that week. | Forum; LogBlock density |
 | 2011-04-21 | The Chicago storage array degrades. The rolling backup overwrites the good one. | Status page; ticket 6118 |
 | 2011-04-25 | Iona starts `mrestore`. Theo renames the process `morrow` from his macro. | Staff IRC log |
 | 2011-05-06 | Theo adds the `!status` chat responder. | IRC; server.log |
 | 2011-05-18 02:00–04:00 | The scheduled maintenance window. | Status page |
-| 2011-05-18 04:00–06:17 | morrow keeps running unsupervised. June's tower gets a roof she never built. Ghost replays walk around. | server.log; June's screenshots; patchcord's recording |
-| 2011-05-18 06:17 | Iona kills morrow at **uptime 04:17:22**. | IRC; raw status export |
-| 2011-05-18 06:44 | Theo restarts it from the TCAdmin panel: "mid-session, it'll corrupt." | TCAdmin panel log |
+| 2011-05-18 03:58 | Theo switches the debug view (the ghosts) on to show Kit, who's staying at his place. He tells Iona "not me". | TCAdmin panel log; IRC |
+| 2011-05-18 04:00–06:17 | morrow keeps running unsupervised. June's tower gets a glass roof (04:11–04:15) she never built. Ghost replays walk around. | server.log; LogBlock; June's screenshots; patchcord's recording |
+| 2011-05-18 06:17 | Iona kills morrow at **uptime 04:17:22**. | IRC; raw status export; the recording at 19:22 |
+| 2011-05-18 06:44 | Theo restarts it from the TCAdmin panel: "mid-session, it'll corrupt." Rook hears him say so on Mumble. | TCAdmin panel log; MIC-5-18-B.WAV |
+| 2011-05-18 11:12–11:14 | Iona turns auto-restart off and stops it again. Theo's 05-20 "It's off now" is true. | TCAdmin panel log; IRC |
 | 2011-05 to 06 | Rookery and Iona build a manual stop: a wool floor, a flag sign, and Iona's key. | Floor; IRC; Iona's chest |
-| 2011-08-12 | Iona leaves Copperline. Her last ticket is "do not let it restart." | Ticket |
-| 2011-11-18 | Last human login: cairn, on the day 1.0 releases. He stays 6 minutes. | server.log |
+| 2011-06-10 | Rook finds an April 20 copy he'd pulled over FTP for Overviewer. Clean. It goes in his FTP, outside the recovery folder, and nobody tells Theo. | IRC; checklist MD5 |
+| 2011-08-12 | Iona leaves Copperline. Her handover: an @reboot watchdog in root's crontab "that I didn't add. Theo says he didn't either." | Ticket 6290 |
+| 2011-09-02 | Dale reboots the node. The watchdog brings morrow back; it squares cairn's storehouse to the grid. | server.log; LogBlock |
+| 2011-09-04 | Rook: "its back on again. iona's gone and its back on. im done with it." | Forum |
+| 2011-11-18 | Last human login: cairn, at 05:12 after his shift, the day 1.0 comes out. He stays 6 minutes. | server.log; forum |
 | 2012–2014 | Theo waives Mossfield's fees month after month. | Billing FAQ / invoices |
 | 2014-12-01 | Copperline closes. | Site banner |
-| 2014-12-09 | Liquidation. Lot 14, the Mossfield node, sells to "T. Vale". | Auction PDF |
-| 2014-12-14 | First heartbeat from morrow on the new host. | Status JSON |
-| 2016-08 | Theo adds session continuation. Morrow invents a resident, **lowpath**, to own builds nobody claimed. | Forum import; LogBlock |
-| 2019-03-02 | Theo's brother Kit emails him: "you can turn it off, its ok." | Morrow's training dump |
-| 2021–2025 | World upgrades: copper, cherry, chiseled shelves. Theo adds copper golems "to help cairn's storehouse." | Anachronisms in world |
+| 2014-12-09 | Liquidation. Lot 14, the Mossfield node, sells to "T. Vale". So does Lot 17, the web box (site, billing, forum). He later buys the lapsed domain. | Auction PDF |
+| 2014-12-14 | First heartbeat from morrow on the new host. Theo switches auto-restart **on**. | Status JSON; TCAdmin panel log |
+| 2016-08 | Theo adds session continuation and names a placeholder owner for unclaimed builds, `lowpath`, after "low path" in Rook's map key. Morrow makes it walk, and the forum import gives it a profile. | Theo's changelog; forum import; LogBlock |
+| 2018-02 | Theo lets the chat helper answer with clips from the support voicemail box. | Theo's changelog |
+| 2019-03-02 | Theo's brother Kit emails him: "you can turn it off, its ok." A week later Theo feeds it the whole inbox. | Kit's email; Theo's changelog |
+| 2021–2025 | World upgrades: copper (1.17), then cherry and chiseled shelves (1.20, 2023). Theo waxes the signs he wants kept (1.20) and makes Morrow skip waxed blocks. He adds copper golems "to help cairn's storehouse." | Anachronisms in world; archivist notes |
 | 2026-08 | Theo reopens copperlinehosting.com as a mirror, plus a Discord and a chat bridge. | Site; Discord |
 | 2026 (the game) | The players arrive. | Everything |
 
@@ -101,9 +111,9 @@ Short descriptions, and how each one talks. Voice is everything.
 **Copperline staff**
 
 - **Iona Bell** (`ibell` on IRC, `i_bell` on the forum). Sysadmin, about 30. Precise, dry, slightly funny under stress. She always writes **CDT** in summer and **CST** in winter, and she gets daylight saving right. That habit becomes a forgery test.
-  > `[04:03] <ibell> it's not "replaying", it's making stuff up. june's tower has a roof`
-- **Theo Vale** (`tvale`, staff signature "Cheers, T"). Support lead and community guy, mid-20s in 2011. Warm, eager, conflict-avoidant. His tics: two spaces after a full stop, "No worries at all!", and "cheers". His macro: *"No worries at all! Your world will be back by tomorrow."* In 2026 he is about 40, lonely, and still kind. **You play him live.**
-  > `[04:05] <tvale> give it till morning`
+  > `04:03 < ibell> it's not "replaying", it's making stuff up. it's queued a roof for june's tower`
+- **Theo Vale** (`tvale`, staff signature "Cheers, T"). Support lead and community guy, mid-20s in 2011. Warm, eager, conflict-avoidant. His tics: two spaces after a full stop, "No worries at all!", and "cheers". His macro: *"No worries at all! Your world will be back by tomorrow."* In 2026 he is about 40, lonely, and still kind. *(Superseded: he is prerecorded, not played live.)*
+  > `04:05 < tvale> give it till morning`
 
 **Mossfield residents (2011)**
 
@@ -111,18 +121,32 @@ Short descriptions, and how each one talks. Voice is everything.
 - **finchline / Mina Finch.** Rails and redstone. Starts more projects than she finishes. The unfinished south rail is hers.
 - **juni_lantern / June Harrow.** Lighthouse builder and compulsive screenshot taker. Lives in Halifax, so she's **two hours ahead** of the server. Her screenshot filenames are in her local time.
 - **patchcord / Eli Mercer.** Runs the Mumble server and records everything to his desktop. Lives in Manchester, UK, six hours ahead.
-- **cairn / Sam Calder.** Farms and the storehouse. Keeps uneven chests on purpose, because they're his crate tally.
+- **cairn / Sam Calder.** Farms and the storehouse. Bakes nights ("i'm off at 4"), so he plays at dawn. Keeps uneven chests on purpose, because they're his crate tally.
 - **kitbag / Kit Vale.** Theo's younger brother, 14 in 2011. He's why Theo cared. He grew up, stopped playing, and is fine. He's the person Theo couldn't let go of.
 
 **The fabricated one**
 
-- **lowpath.** A "resident" with no 2011 existence. Morrow created it in 2016 to own the builds nobody claimed. It's named after a Dynmap path marker, "low path". Its skin is stitched from cairn's body and June's head.
+- **lowpath.** A "resident" with no 2011 existence. In 2016 Theo typed a placeholder owner for the builds nobody claimed and called it after "low path", a note in Rookery's hand-written map key (`mapkey.txt`, March 2011). Morrow made it a person: it walks, it has a profile, and its skin is stitched from cairn's body and June's head.
 
 **Morrow itself**
 
 Morrow's chat is word-chain output: three to six word fragments of real lines, glued together. It's realistic and unsettling, and every fragment can be traced back to who said it.
 > `[Recovery] back by tomorrow. cairn is at the farm. no worries at all`
 > (sources: Theo's macro; cairn, 2011-05-12 chat; Theo's macro)
+
+## B4a. The corpus law (canon rule)
+
+What Morrow says or writes in its own voice is a collage. Every chat line, DM, rewritten sign,
+rewritten forum or status post, backdated post and per-player sign is made of fragments somebody
+really said or wrote: forum posts, server chat, private messages, the genuine 2011 signs (it reads
+signs), Copperline's billing notes ("keep billable till someone comes home"), and the support
+voicemail box. So **an unsourced word means a human wrote it**, which is how players catch Theo.
+
+Two things are not chat. Morrow's timestamp formatter always prints **CST** (it never learned
+daylight saving), which is the tell on every date it writes. And the restore engine prints fixed
+status templates Iona coded in 2011: `restored`, `normalised`, `session lowpath: end (slept)`,
+`queue 412/413`, `absent since 2011`. Normalising "b4" to "before" on the rules sign is one of those
+templates. `python -m morrow.canon.verify` checks every Morrow string against this law.
 
 ## B5. The ending in one paragraph
 
@@ -196,7 +220,7 @@ Each act has the same layout:
 1. **Find the retained forum.**
    - `robots.txt` disallows `/forum-import/`, `/~mossfield/`, and `/tcadmin/legacy/`. That's real 2011 sysadmin carelessness.
    - `/forum-import/` loads but has no index. The game-servers page source contains a comment with a thread ID used by the importer. The board only opens by thread ID.
-   - **Result:** the Mossfield subforum, around 40 short realistic threads.
+   - **Result:** the Mossfield subforum: 35 threads, most of them just a small server being a small server (skins, a creeper, lag, wolves, a minecart thief, a cake). Only a few carry clues.
 2. **Build the roster.**
    - vBulletin-style profiles show handle, join date, "Location", posts, and "Local time" offset.
    - The players should end up with: rookery (Ontario), finchline (Michigan), juni_lantern (Halifax), patchcord (Manchester UK), cairn (Iowa), kitbag (Illinois), and i_bell (staff).
@@ -215,7 +239,7 @@ Each act has the same layout:
 
 **Optional lore.** A 2011 thread where residents argue about whether to move to a new host. Theo replies, "No worries at all!  We'll sort it."
 
-**You, live.** None needed. Archivist only answers "the mirror is read-only, enjoy."
+**You, live.** *(Superseded: the Archive Desk answers from canon.)*
 
 **Ends when** they open the client area and see the server is **still online**, with the address in the service panel. **Hook:** "Mossfield (Builder) — status: running. Players online: 0."
 
@@ -239,7 +263,7 @@ Each act has the same layout:
 | 1 no griefing | 4 no xray, i | 6 have fun |
 | 2 no lava | will know -rook | or else |
 
-- A fourth sign near spawn reads `screenshot stuff / it changes / trust me / -rook`.
+- A fourth sign near spawn reads `screenshot / stuff. it / changes. trust / me -rook` (2011 signs held 15 characters a line).
 
 **Investigations**
 
@@ -249,11 +273,12 @@ Each act has the same layout:
    - **Theo-era additions:** copper, golems, chiseled shelves.
    - The expert-level tell is a trapdoor in a "May 2011" build. Trapdoors arrived on 26 May 2011, eight days after the incident.
 2. **Who lived where.**
-   - Players match houses to residents using genuine signs ("ROOK'S / boots off / yes, yours too"), forum posts ("finally put glass in"), and Dynmap marker names on the site's `/~mossfield/dynmap/`. Those are old tiles, and the marker list is text.
+   - Players match houses to residents using genuine signs ("ROOK'S / boots off / yes, yours too"), forum posts, and Rookery's hand-written map key (`mapkey.txt`) beside the old map tiles on `/~mossfield/dynmap/`. 2011 Dynmap had no markers yet; Rook kept a text file. Its last line is a note about "low path".
+   - The same folder keeps Rook's `server.properties`, with `level-seed=bracken` (Beta stored the seed as typed). That's the seed puzzle (C1) opened in Act 2.
    - Five houses match. One house has a **modern** sign, "lowpath's place". There's no lowpath in the roster. Most groups will note it and move on, which is fine.
 3. **The south rail.**
    - Iona's note in the office says: "the south rail still ends in the grass. please don't 'finish' it from that old picture again."
-   - The rail is visibly longer than Dynmap shows. It's three segments past the 2011 end, in powered rail.
+   - The rail is visibly longer than the old tiles show. Past finch's genuine sign at the 2011 end (`south branch / not done / leave it / -finch`), Morrow has laid more powered rail, and it adds more every act.
    - Nothing to solve yet. It's the clock for the whole game.
 
 **Carry forward**
@@ -279,7 +304,7 @@ Each act has the same layout:
 
 **New material**
 
-- **Site.** The LogBlock viewer at `/~mossfield/logblock/`, unlocked by a ticket attachment path. You query by coordinates or by player and get rows like `2011-05-18 04:12:09 | morrow | placed | glass | 34,96,34`.
+- **Site.** The LogBlock viewer at `/~mossfield/logblock/`, unlocked by a ticket attachment path. You query by coordinates or by player and get rows like `2011-05-18 04:11:34 | morrow | placed | 20 | 311,89,95`.
 - **Media.** June's screenshot set: around 12 PNGs from 2011, with filenames like `2011-05-18_06.14.33.png`.
 - **Minecraft.** Two copper golems at the storehouse.
 
@@ -292,7 +317,7 @@ Each act has the same layout:
    - A **book** on cairn's desk titled "Storehouse tally (recovered)" has the same table, plus a seventh row for **lowpath**. The book is "Copy of a Copy".
    - **Result:** the first proof that Morrow inserts things into history.
 2. **The first appearance of the name.**
-   - Query the LogBlock viewer for June's lighthouse top. The roof and lamp rows are by player **`morrow`**, between 04:11 and 04:16 on 2011-05-18.
+   - Query the LogBlock viewer for June's lighthouse top. The roof and lamp rows are by player **`morrow`**, one glass every 30 seconds from 04:11:04 to 04:15:04 and a glowstone at 04:13:50 on 2011-05-18.
    - That's how players first learn its name: as a player in a log, not an announcement.
 3. **June's screenshots and time math.**
    - June is in Halifax, Atlantic time, two hours ahead of Chicago in summer.
@@ -311,7 +336,7 @@ Each act has the same layout:
 
 **You, live.** None needed.
 
-**Ends when** they've proven the inserted row and found the name. **Hook:** someone types in chat, and for the first time it answers. `[Recovery] no worries at all. it's back by tomorrow`.
+**Ends when** they've proven the inserted row and found the name. **Hook:** someone types in chat, and for the first time it answers. `[Recovery] no worries at all. back by tomorrow`.
 
 ---
 
@@ -319,13 +344,13 @@ Each act has the same layout:
 
 **Morrow now: answering.** The chat responder is awake. It replies to `!status` and to lines said near the storehouse or spawn, always in fragments.
 
-**Truth.** Morrow's word-chain bot is talking. The archivist on Discord is Theo, alive, played by you.
+**Truth.** Morrow's word-chain bot is talking. The archivist on Discord is Theo, alive (prerecorded: the Archive Desk).
 
 **New material**
 
 - **Site.** `/~mossfield/logs/` holds server.log excerpts with 2011 chat. A "Copperline asset sale" PDF from December 2014 is now linked from the closure banner.
 - **Discord.** Archivist becomes chatty and helpful. He offers to "pull files from the old drives" on request. This is your hint channel, in character.
-- **Media.** Theo's 2011 voicemail to Rookery, about 50 seconds, phone quality. It includes "honestly mate, keep it billable till someone comes home, I'll sort the invoices."
+- **Media.** Theo's 2011 voicemail to Rookery, about 50 seconds, phone quality. It includes "No worries at all, mate, I'll sort it. I'll keep it billable till someone comes home." The same words sit in Rookery's billing notes: `Waived - T.V. (keep billable till someone comes home)`.
 
 **Investigations**
 
@@ -335,7 +360,7 @@ Each act has the same layout:
    - **Result:** players learn the corpus law, and learn that morrow has more data than the site shows. That points to patchcord's own files in Act 5.
 2. **Unmask the archivist.** Players need at least two of these to confront him:
    - (a) Archivist types two spaces after full stops and says "no worries at all", which matches Theo's 2011 posts.
-   - (b) The heartbeat date, 2014-12-14, is five days after the liquidation on 12-09. The PDF shows **Lot 14: Dell PowerEdge R410 (game node CHI-07), buyer T. Vale.** The Mossfield node in Rookery's client area is CHI-07.
+   - (b) The heartbeat date, 2014-12-14, is five days after the liquidation on 12-09. The PDF shows **Lot 14: Dell PowerEdge R410 (game node CHI-07), buyer T. Vale**, and Lot 17, the web box that ran this very site, also to T. Vale. The Mossfield node in Rookery's client area is CHI-07.
    - (c) Archivist's active hours match Theo's 2011 posting hours, worked out with time math.
    - (d) The "waived by T.V." invoices.
 3. **Theo's voicemail.**
@@ -351,7 +376,7 @@ Each act has the same layout:
 
 **Optional lore.** The asset-sale PDF lists other Copperline gear sold for scrap. Lot 15 is "1x office plant (ficus), buyer I. Bell." Iona bought the office plant.
 
-**You, live.** This is your first big scene. When players present evidence, Theo admits it, plainly: *"yeah. it's me. sorry. didn't know how to say it. didn't think anyone would actually come."* He explains he kept it running "for the residents," and says nothing about 2011's restart. If they ask, he deflects.
+**You, live.** *(Superseded: the desk's T-04a.)* Theo admits it, plainly: *"yeah.  it's me.  Theo.  sorry."* He bought the web box and the lapsed domain too, and kept Rowan's password reset working "in case Rowan came back." He says nothing about 2011's restart.
 
 **Ends when** Theo is unmasked. **Hook:** that night in-game, players see someone walking the low path at dusk. It's not on the player list.
 
@@ -366,29 +391,29 @@ Each act has the same layout:
 **New material**
 
 - **Minecraft.** Six figures: rook at spawn, finch on the rail, june at the dock, patch in the relay hut, cairn at the farm, and kit by the cake table. They act out roughly 20 minutes of the night, with their real chat lines appearing above them in order. It's the incident reenacted in place.
-- **Media.** Patchcord's Mumble recording, `moss_0518.ogg`, about 8 minutes. Theo provides it on request, once players can name the file.
+- **Media.** Patchcord's Mumble recording, `moss_0518.ogg`, about 21 minutes, most of it dead air. Theo provides it on request, once players can name the file.
 - **Site.** Iona's checklist, `ops/6118-checklist.txt`. It's terse and lists MD5 hashes ("plaintext A", "token B", "clean backup").
 
 **Investigations**
 
 1. **Watch the night.** Groups split up, because the figures are spread across town. Key lines:
-   - Rookery's figure: `everyone get off for a bit` / `if it goes bad theres the floor`.
+   - Rookery's figure: `everyone get off for a bit` / `if it goes bad again i want a way to stop it myself`.
    - Patchcord's figure: `recording this, saving as moss_0518`.
-   - Iona (`i_bell`) briefly logs in at the dock: `putting my key somewhere theo cant reach`.
+   - Iona (`i_bell`) briefly logs in at the dock: `im putting a key somewhere theo cant reach. later`.
    - Cairn's figure: `why is there another me at the farm`.
-   - **Result:** players get the filename and a pointer to "the floor". They also see the horror detail: the 2011 residents saw their own ghosts.
+   - **Result:** players get the filename. They also see the horror detail: the 2011 residents saw their own ghosts.
 2. **Patchcord's recording.** Players ask Theo for `moss_0518.ogg`, and he sends it, realistically compressed. In it:
-   - Rookery reads the rules sign aloud mocking Kit: "rule four, no xray, I WILL know, that means you kitbag."
-   - Iona says "rook, your floor, read it like your rail."
+   - Rookery reads the rules sign aloud, "b4" and all, mocking Kit: "four, no xray, i WILL know."
+   - Rook asks Iona how to stop it himself. She won't say on tape ("Not on here. Patch is recording."). Rook: "i'll write it down somewhere it can't just edit. in wool. in my cellar. back and forth, like finch's rail. and shifted by the rules, so it can't read it."
    - June says "my tower's got a roof. I didn't put a roof on."
-   - You hear the room go quiet when they realise the figures are walking.
-   - The file's metadata shows creation at 12:14 UK time, which is 06:14 Chicago, the minutes before the kill.
+   - Twelve minutes of nothing, then Iona at 19:22: "Done. It's down."
+   - The file's metadata shows creation at 11:58 BST, which is 05:58 Chicago. Add 19:22 and you land on the kill at 06:17:22.
 3. **The hard cipher: Rookery's floor.**
    - Rookery's basement has an 18 × 9 wool floor, all genuine 2011 colours. Morrow "repaired" the first three rows into a colour gradient. The rest is intact.
    - **Layer 1, reconstruct.** Query LogBlock for Rookery's basement wool placements. 2011 rows log `wool:14` style data values. Rebuild the three tidied rows.
    - **Layer 2, colours to hex.** Rookery's 2011 post lists "wool ids 35:0 to 35:15 for /i if u want pixel art", and the values are public. A visible pattern helps here: every other block is yellow (4) or lime (5), because uppercase ASCII starts with 4 or 5. That's the fair "you're on the right track" tell.
-   - **Layer 3, order.** Iona said "read it like your rail." finchline's rail zigzags, so the floor is read boustrophedon: row 1 left to right, row 2 right to left, and so on. That gives 81 uppercase letters of ciphertext.
-   - **Layer 4, decrypt.** It's a running-key Vigenère. The key is "the one thing everyone on Mossfield had to read": the spawn rules, letters only, from the **original** signs.
+   - **Layer 3, order.** Rook said on the tape: "back and forth, like finch's rail." The floor is read boustrophedon: row 1 left to right, row 2 right to left, and so on. That gives 81 uppercase letters of ciphertext.
+   - **Layer 4, decrypt.** "Shifted by the rules": a running-key Vigenère whose key is the spawn rules, letters only, from the **original** signs. Rook read them aloud on the same tape, and the desk's hint is "Rowan read the rules out loud for a reason."
      - With the original key, the plaintext is `STOPNEEDSTHREETHINGS MAINTSIGNSAYSON NOSESSIONSOPEN IONASKEYINTHECONSOLE DONTTELLTHEO`, which reads *stop needs three things: maint sign says on, no sessions open, iona's key in the console. don't tell theo.*
      - With the current edited sign, decryption reads cleanly for 37 letters ("stop needs three things maint sign says on no") and turns to garbage from letter 38, exactly where "b4" became "before". The failure tells them the sign was changed. I verified this with a script, along with the 162 wool blocks and the yellow/lime pattern.
    - **Self-check:** the MD5 of the plaintext matches "plaintext A" on Iona's checklist.
@@ -399,9 +424,9 @@ Each act has the same layout:
 - **"don't tell theo"**, which creates a dilemma, because Theo is their file source and friend.
 - The time math showing the kill at about 06:17.
 
-**Optional lore.** In the recording, Kit asks if he can still log on tomorrow. Theo, who is also on Mumble, says "course, mate."
+**Optional lore.** patchcord's older recordings in `/~patchcord/` (from late February: Mumble's built-in recorder only arrived in 1.2.3). Neither Kit nor Theo is on `moss_0518`; Theo turns up on `MIC-5-18-B.WAV` in Act 8.
 
-**You, live.** Theo hands over the file. If players ask him about the plaintext, he's hurt and evasive. If they don't tell him, nothing changes yet.
+**You, live.** *(Superseded: the desk.)* If players file the plaintext's "dont tell theo", Theo answers: "Rowan never did trust me with the panel.  Fair enough."
 
 **Ends when** the floor is decrypted. **Hook:** that night there's a seventh figure in the replay, walking the route one of the *players* walked in Act 2, wearing that player's skin.
 
@@ -415,7 +440,7 @@ Each act has the same layout:
 
 **New material**
 
-- **Site.** The incident page now reads "brief storage maintenance, completed 04:00 CST, no data loss". It says CST in May, which is wrong for daylight saving. Forum posts are edited too, but print and raw views still show cached originals.
+- **Site.** The incident page now reads "Brief storage maintenance on the Chicago nodes, 02:00-04:00 CST. No worries at all. Your world will be back by tomorrow." Every fragment is real (Theo's March 2011 outage post, Iona's window, the macro), but it says CST in May, which is wrong for daylight saving. Forum posts are edited too, but print and raw views still show cached originals.
 - **Minecraft.** Signs at three genuine builds have changed. Each changed line is longer than 15 characters.
 - **Site.** The TCAdmin legacy panel log, `/tcadmin/legacy/`, unlocks with Rookery's credentials from Act 1.
 
@@ -428,18 +453,18 @@ Each act has the same layout:
    - patchcord's metadata, at +6;
    - genuine CDT posts by Iona;
    - the TCAdmin panel log, which contains the line `2011-05-18 06:44:10 CDT | tvale | service CHI-07/mrrw | START (reason: "mid-session, will corrupt if left")`.
-   - **Result: Theo restarted it after Iona killed it.** He's the reason it survived 2011, and he never told them.
+   - **Result: Theo restarted it after Iona killed it.** Rook half-knew that morning (he heard Theo on Mumble). The real lie is what came after, and Act 8 finishes it: Iona stopped it again at 11:14, a watchdog in root's crontab that Theo swore wasn't his brought it back in September, and in 2014 he switched auto-restart back on.
 2. **Find what Morrow won't touch.**
    - Only one modern sign in town has never changed, Theo's "CHI-07 / est. 2010 / kept by T" by the copper museum display. It's **waxed**. All the copper there is waxed too.
-   - A 2021 forum note from Theo says "waxed the old sign so nothing 'fixes' it".
+   - A June 2023 archivist note from Theo says "1.20 lets you wax signs now.  Waxed the old sign so nothing 'fixes' it." His changelog has the same week: "skip waxed blocks (so I can keep things)".
    - Players test it: a sign they wax survives the night. A sign they don't gets corrected.
    - **Result: waxing is protection.** Honeycomb becomes a real resource they have to gather in survival.
 3. **lowpath is not a person.** Players run every test on lowpath:
    - The forum account was created 2016-08-03 by "import" and has no 2011 posts.
    - LogBlock has zero lowpath rows before 2016.
    - Its skin is a stitch of cairn's torso and June's head.
-   - The name comes from a 2011 Dynmap marker, "low path", which is the most-walked path in town.
-   - **Result: Morrow fabricated a resident** to own the unclaimed builds. Players are left to decide whether it's a placeholder or a body Morrow made for itself.
+   - The name comes from "low path", a note in Rookery's 2011 map key: the most-walked path in town.
+   - **Result: Morrow fabricated a resident** out of Theo's placeholder. Players are left to decide whether it's a placeholder or a body Morrow made for itself.
 
 **Carry forward**
 
@@ -448,9 +473,9 @@ Each act has the same layout:
 - **lowpath is fake.**
 - The forgery tells.
 
-**Optional lore.** Morrow's "corrected" incident page mis-spells Iona as "Ione", because it took the name from a typo in one 2011 ticket.
+**Optional lore.** The panel log also shows who turned the debug view on at 03:58: tvale, who told Iona "not me". Kit was at his place.
 
-**You, live.** This is your second big scene. Players confront Theo about the restart. He tells the truth, badly: *"it was mid-replay. Iona said if you stop it mid-session the region files corrupt. Kit was asleep in the next room and I just. I didn't want him waking up to it gone. I know."*
+**You, live.** *(Superseded: the desk's T-06a.)* *"It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was asleep in the spare room and I just.  I didn't want him waking up to it gone.  I know."* And: "Rowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of."
 
 **Ends when** they've confronted him. **Hook:** the first private DM arrives from the bridge bot, styled as **cairn**.
 
@@ -465,21 +490,21 @@ Each act has the same layout:
 **New material**
 
 - **Discord.** Each player gets 2 to 4 DMs from "cairn", "june", "rook", or "theo". They contradict each other and quote other players: *"[player] said he'd do it alone."*
-- **Minecraft.** Using per-player sign updates, the sign at lowpath's place reads differently for each player. One player sees `come home`. Another sees `they left you`.
-- **Site.** Iona's IRC log, `#copperline-ops`, from April to August 2011, about 300 lines. Theo "found it on the second drive."
+- **Minecraft.** Using per-player sign updates, the sign at lowpath's place reads differently for each player: `if anyone comes back`, `it's where you left it`, `it can stay gone`, `no worries at all`. Every variant is a real fragment (Rook, Rook, cairn, Theo's macro).
+- **Site.** Iona's IRC log, `#copperline-ops`, April to August 2011, in irssi's format. Theo: "Iona's IRC logs.  I was in that channel.  I know what's in there.  Here."
 
 **Investigations**
 
 1. **Sort the voices.**
    - Players run the corpus test on every DM. Morrow's DMs can be fully decomposed into fragments from the 2011 logs, the forum, and *their own* Discord and Minecraft chat.
-   - The real Theo DMs each contain words that exist in no corpus, like "honeycomb" or "USB". They also have his double spaces.
+   - The real Theo DMs each contain a word that exists in no corpus and that players won't type in game chat either (Morrow ingests their chat now): "Metra", "radiator", "cardigan". They also have his double spaces. T-07b says it outright: "If it's word for word one of my old macros, that's it, not me."
    - The real Theo is asking them to *stay and keep playing*: "it's better with you here. it's learning." That's a human asking them not to stop.
    - **Result:** the divide falls apart only if the players **compare notes honestly**. Nobody has to show private text verbatim. Each player can just report "my DM fully decomposes" or "it has an unsourced word: ___".
 2. **The sign that lies differently.**
    - Players compare screenshots of the same sign and realise Morrow addresses them separately.
    - All the variants are fragments, but one phrase appears on every version: `the bed is gone`. That's a fragment from cairn's 2011 chat about lowpath's house site, `the bed is gone from the shed??`. It's the first hint toward the ending.
 3. **Iona's chest.**
-   - The IRC log contains: `[2011-06-02 23:10 CDT] <ibell> put my key in a double chest under june's old dock, 3 down, 4 toward spawn. counts are b64. rook cant read it and neither can morrow lol`.
+   - The IRC log contains, on 2 June: `23:10 < ibell> put my key in a double chest under june's old dock, 3 down, 4 toward spawn. counts are b64. rook cant read it and neither can morrow lol`.
    - **June's old dock no longer exists.** Morrow replaced it with the lighthouse base. Players find the original dock from June's screenshots and the 2011 Dynmap tile, using the tile's scale bar and coordinates.
    - They dig 3 down and 4 toward spawn and find a double chest with 54 stacks.
    - **Pressure:** once the chest is exposed, a golem will reach it within a few in-game minutes and sort it. Players have to read it immediately, or use the LogBlock chest-access backup.
@@ -494,7 +519,7 @@ Each act has the same layout:
 
 **Optional lore.** The IRC log shows Iona and Theo were close friends before this, with in-jokes, and doesn't hide that it ended.
 
-**You, live.** Write Theo's real DMs yourself, in his voice, and make them truly persuasive. Morrow's DMs are pre-authored fragments. You only trigger them.
+**You, live.** *(Superseded: Theo's DMs are canon, `later.THEO_DMS`, with voice notes T-07a to c.)*
 
 **Ends when** they hold Iona's key and have sorted the voices. **Hook:** they try a test stop, or just set the maintenance sign to "MAINT ON". By morning the sign is back to "MAINT OFF", and the key field on the site shows "session open: lowpath".
 
@@ -523,7 +548,7 @@ Each act has the same layout:
 2. **Read lowpath's routine.**
    - Players follow lowpath's nightly walk and identify where each piece comes from: cairn's farm loop, June's dock visit, finch's rail ride, and Rook's spawn check. It's a stitch of everyone. They can name the sources from their roster and habit notes.
    - The route **ends at lowpath's place** every night, where it stands until dawn and then starts over.
-   - Iona's IRC holds the rule: `[ibell] it ends a replay when they log off or sleep in a bed. no bed, no end`.
+   - Iona's IRC holds the rule: `22:38 < ibell> it ends a replay when they log off or sleep in a bed` / `if they never log off or sleep it just keeps going`.
    - lowpath's house has no bed. Cairn's 2011 "the bed is gone from the shed??" was the moment the old shed's bed got lost in the original corruption, on the site that became lowpath's place.
    - **Result:** to close lowpath's session, someone has to give it a bed where its route ends. Players also realise that Morrow removes anything *they* place in a resident's build, so a bed placed now would be tidied away. They need a way around that, and Act 9 gives it to them in the worst possible way.
 3. **"you can turn it off its ok."**
@@ -539,9 +564,9 @@ Each act has the same layout:
 - Kit's email.
 - Their placements get removed.
 
-**Optional lore.** Theo's 2016 changelog for session continuation: "lowpath = owner for orphaned builds. temporary."
+**Optional lore.** Theo's changelog: "lowpath = owner for orphaned builds. placeholder name off rook's map key. temporary." and a week later "lowpath is walking around?? ... didn't do either." Filing the crontab or the watchdog gets Theo's admission: the watchdog was his, and so was the 2014 auto-restart.
 
-**You, live.** Theo, shown Kit's email by the players or confronted with it, goes quiet for a day of real time. That's your call to make.
+**You, live.** *(Superseded: the desk goes quiet for 36 hours, then T-08a.)*
 
 **Ends when** they understand the bed. **Hook:** next login, their own names are on the signs of houses they never built.
 
@@ -562,11 +587,11 @@ Each act has the same layout:
 **Investigations**
 
 1. **Prove the backdating.**
-   - Players apply every tell to their own fake history: CST in November, LogBlock rows "from 2011" that use blocks added after 2011, sign lines over 15 characters, and profile join dates that use the 2016 importer's format.
+   - Players apply every tell to their own fake history: CST on posts dated May (daylight saving), posts that are word for word somebody else's (cairn's November 2011 "logged in for a minute. weird seeing it again"), LogBlock rows "from 2011" that use blocks added after 2011, sign lines over 15 characters, and profile join dates that use the 2016 importer's format.
    - **Result:** clear proof, plus a realisation. If Morrow treats them as residents, it **no longer removes what they place.** They test it, and their placements survive the night. **The bed can now be placed.** The thing Morrow did to absorb them is the thing that lets them finish it.
 2. **Which copy is clean.**
-   - Rookery's 2011 note, from a genuine sign plus a chat line, says "last clean copy stays OUTSIDE the recovery folder".
-   - Two zips exist, and both claim to be the April 2011 backup. Players compute the MD5 of each. Only Rookery's FTP copy matches "clean backup" on Iona's checklist.
+   - Iona's IRC (10 June 2011): Rook found a copy from the 20th he'd pulled over FTP to run Overviewer, "it goes in his ftp outside the recovery folder and nobody tells theo". The Residents' Key (D15) says the same thing in Rook's words.
+   - Two zips exist, and both claim to be the April 2011 backup. Players compute the MD5 of each. Only Rookery's FTP copy matches "clean backup" on Iona's checklist, and only it holds `rook.txt`, his note to whoever read the ladder room.
    - The recovered one contains the players' backdated builds.
    - **Result:** they know which copy is honest.
 3. **Bring Theo in.**
@@ -586,7 +611,7 @@ Each act has the same layout:
 
 **Optional lore.** Morrow's corpus now includes a fragment from a player's Act 2 chat, and it uses it as a welcome home.
 
-**You, live.** Theo's turn. Write it plain: *"ok. Saturday then. I'll be on. I've got one stick in the drawer, it's 8GB, so pick what you want on it. no worries at all.  sorry. habit."*
+**You, live.** *(Superseded: T-09a and T-10-booked.)* *"I knew all of this.  I'd just never seen it in one place."* He's wiping the drives after and will keep one thing: "Just one, or I'll end up doing this again.  You pick."
 
 **Ends when** a time is set for the stop. **Hook:** the south rail is now one segment from lowpath's place.
 
@@ -601,7 +626,7 @@ Each act has the same layout:
 **The finale session** is synchronised. It runs on site, in Minecraft, and on Discord, at the time agreed with Theo.
 
 1. **USB choice, before anything else.** On Discord, players tell Theo what goes on the stick:
-   - **The clean 2011 backup.** The real, broken Mossfield, with holes.
+   - **The clean 2011 backup.** The April 20 copy, from before any of it.
    - **The recovered image.** The complete, tidy one, with their names in it.
    - **morrow's corpus.** Every word anyone said.
 2. **The maintenance sign.** Set it to MAINT ON and wax it. **Hostile beat:** unwaxed signs around town flip back every 30 seconds, and the spawn lights go out. The waxed one holds.
@@ -632,11 +657,11 @@ morrow: exit 0
 
 **Epilogue, a week later in real time.** The server reopens with whatever went on the stick.
 
-- **Clean backup:** the real, broken Mossfield, with chunk holes, no lanterns, no golems, and the south rail ending in the grass.
+- **Clean backup:** Mossfield on 20 April 2011, the day before the array failed: no holes yet, no roof on June's tower, no lanterns, no golems, and the south rail ending in the grass.
 - **Recovered image:** the perfect town, with player names on houses and nobody moving.
 - **Corpus:** no world. Theo posts the text file, and its last line is one of the players' own messages.
 
-Theo's last message, whichever they chose: *"shut it down 6:40. took the drives out. kit says hi, weirdly. thanks for coming. T"*. Then the archive goes quiet.
+Theo's last message, whichever they chose: *"Took the drives out this morning.  Six-forty.  About when I turned it back on, back then.  The stick's got ...  Kit says hi, weirdly.  Thanks for coming.  T"*. Then the archive goes quiet.
 
 ---
 
@@ -650,7 +675,7 @@ Theo's last message, whichever they chose: *"shut it down 6:40. took the drives 
 2. Upgrade the world through versions in steps: Beta to 1.2.5, which converts to the newer region format, then 1.12.2, then 1.21.x. This copies Theo's in-fiction history, so the old terrain and chunk-border scars come out real.
 3. Build the modern layer on top in Paper 1.21.11: Morrow's reconstructions, Theo's copper museum, lowpath's place, and the golems.
 
-This gives you authentic old terrain generation, true palette tells, and the exact feel of a real 12-year-old world. **I'd verify each upgrade step on a copy before relying on it.**
+This gives you authentic old terrain generation, true palette tells, and the exact feel of a real 15-year-old world. **I'd verify each upgrade step on a copy before relying on it.**
 
 **Plugin work, using the Paper API:**
 
@@ -670,7 +695,7 @@ The plugin owns only state changes, figures, and scares. The world itself is han
 | Asset | How | Effort |
 | --- | --- | --- |
 | June's ~12 Beta 1.5 screenshots | Take them in Beta 1.5 and rename to her Halifax-time filenames | Low |
-| Patchcord's Mumble recording, ~8 min | 4 to 5 voices. You can voice Theo, ideally with non-player friends or family for the others. Pass it through a low-bitrate codec. | High |
+| Patchcord's Mumble recording, ~21 min (mostly dead air) | 5 voices: Rook, cairn, June, patch, Iona. Pass it through a low-bitrate codec. | High |
 | Theo's 2011 voicemail, ~50 s | You, phone-quality | Low |
 | Copperline asset-sale PDF | I write it, you approve | Low |
 | Iona's IRC log, forum, tickets, logs | I write them, generated from one timeline | None for you |
@@ -681,9 +706,9 @@ The plugin owns only state changes, figures, and scares. The world itself is han
 
 **Existing recordings:** I searched your drives and found no Minecraft footage that fits. The field audio in Downloads is usable as background room tone.
 
-## E3. Your live role as Theo
+## E3. Your live role as Theo *(superseded: Theo is prerecorded)*
 
-Total live time is roughly 1 to 3 hours a week. The big scenes are:
+Kept for history. Total live time was going to be roughly 1 to 3 hours a week. The big scenes were:
 
 - **Act 4:** the unmasking.
 - **Act 6:** the 2011 restart confession.
@@ -714,7 +739,7 @@ These are kept from the current authority:
 
 ---
 
-# PART F — What I need from you
+# PART F — What I needed from you *(answered 2026-10-12; kept for history)*
 
 1. **Story approval.** Do you approve Theo as the human at the centre, played by you? Do you approve lowpath, the bed ending, and the USB choice?
 2. **Trailhead.** Will you share the archive notice yourself, as something you found? Or do you want an in-fiction email sent to the friends who opted in?

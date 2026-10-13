@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { bundle, currentAct, type Bundle, type LogRow } from "@/lib/morrow/canon";
+import { bundle, currentAct, type Bundle, type LogRow, type Marker } from "@/lib/morrow/canon";
 
 /**
  * Copperline's free customer web space, served at /~name/ (rewritten to /u/name/).
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { user, path = [] } = await params;
   const sub = path.join("/");
   if (user === "mossfield") {
-    return { title: ({ "": "mossfield", dynmap: "Minecraft Dynamic Map", logblock: "LogBlock", logs: "logs" } as Record<string, string>)[sub] ?? "404 Not Found" };
+    return { title: ({ "": "mossfield", dynmap: "Minecraft Dynamic Map", "mapkey.txt": "mapkey.txt", "server.properties": "server.properties", logblock: "LogBlock", logs: "logs" } as Record<string, string>)[sub] ?? "404 Not Found" };
   }
   return { title: `Index of /~${user}/${sub}` };
 }
@@ -28,8 +28,12 @@ export default async function UserSpace({ params, searchParams }: { params: Para
   const sub = path.join("/");
 
   if (user === "mossfield") {
-    if (sub === "") return <MossfieldHome />;
+    const files = act >= 2 ? b.mossfield_files ?? [] : [];
+    if (sub === "") return <MossfieldHome files={files} />;
+    const kept = files.find((f) => f.file === sub);
+    if (kept) return <Plain title={kept.file}><pre className="plain-pre">{kept.body}</pre></Plain>;
     if (sub === "dynmap") return act >= 2 ? <Dynmap b={b} /> : <ApacheMissing path="/~mossfield/dynmap/" />;
+    if (sub === "mapkey.txt") return act >= 2 ? <Plain title="mapkey.txt"><pre className="plain-pre">{mapKeyText(b)}</pre></Plain> : <ApacheMissing path="/~mossfield/mapkey.txt" />;
     if (sub === "logblock") return act >= 3 ? <LogBlockViewer b={b} q={q} /> : <LogBlockLocked />;
     if (sub === "logs") return <Logs b={b} day={q.day} />;
     notFound();
@@ -65,7 +69,8 @@ function ApacheMissing({ path }: { path: string }) {
   );
 }
 
-function MossfieldHome() {
+/** Rook's page. From Act 2 it also lists the files he left next to it (server.properties: level-seed=bracken). */
+function MossfieldHome({ files }: { files: { file: string; mtime: string; size: string }[] }) {
   return (
     <Plain title="mossfield">
       <h1>mossfield</h1>
@@ -76,20 +81,42 @@ function MossfieldHome() {
         <li><a href="/~mossfield/logblock/">logblock</a> (who broke my stuff)</li>
         <li><a href="/forum-import/forumdisplay.php?f=12">forum</a></li>
       </ul>
+      {files.length ? (
+        <>
+          <p>other stuff:</p>
+          <table className="plain-table">
+            <thead><tr><th>Name</th><th>Last modified</th><th>Size</th></tr></thead>
+            <tbody>{files.map((f) => (
+              <tr key={f.file}><td><a href={`/~mossfield/${f.file}`}>{f.file}</a></td><td>{f.mtime}</td><td>{f.size}</td></tr>
+            ))}</tbody>
+          </table>
+        </>
+      ) : null}
       <p><small>last updated 22 feb 2011. new map!!</small></p>
     </Plain>
   );
+}
+
+/**
+ * Rook's map key. Dynmap only got markers (markers.json) in Sept 2011, so in Mar 2011 the places
+ * were a text file Rook kept next to the map: /~mossfield/mapkey.txt. Accepts the canon as finished
+ * text (mapkey / mapkey_txt) or as marker rows (mapkey / dynmap_markers), and writes rows out by hand.
+ */
+function mapKeyText(b: Bundle): string {
+  if (typeof b.mapkey === "string") return b.mapkey;
+  if (b.mapkey_txt) return b.mapkey_txt;
+  const rows = (Array.isArray(b.mapkey) ? b.mapkey : b.dynmap_markers) ?? [];
+  const pos = (m: Marker) => `${m.x} ${m.y} ${m.z}`;
+  const w = Math.max(10, ...rows.map((m) => pos(m).length)) + 3;
+  return ["mossfield map key. x y z, f3 coords. ask rook if ur place is missing", "", ...rows.map((m) => pos(m).padEnd(w) + m.label)].join("\n") + "\n";
 }
 
 function Dynmap({ b }: { b: Bundle }) {
   return (
     <Plain title="Minecraft Dynamic Map">
       <h1>Dynmap 0.12 - world</h1>
-      <p><i>Map tiles were not retained in this mirror. The marker set was kept (standalone/markers.json).</i></p>
-      <table className="plain-table">
-        <thead><tr><th>marker</th><th>type</th><th>x</th><th>y</th><th>z</th></tr></thead>
-        <tbody>{b.dynmap_markers.map((m) => <tr key={m.label}><td>{m.label}</td><td>{m.type}</td><td>{m.x}</td><td>{m.y}</td><td>{m.z}</td></tr>)}</tbody>
-      </table>
+      <p><i>Map tiles were not retained in this mirror. Rook&apos;s key to the map was kept: <a href="/~mossfield/mapkey.txt">mapkey.txt</a></i></p>
+      <pre className="plain-pre">{mapKeyText(b)}</pre>
     </Plain>
   );
 }
@@ -107,10 +134,12 @@ const PAGE = 100;
 
 function LogBlockViewer({ b, q }: { b: Bundle; q: Record<string, string | undefined> }) {
   const player = (q.player ?? "").trim().toLowerCase();
-  const x = q.x ? Number(q.x) : null, y = q.y ? Number(q.y) : null, z = q.z ? Number(q.z) : null;
-  const radius = Math.min(Math.max(Number(q.radius ?? 5) || 5, 0), 64);
+  const num = (v?: string) => (v && v.trim() !== "" && Number.isFinite(Number(v)) ? Number(v) : null);
+  const x = num(q.x), y = num(q.y), z = num(q.z);
+  // LogBlock's "area" default; a blank y searches the whole column (towers, cellars), like `lb lookup area 32`.
+  const radius = Math.min(Math.max(num(q.radius) ?? 32, 0), 64);
   const since = q.since ?? "", until = q.until ?? "";
-  const searched = Boolean(player || x !== null || since);
+  const searched = Boolean(player || x !== null || z !== null || since);
   let rows: LogRow[] = [];
   if (searched) {
     rows = b.logblock.filter((r) =>
@@ -143,7 +172,7 @@ function LogBlockViewer({ b, q }: { b: Bundle; q: Record<string, string | undefi
           </table>
           {rows.length > page * PAGE ? <p><a href={`?${qs(page + 1)}`}>next page »</a></p> : null}
         </>
-      ) : <p>enter a player or a position.</p>}
+      ) : <p>enter a player or a position. leave y blank to search the whole column.</p>}
     </Plain>
   );
 }

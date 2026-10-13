@@ -1,86 +1,55 @@
-# Building Mossfield in Beta 1.5 (your part)
+# 2011 Mossfield in Beta 1.5 (your part: one walk)
 
-The 2011 layer of Mossfield must be built in real Beta 1.5, on seed `bracken`. That's what makes
-the terrain, the chunk "fossils", the palette tells and the seed puzzle real. You build the
-houses by hand, because 2011 player builds are lumpy and personal. My tools then place every
-cipher object to the exact block (the wool floor, Iona's chest, the block-ID wall, the signs,
-the note blocks), so you never have to place 162 wool blocks by hand.
+The 2011 layer of Mossfield is real Beta 1.5_01 terrain on seed `bracken` (your world, generated
+2026-10-12). Claude built the residents' places into it in 2011 blocks only
+(`python -m morrow.world.build2011`), and the injector places every cipher object on top. You
+only need to do the one thing code can't: walk Kit's route, because only the real game can
+generate the "fossil" Beta chunks puzzle D3 depends on.
 
-## Step 1. Make the world (about 2 minutes)
+## Where everything is
 
-1. Open the Minecraft Launcher, then **Settings**, and turn on **Show historical versions of
-   Minecraft: Java Edition**.
-2. **Installations**, then **New installation**. Name it `Mossfield Beta`, version `old_beta b1.5_01`.
-   Play it.
-3. **Singleplayer**, then **Create New World**. Name: `Mossfield`. Seed: `bracken` (lowercase, exactly).
-4. Walk around spawn for a minute, then quit to title.
-5. Copy the world folder from `%APPDATA%\.minecraft\saves\Mossfield` to
-   `D:\the-observance\world\beta\Mossfield`.
+| Place | Around (x, z) | Built |
+| --- | --- | --- |
+| Spawn plaza, rules signs, cake table | -233, 30 | cobble/gravel plaza, fence-post torches |
+| Rookery's house + cellar | -262, 0 | lumpy cobble box, dirt pillar he never took down, ladder to the floor room |
+| Rookery's ladder room | -240, 64 (y 40) | under the sand south of spawn, shaft capped with one dirt block |
+| finch's rail hub | -215, 22 | the only neat thing in town; line runs north, east, north, east to the farms |
+| finch's south branch | ends -215, 62 | stops dead in the grass, cobble marking, her "leave it" sign |
+| finch's hidden spur station | -224, -116 (y 70) | tunnel into the hill north of town from the spur's end |
+| patchcord's relay hut | -199, -70 | cramped cobble hut by the line, note-block wall, jukebox |
+| cairn's storehouse, shed, fields, sheep pen | -80, -140 | long plank shed, log corners, six tally chests, split pen |
+| June's house, dock, lighthouse | -246, 236 / tower -243, 249 | on the sandy spit to the south |
+| Iona's annex | -286, 28 (y 35) | under the hill west of spawn; stair tunnel capped under the grass |
+| Iona's notes cell | -180, -20 (y 40) | |
+| Kit's base | 330, -530 | **your walk** |
 
-Tell me when that's done. I'll render a top-down map of the real terrain and choose where each
-house goes: June on the coast, cairn on flat farmland, Rookery's cellar on solid ground. Then
-I'll send you a map with numbered plots.
+## Kit's walk (about 5 minutes)
 
-## Step 2. Build the houses (your creative part)
+1. Launcher: the `old_beta b1.5_01` installation. Singleplayer -> **Mossfield (Kit walk)**.
+2. Options -> Video Settings -> Render Distance: **Short**. (A narrow strip of old terrain reads as a
+   kid's footpath across the modern world later.)
+3. You start at cairn's storehouse door, facing the right way. Press **F3** to see x and z.
+4. **Walk** toward **x 330, z -530**: x goes up and z goes down at about the same rate. Don't use
+   boats; swim if you hit water. About 560 blocks.
+5. At x 330, z -530 (within a few blocks is fine), build Kit's hideout: a tiny dirt hut (you have
+   128 dirt) with the **wooden door** in your inventory, and a torch or two inside. Make it
+   look like a 14-year-old made it.
+6. Save and quit. Tell Claude. The save gets copied back to `world\beta\Mossfield`, Kit's signs go
+   in next to your door, and the pipeline upgrades the whole thing.
 
-Build each resident's place on its plot. Keep it 2011: small, practical, a bit ugly, unfinished
-in places. Real 2011 players built cobblestone boxes with wooden roofs, dirt scaffolding they
-forgot to remove, torches everywhere, and glass in whatever shape fit.
+## Rules the builds follow (for any touch-ups you want to make)
 
-**Only use these blocks** (they existed by 18 May 2011, Beta 1.5):
+Only blocks that existed by 18 May 2011 (Beta 1.5): stone, cobble, mossy cobble, dirt, grass,
+sand, sandstone, gravel, clay, brick, oak planks only (spruce/birch *logs* are fine), glass, wool,
+plain bookshelves, lapis/iron/gold/diamond blocks, stone/sandstone/wood/cobble slabs, cobble and
+wood stairs, fences, ladders, wooden and iron doors, signs, torches, redstone torches, rails,
+powered and detector rails, minecarts, chests, furnaces, crafting tables, dispensers, note blocks,
+jukeboxes, beds, farmland, wheat, sugar cane, cactus, pumpkins, jack-o-lanterns, cake, redstone
+dust, repeaters, levers, buttons, pressure plates, netherrack, soul sand, glowstone, obsidian, TNT.
 
-| Use freely | Notes |
-| --- | --- |
-| stone, cobblestone, mossy cobblestone, dirt, grass, sand, sandstone, gravel, clay, brick | |
-| wood planks (oak only, the only kind then), logs (oak, spruce, birch) | spruce/birch *planks* did not exist |
-| glass, wool (all 16 colours), bookshelf (plain), lapis block, iron/gold/diamond block | |
-| slabs (stone, sandstone, wood, cobble), cobble and wood stairs | |
-| fences, ladders, wooden and iron doors, signs, torches, redstone torches | |
-| rails, powered rails, detector rails, minecarts | powered rails were brand new |
-| chests, furnaces, crafting tables, dispensers, note blocks, jukeboxes, beds | beds only since Feb 2011 |
-| farmland, wheat, sugar cane, cactus, pumpkins, jack-o-lanterns, cake | |
-| redstone dust, repeaters, levers, buttons, pressure plates | no pistons yet |
-| netherrack, soul sand, glowstone, obsidian, TNT | |
+**Never:** trapdoors (Beta 1.6, 26 May 2011), pistons, glass panes, stone bricks, fence gates,
+iron bars, spruce/birch/jungle planks, item frames, anvils, lanterns, barrels, anything copper,
+written books / book and quill. Those are the anachronisms Morrow gets caught with, so they only
+appear in the modern layer.
 
-**Never use:** trapdoors, pistons, glass panes, stone bricks, fence gates, iron bars,
-spruce/birch/jungle planks, item frames, anvils, lanterns, barrels, anything copper, or
-books. Those are the anachronism tells Morrow gets caught with, so they must only appear in
-the modern layer I add later.
-
-## Step 3. Things that must exist (the story depends on them)
-
-You'll get exact plot coordinates in Step 1's map. For now, this is the list.
-
-- **Spawn:** a small plaza. I place the three rules signs and Rookery's warning sign (`screenshot / stuff. it / changes. trust / me -rook`).
-- **Rookery's house:** a plain cobble house with a ladder down to a **cellar**. Leave the cellar
-  floor as an empty 18 by 9 area at the marked height, and I fill the wool. Put a sign on the
-  door: `ROOK'S / boots off / yes, yours too`.
-- **cairn's storehouse:** a long wooden shed with **six rows of chests**, one row per resident.
-  Leave the chests empty, because I fill the uneven tally. Also build a separate **small shed**
-  nearby with no bed in it. That's "the bed is gone from the shed".
-- **cairn's farms and sheep pen:** wheat fields, plus a fenced pen split into an inner and an outer
-  part.
-- **June's point:** a little house on the coast, a **wooden dock** east of it, and a **lighthouse
-  base** on the point. Build the tower to the gallery with an **open top**, with no roof and no
-  lamp. Morrow adds those.
-- **patchcord's relay hut:** a small hut by the rail with a **wall of note blocks** (I tune them),
-  a jukebox and a chest.
-- **finchline's rail:** a powered-rail line from spawn to the farms, with a **hub** and a
-  **spur** that heads off and ends unfinished in the grass. The south branch should stop
-  abruptly. Plus a separate hidden **spur station** reached through a tunnel, with an
-  8-lever door that I wire.
-- **The cake table** near spawn, where Kit stood.
-- **Kit's secret base:** walk about 800 blocks out alone, along the route I'll mark, and dig a
-  tiny dirt hut. Walking there is what generates the "fossil" chunks, so you have to actually
-  walk it in Beta. Don't fly or teleport. I add the `KIT ONLY` signs.
-- **Iona's things:** nothing for you to build. I place her buried chest, her notes chest and
-  her block strip.
-- **Do NOT build lowpath's place.** That's Morrow's, added later in modern blocks.
-
-## Step 4. Hand the world back
-
-Quit the game and copy the world folder again to `D:\the-observance\world\beta\Mossfield`. My
-injector places every cipher object, writes every sign, and fills every chest from the canon. It
-also regenerates the LogBlock rows from the actual blocks, so the block log always matches the
-world. Then I run the upgrade chain (Beta, 1.2.5, 1.12.2, 1.21.11) and you'll see a 15-year-old
-world on Paper.
+Don't build lowpath's place. That's Morrow's, added on Paper.

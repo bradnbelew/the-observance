@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { bundle } from "@/lib/morrow/canon";
 import { deskFast, eveningAfter } from "@/lib/morrow/campaign";
-import { remember, scoreBrief, ticketLink, type Ticket } from "@/lib/morrow/desk";
+import { deskEvent, remember, scoreBrief, ticketLink, type Ticket } from "@/lib/morrow/desk";
+import { postDeskEvent } from "@/lib/morrow/bridge";
 
 export const dynamic = "force-dynamic";
 
@@ -20,5 +21,7 @@ export async function POST(request: Request) {
   };
   await remember(t);
   console.log(`MORROW_DESK brief=${tid} accepted=${brief.accepted.length}/${b.case_brief.length}`);
+  const ev = deskEvent(b, t);
+  if (ev) after(() => postDeskEvent(ev));
   return NextResponse.redirect(new URL(ticketLink(t), request.url), 303);
 }

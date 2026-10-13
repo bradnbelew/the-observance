@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
-import { bundle } from "@/lib/morrow/canon";
-import { unseal } from "@/lib/morrow/campaign";
+import { bundle, currentAct } from "@/lib/morrow/canon";
+import { actClock, unseal } from "@/lib/morrow/campaign";
 import { answered, deskNotes, fileLink, voiceLink, type Ticket } from "@/lib/morrow/desk";
 import { VoiceNote } from "@/components/morrow/VoiceNote";
 
@@ -14,11 +14,17 @@ export const dynamic = "force-dynamic";
 export default async function ArchiveDesk() {
   const b = await bundle();
   const mine = ((await cookies()).get("desk_tickets")?.value ?? "").split("~").map((t) => ({ t, v: unseal<Ticket & { c?: string }>(t) })).filter((x) => x.v);
-  const notes = deskNotes(b);
+  const notes = deskNotes(b, await actClock());
   return (
     <LegacyShell active="support">
       <Breadcrumbs>Archive Desk</Breadcrumbs>
       <OldPageTitle sub="Requests for retained customer records.">Archive Desk</OldPageTitle>
+      {(await currentAct()) >= 6 ? (
+        <table className="old-data-table desk-staff"><tbody>
+          <tr><th>Desk staff</th><td>archivist (Theo, Copperline Support)</td></tr>
+          <tr><th>Home Page</th><td><a href="/~tvale/">copperlinehosting.com/~tvale/</a></td></tr>
+        </tbody></table>
+      ) : null}
       <section className="old-copy">
         <h2>Notes from the desk</h2>
         {notes.map((n, i) => (

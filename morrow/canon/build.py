@@ -10,6 +10,7 @@ so a page can never ship a later act's content early.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from . import ciphers, files, forum, irc, later, layout, logblock, media, people, records, serverlog
@@ -55,7 +56,8 @@ def full_canon() -> dict:
 
 
 def dynmap_markers() -> list[dict]:
-    """markers.json as Dynmap exported it in 2011. Positions are the 2011 ones."""
+    """The places in Rookery's hand-written map key (media.MAPKEY, mapkey.txt, March 2011), as rows.
+    2011 Dynmap had no markers (they arrived in September 2011): the site should show mapkey.txt."""
     a = layout.ANCHORS
     pick = [("spawn", "spawn"), ("rookery_house", "rook's"), ("cairn_storehouse_door_2011", "storehouse"),
             ("cairn_farm", "the farms"), ("sheep_pen", "sheep"), ("june_house", "june's point"),
@@ -90,6 +92,11 @@ def site_bundle(act: int) -> dict:
         "logblock": logblock.rows_for_act(act),
         "june_shots": [x for x in media.JUNE_SHOTS + media.FORGED_SHOTS if x["act"] <= act],
         "dynmap_markers": dynmap_markers() if act >= 2 else [],
+        # mapkey.txt as Rook wrote it (the site serves it at /~mossfield/mapkey.txt)
+        "mapkey": ("\n".join(media.MAPKEY["lines"]) + "\n") if act >= 2 else None,
+        "mapkey_txt": ("\n".join(media.MAPKEY["lines"]) + "\n") if act >= 2 else None,
+        "mossfield_files": ([{"file": "server.properties", "mtime": "22-Feb-2011 23:41", "size": "1K",
+                              "body": media.SERVER_PROPERTIES}] if act >= 2 else []),
         "patchcord_folder": media.PATCHCORD_FOLDER if act >= 5 else [],
         "tvale_folder": media.TVALE_FOLDER if act >= 6 else [],
         "tvale_box": later.TVALE_BOX["files"] if act >= later.TVALE_BOX["act"] else [],
@@ -107,6 +114,12 @@ def site_bundle(act: int) -> dict:
         "files": {k: {"act": v[0], "line": v[1], "voice": v[2]} for k, v in later.DESK_FILES.items() if v[0] <= act},
         "drops": [{"act": a, "after_hours": h, "file": f, "note": n} for a, h, f, n in later.DESK_DROPS if a <= act],
         "hints": later.HINTS.get(act, []),
+        "hint_hours": later.HINT_HOURS,
+        # Correct evidence filed early: matched (tokens only, never the reply) so Theo can say "give me a
+        # bit" and answer properly once the act arrives. The ticket is re-read against the later bundle.
+        "held": [{"id": r["id"], "act": r["act"], "tokens": r["tokens"], "need": r["need"], "require": r.get("require", [])}
+                 for r in later.DESK_RULES if r["act"] > act],
+        "held_files": {k: v[0] for k, v in later.DESK_FILES.items() if v[0] > act},
     }
     if act >= 6:
         bundle["forum_rewrites"] = {str(k): {"body": b, "note": n} for k, (b, n) in later.FORUM_REWRITES.items()}
@@ -114,8 +127,11 @@ def site_bundle(act: int) -> dict:
         bundle["case_brief"] = later.CASE_BRIEF_FIELDS
         bundle["backdated_posts"] = later.BACKDATED_POSTS
         bundle["clean_md5"] = json.loads((files.OUT.parent / "hashes.json").read_text())["notrecovery-mossfield_2011-04-20.zip"]
+        bundle["brief_replies"] = {k: {"text": t, "voice": v} for k, (t, v) in later.BRIEF_REPLIES.items()}
     if act >= 10:
         bundle["usb_choices"] = {k: {"line": v[0], "voice": v[1]} for k, v in later.USB_CHOICES.items()}
+        bundle["usb_vote"] = {"prompt": later.USB_VOTE["prompt"], "undecided": later.USB_VOTE["undecided"],
+                              "options": later.USB_VOTE["options"]}
         bundle["stop_log"] = later.STOP_LOG
         bundle["ready_status"] = later.READY_STATUS
         bundle["console"] = {"cmd_md5": ciphers.md5(ciphers.HALT_COMMAND), "key_md5": ciphers.md5(ciphers.IONA_TOKEN)}
@@ -125,12 +141,27 @@ def site_bundle(act: int) -> dict:
 PLUGIN = ROOT / "plugin-v2" / "src" / "main" / "resources" / "canon"
 
 
+QUOTE_BLOCK = re.compile(r"\[QUOTE(=[^\]]*)?\].*?\[/QUOTE\]\s*", re.S | re.I)
+
+
 def corpus() -> list[dict]:
-    """Everything Morrow ever ingested, with sources. Morrow may only reuse these words."""
+    """Everything Morrow ever ingested, with sources. Morrow may only reuse these words.
+    It reads chat, the forum, private messages, the support macros, billing notes, the signs in the
+    world, and (Theo's 2018 changelog) the support voicemail box."""
     out = [{"text": people.THEO_MACRO, "source": "Theo support macro"}]
     for t in forum.THREADS:
         for p in t["posts"]:
-            out.append({"text": p["body"], "source": "%s, forum, %s" % (p["author"], p["at"])})
+            body = QUOTE_BLOCK.sub("", p["body"])  # a quote is somebody else's words, already sourced
+            out.append({"text": body, "source": "%s, forum, %s" % (p["author"], p["at"])})
+    for inv in records.CLIENT_ACCOUNT["invoices"]:
+        if "(" in inv["status"]:
+            out.append({"text": inv["status"].split("(", 1)[1].rstrip(")"),
+                        "source": "billing note, invoice #%d, %s" % (inv["no"], inv["date"])})
+    for sign in ciphers.RULES_SIGNS_2011:
+        out.append({"text": " ".join(l for l in sign if l), "source": "spawn rules sign, 2011"})
+    for key, sign in ciphers.GENUINE_SIGNS_2011.items():
+        out.append({"text": " ".join(l for l in sign if l), "source": "sign (%s), 2011" % key})
+    out.append({"text": later.VOICEMAIL_2011, "source": "Theo's voicemail to Rowan, 2011-04-28 (support voicemail box)"})
     for day, lines in serverlog.DAYS.items():
         for t, _lvl, msg in lines:
             if msg.startswith("<"):
@@ -155,7 +186,7 @@ def incident_replay() -> list[dict]:
     """Act 5: the night of 18 May 2011, ~20 min compressed. Each figure walks and 'says' its logged lines."""
     figs = [
         {"who": "rookery", "path": _walk("spawn", "rules_signs", 0, 30),
-         "lines": [[20, "everyone get off for a bit"], [140, "if it goes bad theres the floor"]]},
+         "lines": [[20, "everyone get off for a bit"], [140, serverlog_line("04:22:40")]]},
         {"who": "cairn", "path": _walk("cairn_farm", "cairn_storehouse_door_2011", 0, 60) + _walk("cairn_storehouse_door_2011", "cairn_farm", 61, 60),
          "lines": [[40, "theres someone at the farm"], [70, "why is there another me at the farm"]]},
         {"who": "juni_lantern", "path": _walk("june_house", "june_old_dock", 0, 40),
@@ -165,7 +196,7 @@ def incident_replay() -> list[dict]:
         {"who": "patchcord", "path": _walk("patchcord_relay_hut", "patchcord_relay_hut", 0, 10),
          "lines": [[150, "recording this, saving as moss_0518"], [200, serverlog_line("06:09:17")]]},
         {"who": "i_bell", "path": _walk("june_old_dock", "june_old_dock", 0, 10),
-         "lines": [[170, "putting my key somewhere theo cant reach"]]},
+         "lines": [[170, serverlog_line("06:02:31")]]},
     ]
     return figs
 
@@ -200,9 +231,9 @@ def write_plugin_canon() -> None:
         "rules_signs_2011": ciphers.RULES_SIGNS_2011,
         "rules_signs_morrow": ciphers.RULES_SIGNS_MORROW,
         "tally_book_morrow": ciphers.tally_book_morrow(),
-        "sign_back_notes": {
+        "sign_back_notes": {  # restore-engine templates (later.ENGINE_VOCAB), not chat
             "rookery_house": ["rookery:", "absent since 2011", "boots off (kept)", ""],
-            "rules_signs": ["rules:", "1 typo noted", "", ""],
+            "rules_signs": ["rules:", "1 line normalised", "", ""],
             "cairn_storehouse_door_2011": ["cairn:", "uneven x14", "normalised", ""],
             "june_house": ["juni_lantern:", "tower plan", "completed", "2011-05-18"],
         },
@@ -232,6 +263,9 @@ def write_plugin_canon() -> None:
         "south_rail_dir": list(layout.SOUTH_RAIL_DIR),
         "finch_lock_bits": later.FINCH_LOCK_BITS, "finch_spur_sign": later.FINCH_SPUR_SIGN,
         "nether_hub_sign": later.NETHER_HUB_SIGN,
+        "genuine_signs_2011": ciphers.GENUINE_SIGNS_2011,
+        "finch_south_sign": {"anchor": "south_rail_end", "offset": list(ciphers.FINCH_SOUTH_SIGN_OFFSET),
+                             "lines": ciphers.GENUINE_SIGNS_2011["finch_south_rail"]},
         "stop_secret_hint": "set stop-secret in plugins/mrrw/config.yml to the website's MORROW_STOP_SECRET",
     }
     (PLUGIN / "canon.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
@@ -250,6 +284,17 @@ def write_discord_canon() -> None:
                    "https://copperlinehosting.com/support/index.php  No worries at all.",
         "bridge_cut": {"text": "cutting the bridge now.  bye mossfield.", "voice": "T-10-cut"},
         "fake_theo": later.FAKE_THEO_NOTE,
+        # Theo's big desk replies, posted to #general when the plugin's journal releases them ("theo.reply")
+        "theo_mirror": {
+            "header": later.THEO_MIRROR_HEADER,
+            "replies": {**{r["voice"]: r["reply"] for r in later.DESK_RULES if r.get("voice") in later.THEO_MIRROR_VOICES},
+                        **{v: t for t, v in later.BRIEF_REPLIES.values() if v in later.THEO_MIRROR_VOICES}},
+        },
+        # Act 10: the group's USB vote in #general (the plugin counts it from usb-votes.json)
+        "usb_vote": later.USB_VOTE,
+        # Act 7: Morrow answers DMs through the plugin's corpus (GET /corpus), signed like its DMs
+        "persona_reply_template": "{as}: {text}",
+        "personas": sorted({dm["as"] for dm in later.MORROW_DMS}),
     }, indent=1), encoding="utf-8")
 
 

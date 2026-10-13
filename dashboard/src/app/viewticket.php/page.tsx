@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
 import { bundle } from "@/lib/morrow/canon";
 import { unseal } from "@/lib/morrow/campaign";
-import { fileLink, replyFor, voiceLink, type Ticket } from "@/lib/morrow/desk";
+import { after } from "next/server";
+import { deskEvent, fileLink, replyFor, voiceLink, type Ticket } from "@/lib/morrow/desk";
+import { postDeskEvent } from "@/lib/morrow/bridge";
 import { VoiceNote } from "@/components/morrow/VoiceNote";
 
 export const metadata: Metadata = { title: "View Ticket - Copperline Hosting" };
@@ -22,6 +24,10 @@ export default async function ViewTicket({ searchParams }: { searchParams: Promi
     );
   }
   const reply = replyFor(b, t);
+  // Evidence filed before its act was held; once the act has caught up, viewing the ticket tells the
+  // plugin again (POST /event is idempotent there: a repeat answers "duplicate").
+  const ev = t.kind === "rule" || t.kind === "file" ? deskEvent(b, t) : null;
+  if (ev) after(() => postDeskEvent(ev));
   const opened = new Date(t.at).toLocaleString("en-US", { timeZone: "America/Chicago" });
   return (
     <LegacyShell active="support">

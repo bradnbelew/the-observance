@@ -41,7 +41,11 @@ export type Bundle = {
   server_logs: Record<string, string>;
   logblock: LogRow[];
   june_shots: Shot[];
-  dynmap_markers: Marker[];
+  /** Rook's hand-written map key (mapkey.txt, Mar 2011): either the finished text or the marker rows.
+   *  `dynmap_markers` is the older name for the same rows; the page accepts either. */
+  mapkey?: Marker[] | string;
+  mapkey_txt?: string;
+  dynmap_markers?: Marker[];
   patchcord_folder: { file: string; mtime: string; size: string; note: string }[];
   tvale_folder: { file: string; mtime: string; size: string }[];
   tvale_box: string[];
@@ -60,6 +64,10 @@ export type Bundle = {
   backdated_posts?: [string, string][];
   clean_md5?: string;
   usb_choices?: Record<string, { line: string; voice: string }>;
+  /** Act 10 group vote: what each choice costs, in Theo's words (morrow/canon/later.py USB_VOTE). */
+  usb_vote?: { prompt: string; undecided: string; options: Record<string, { label: string; cost: string }> };
+  brief_replies?: { accepted: { text: string; voice: string }; missing: { text: string; voice: string } };
+  mossfield_files?: { file: string; mtime: string; size: string; body: string }[];
   stop_log?: string[];
   ready_status?: string;
   console?: { cmd_md5: string; key_md5: string };

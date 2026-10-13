@@ -1,5 +1,7 @@
 plugin: DiscordSRV
 channel: #bridge
 on_process_exit: relaunch mrrw chat
+mirror_source: mrrw.db
+voice_clips: /srv/support/voicemail/
 added: 2026-08-02
 added_by: tvale

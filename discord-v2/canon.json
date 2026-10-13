@@ -2,7 +2,7 @@
  "morrow_dms": [
   {
    "as": "cairn",
-   "text": "there's another me at the farm. i'm at the storehouse. don't tell rook"
+   "text": "there's another me at the farm. i'm at the storehouse. don't guess my chests"
   },
   {
    "as": "juni_lantern",
@@ -10,11 +10,11 @@
   },
   {
    "as": "rookery",
-   "text": "everyone get off for a bit. if it goes bad theres the floor"
+   "text": "everyone get off for a bit. if it goes bad again"
   },
   {
    "as": "patchcord",
-   "text": "recording this for later. don't tell rook, he'll want to be on it"
+   "text": "recording this for later. remind me to send you a copy"
   },
   {
    "as": "theo",
@@ -24,15 +24,15 @@
  "quote_template": "{other} said: {line}",
  "theo_dms": [
   {
-   "text": "it's me.  it's actually me.  I'm on the train home.  Stay a bit.",
+   "text": "it's me.  it's actually me.  I'm on the Metra home.  Stay a bit.",
    "voice": "T-07a"
   },
   {
-   "text": "Don't believe anything that sounds like a support macro.  That's not me anymore.  I work at a library now.",
+   "text": "If it's word for word one of my old macros, that's it, not me.  I still say no worries.  I know.  Ignore the typos, the radiator is clanking.",
    "voice": "T-07b"
   },
   {
-   "text": "It's better with you there.  It's learning.  I think that's a good thing.  I bought honeycomb for the signs.",
+   "text": "It's better with you there.  It's learning.  I think that's a good thing.  Ignore me, it's late and I'm in my cardigan.",
    "voice": "T-07c"
   }
  ],
@@ -42,7 +42,47 @@
   "voice": "T-10-cut"
  },
  "fake_theo": {
-  "text": "no worries at all.  keep it billable till someone comes home.",
+  "text": "no worries at all, mate.  keep it billable till someone comes home.",
   "voice": "T-09-fake"
- }
+ },
+ "theo_mirror": {
+  "header": "**archivist** - Archive Desk - re: {subject}",
+  "replies": {
+   "T-04a": "yeah.  it's me.  Theo.  sorry.  I didn't know how to say it.  I didn't think anyone would actually come.\n\nI kept the old box running after Copperline closed.  It's in my spare room.  I bought the web box at the same auction, and the domain when it lapsed.  I kept Rowan's password reset working.  In case Rowan came back.\n\nIt's just Mossfield.  It's just the residents.",
+   "T-06a": "It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was asleep in the spare room and I just.  I didn't want him waking up to it gone.\n\nI know.  I know what it sounds like.\n\nRowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of.",
+   "T-08a": "Kit sent that in 2019.  I read it on the train and I didn't answer.\n\nHe was right.  He was twenty-two, he had a job, he hadn't logged in since he was fifteen.  I kept it running because.  I don't know.  Because turning it off felt like the last day all over again.\n\nThat was seven years ago.  Fifteen since any of them played.  I'm sorry I fed it his email.  I wanted it to sound like people.",
+   "T-09a": "Okay.  Okay.  I've read all of it.  I knew all of this.  I'd just never seen it in one place.  You're right.  Let's do it properly, the way Rowan wanted.\n\nI'm wiping the drives after.  I've got one USB stick in the drawer.  I'll keep one thing.  Just one, or I'll end up doing this again.  You pick.\n\nThe panel will let you book a maintenance window now.",
+   "T-09b": "I hear you.  I just need it to be real.  Show me."
+  }
+ },
+ "usb_vote": {
+  "prompt": "One stick.  I said you pick, so you all pick.  Whatever most of you press is what I put on it.  Press another one to change your mind.",
+  "options": {
+   "clean": {
+    "label": "The April copy",
+    "cost": "Mossfield on the 20th of April, before any of it.  June's tower without its roof.  The south rail ending in the grass.  And no light flashing at June's.  Morrow built that."
+   },
+   "recovered": {
+    "label": "The finished town",
+    "cost": "Your names on the houses.  June's light still flashing.  But everything it tidied stays tidy."
+   },
+   "corpus": {
+    "label": "Every word",
+    "cost": "Every word anyone said there.  The forum, the chat, the voicemail, yours too.  No world at all."
+   }
+  },
+  "tally": "So far: {counts}",
+  "ack": "Got it: {label}.  Press another one to change it.",
+  "residents_only": "Only Mossfield residents get a say on this one, sorry.",
+  "closed": "It's done.  The stick's in the drawer.",
+  "undecided": "The group hasn't decided.  Ask in #general."
+ },
+ "persona_reply_template": "{as}: {text}",
+ "personas": [
+  "cairn",
+  "juni_lantern",
+  "patchcord",
+  "rookery",
+  "theo"
+ ]
 }

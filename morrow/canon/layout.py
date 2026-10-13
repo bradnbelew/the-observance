@@ -1,48 +1,50 @@
 """World anchors for Mossfield (seed 'bracken', Beta 1.5).
 
-PROVISIONAL. These coordinates are placeholders until the Beta 1.5 world is generated
-on seed 'bracken' and the town is laid onto its real terrain. When that happens, edit
-the numbers here and rerun the build: every LogBlock row, server.log login position,
-sign and chest placement follows automatically.
+Laid onto the real terrain of the owner's Beta 1.5_01 world on seed 'bracken' (generated
+2026-10-12, spawn -233,64,30). The 2011 builds are placed by morrow/world/build2011.py and
+the cipher objects by inject.py, both from these anchors; rerun the canon build after any
+change: every LogBlock row, server.log login position, sign and chest placement follows.
+Kit's base is the end of the owner's walk; its y is read from the generated ground.
 """
 
 from __future__ import annotations
 
-PROVISIONAL = True
+PROVISIONAL = False
 SEED_TEXT = "bracken"
 
 ANCHORS = {
-    "spawn": (0, 64, 0),
-    "rules_signs": (2, 65, 3),             # three signs, x+0..2
-    "cairn_storehouse_door_2011": (220, 68, -38),
-    "cairn_storehouse_door_morrow": (226, 68, -38),   # Morrow's grid-squared rebuild, 6 east
-    "cairn_farm": (205, 68, -60),
-    "rookery_house": (-30, 66, 20),
-    "rookery_cellar_floor": (-36, 58, 14),  # NW corner of the 18x9 wool floor, x+ east, z+ south
-    "rookery_ladder_room": (-216, 40, 168),  # = nether hub (-27, 21) x 8
-    "nether_hub": (-27, 70, 21),
-    "june_house": (296, 71, 84),
-    "june_tower": (312, 66, 96),
-    "june_old_dock": (318, 63, 80),
-    "iona_key_chest": (314, 60, 80),        # 3 down, 4 toward spawn (west) from the old dock
-    "iona_notes": (-72, 40, 230),          # r.-1.0.mcr c(27,14) y40
-    "patchcord_relay_hut": (-72, 70, 140),
-    "finch_hub": (-30, 66, -12),
-    "finch_spur": (-140, 62, -260),
-    "maintenance_annex": (-330, 35, -244),
-    "lowpath_place": (150, 75, 40),
-    "kit_fossil_base": (812, 70, -640),
-    "sheep_pen": (198, 68, -52),
+    "spawn": (-233, 69, 30),               # plaza floor
+    "rules_signs": (-236, 70, 25),         # three signs, x+0..2, facing south into the plaza
+    "cairn_storehouse_door_2011": (-80, 71, -140),     # door in the north wall; tally chests at x+2
+    "cairn_storehouse_door_morrow": (-74, 71, -140),   # Morrow's grid-squared rebuild, 6 east
+    "cairn_farm": (-100, 72, -162),        # NW corner of the fields, crop level
+    "rookery_house": (-262, 70, -2),       # north wall, left of the door; floor level
+    "rookery_cellar_floor": (-270, 62, -5),  # NW corner of the 18x9 wool floor, x+ east, z+ south
+    "rookery_ladder_room": (-240, 40, 64),   # = nether hub (-30, 8) x 8
+    "nether_hub": (-30, 70, 8),
+    "june_house": (-246, 67, 236),         # door, east wall
+    "june_tower": (-243, 66, 249),         # centre of the tower base; lamp at +22, glass at +23
+    "june_old_dock": (-238, 64, 236),      # landward end of the dock, at the shoreline
+    "iona_key_chest": (-238, 61, 232),     # 3 down, 4 toward spawn (north) from the old dock
+    "iona_notes": (-180, 40, -20),
+    "patchcord_relay_hut": (-199, 69, -70),  # note wall origin (notes at x+i, y+1, z+2)
+    "finch_hub": (-215, 70, 22),
+    "finch_corner": (-170, 71, -120),      # where the main line turns east for the farms
+    "finch_spur": (-224, 70, -116),        # her hidden station, in the hill north of town
+    "maintenance_annex": (-286, 35, 28),
+    "lowpath_place": (-213, 69, 86),
+    "kit_fossil_base": (334, 70, -530),    # inside Kit's dirt hut (the owner's walk, 2026-10-13)
+    "sheep_pen": (-112, 71, -150),
     # modern layer (Theo-era and Morrow-era), installed on the upgraded world by /mrrw install
-    "maint_sign": (0, 65, 7),  # its own block: (6,65,3) is Rookery's 2011 warning sign
-    "theo_museum": (40, 64, -20),
-    "theo_reading_room": (48, 64, -20),
-    "theo_map_wall": (56, 64, -20),
-    "meadow_center": (128, 64, 128),
-    "south_rail_end": (-30, 66, 60),
-    "listening_room": (228, 68, -30),
-    "dust_corridor": (-330, 35, -236),
-    "kit_genuine_door": (812, 70, -641),
+    "maint_sign": (-236, 70, 32),
+    "theo_museum": (-252, 69, -30),
+    "theo_reading_room": (-244, 69, -30),
+    "theo_map_wall": (-236, 69, -30),
+    "meadow_center": (-180, 71, 55),
+    "south_rail_end": (-215, 70, 62),
+    "listening_room": (-64, 71, -132),
+    "dust_corridor": (-286, 35, 36),
+    "kit_genuine_door": (334, 70, -529),   # his door, south wall of the hut
 }
 SOUTH_RAIL_DIR = (0, 1)  # +z: the south branch keeps "finishing" toward lowpath's place
 

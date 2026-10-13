@@ -5,6 +5,7 @@ import { bundle, currentAct } from "@/lib/morrow/canon";
 import { deskFast, seal, unseal } from "@/lib/morrow/campaign";
 import { remember, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { morrowStatus, ping, stopCode, STOP_CHOICES } from "@/lib/morrow/slp";
+import { bridgeState } from "@/lib/morrow/bridge";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,9 @@ const md5 = (s: string) => createHash("md5").update(s).digest("hex");
  * (from the buried chest). It then asks the node itself, over the server-list ping, whether
  * Morrow reports "maint=on sessions=0" (the waxed MAINT sign and lowpath's session ended).
  * Only then does it issue the stop code that players enter in game.
+ *
+ * What goes on the USB stick is the group's call: with the bridge on, the console only accepts the
+ * winner of the #general vote (the plugin counts it); without a bridge, the panel's own choice.
  */
 export async function POST(request: Request) {
   const back = (r: object) => NextResponse.redirect(new URL(`/tcadmin/legacy?r=${seal(r)}`, request.url), 303);
@@ -25,9 +29,17 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const command = String(form.get("command") ?? "").trim().toUpperCase();
   const key = String(form.get("key") ?? "").trim();
-  const choice = String(form.get("choice") ?? "") as keyof typeof STOP_CHOICES;
+  let choice = String(form.get("choice") ?? "") as keyof typeof STOP_CHOICES;
   if (md5(command) !== b.console.cmd_md5) return back({ error: `${command || "(blank)"}: unknown command` });
   if (md5(key) !== b.console.key_md5) return back({ error: "key rejected (watchdog still armed)" });
+  const bridge = await bridgeState();
+  if (bridge) {
+    if (!bridge.usb.winner) {
+      console.log(`MORROW_CONSOLE refused: no USB winner yet (${JSON.stringify(bridge.usb.votes)})`);
+      return back({ error: b.usb_vote?.undecided ?? "The group hasn't decided.  Ask in #general." });
+    }
+    choice = bridge.usb.winner;
+  }
   if (!(choice in STOP_CHOICES)) return back({ error: "choose what to retain first" });
 
   const reply = await ping();

@@ -46,7 +46,13 @@ def backup_zip(contaminated: bool, players: list[str] | None = None) -> bytes:
         add("level.dat.txt", "LevelName: Mossfield\nRandomSeed: 137407650\nVersion: 19132 (McRegion)\nLastPlayed: 2011-04-20 02:30 CDT\n")
         for r in people.RESIDENTS:
             add("players/%s.dat.txt" % r.handle, r.handle + "\n")
-        add("region/README.txt", "region files r.-1.-1.mcr .. r.1.1.mcr (stand-in until the Beta world is archived)\n")
+        add("region/README.txt", "region/ not included in this export (over the 50 MB ticket attachment limit).\n"
+            "full copy: CHI-07:/srv/backup/mossfield/2011-04-20/region (6 files, r.-2.-1 .. r.0.0)\n")
+        if not contaminated:
+            # Rookery dropped this in his copy in September 2011, for whoever read the ladder room.
+            info = zipfile.ZipInfo("Mossfield/rook.txt", date_time=(2011, 9, 4, 1, 4, 18))
+            info.external_attr = 0o644 << 16
+            z.writestr(info, later.ROOK_TXT)
         if contaminated:
             add("players/lowpath.dat.txt", "lowpath\n")
             for p in players or []:
@@ -95,9 +101,11 @@ def asset_sale_pdf() -> bytes:
 
 
 # ---------------------------------------------------------------------------
-# panel_ok.jpg: Theo's 2011 screenshot of the TCAdmin panel, cropped to hide the
-# "Start service" confirmation. The JPEG's EXIF thumbnail was never regenerated, so it
-# still shows the uncropped original. (A real-world forensic tell, 2011-plausible.)
+# panel_ok.jpg: Theo's 2011 screenshot of the TCAdmin panel. He pasted Print Screen into
+# Paint.NET 3.5.8 and saved it at 06:44:31 (with a small EXIF thumbnail), then cropped off the
+# "Start service" confirmation and saved again at 06:46. The old metadata came across, thumbnail
+# and all, so the thumbnail still shows the uncropped original. Auto restart reads On: Iona only
+# turned it off at 11:12.
 
 def _panel_full():
     from PIL import Image, ImageDraw
@@ -107,7 +115,7 @@ def _panel_full():
     d.text((12, 10), "TCAdmin 1.0  -  Game Services  -  logged in: tvale", fill=(255, 255, 255))
     d.rectangle([20, 54, 780, 300], outline=(138, 154, 166), fill=(255, 255, 255))
     rows = [("Service", "CHI-07/mrrw"), ("Status", "Stopped (manual, 06:17:22)"), ("Owner", "Copperline Recovery"),
-            ("Auto restart", "Off")]
+            ("Auto restart", "On")]
     for i, (k, v) in enumerate(rows):
         d.text((40, 74 + i * 28), k, fill=(60, 60, 60))
         d.text((220, 74 + i * 28), v, fill=(20, 20, 20))
@@ -121,8 +129,9 @@ def _panel_full():
 
 
 def _exif_with_thumbnail(thumb_jpeg: bytes) -> bytes:
-    """Minimal little-endian TIFF/EXIF: IFD0 (Make, Software, DateTime) + IFD1 (JPEG thumbnail)."""
-    entries0 = [(0x010F, 2, b"Dell\x00"), (0x0131, 2, b"Paint.NET v3.5.8\x00"), (0x0132, 2, b"2011:05:18 06:44:31\x00")]
+    """Minimal little-endian TIFF/EXIF: IFD0 (Software, DateTime) + IFD1 (JPEG thumbnail). A screenshot
+    has no camera, so no Make or Model."""
+    entries0 = [(0x0131, 2, b"Paint.NET v3.5.8\x00"), (0x0132, 2, b"2011:05:18 06:44:31\x00")]
     header = b"II*\x00" + struct.pack("<I", 8)
     n0 = len(entries0)
     ifd0_size = 2 + n0 * 12 + 4

@@ -3,6 +3,20 @@
 # Must equal the website's MORROW_STOP_SECRET. Signs the Act 10 stop code.
 stop-secret: mrrw-dev-stop-secret
 
+# Acts advance by themselves from what the game and the website already log (see
+# morrow/v2/OPERATOR-RUNBOOK.md). /mrrw act N always wins. Ops don't count as residents for the
+# join / online-time triggers unless auto_advance_count_ops is true.
+auto_advance: true
+auto_advance_count_ops: false
+
+# The signed bridge the website and the Discord bot read (GET /state, POST /event, GET /corpus).
+# Requests are signed with stop-secret; every request is refused while it is the dev default.
+# Changing these needs a server restart.
+bridge:
+  enabled: true
+  bind: 0.0.0.0
+  port: 25588
+
 # Signed skin textures for the replayed figures (see morrow/v2/HUMAN-TODO.md, "Skins").
 # Upload each PNG at mineskin.org, then paste the texture value and signature here.
 # Without them the figures wear the default skin and still work.

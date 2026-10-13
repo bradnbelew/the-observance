@@ -1,5 +1,6 @@
 import net from "node:net";
 import { createHmac } from "node:crypto";
+import { stopSecret } from "./signing";
 
 /**
  * Minecraft Server List Ping, from the website to the Mossfield server (MORROW_MC_HOST).
@@ -77,7 +78,7 @@ export const STOP_CHOICES = { clean: "C", recovered: "R", corpus: "W" } as const
 
 /** The final stop code. Must match plugin-v2 StopCode.java. Valid for the current and previous half hour. */
 export function stopCode(choice: keyof typeof STOP_CHOICES, at = new Date()): string {
-  const secret = process.env.MORROW_STOP_SECRET || "mrrw-dev-stop-secret";
+  const secret = stopSecret();
   const bucket = Math.floor(at.getTime() / 1_800_000);
   const mac = createHmac("sha256", secret).update(`stop|${STOP_CHOICES[choice]}|${bucket}`).digest("hex").toUpperCase();
   return `${STOP_CHOICES[choice]}-${mac.slice(0, 4)}-${mac.slice(4, 8)}`;

@@ -1,0 +1,14 @@
+name: mrrw-01
+version: '2011.05.18'
+main: com.copperline.trailhead.TrailheadPlugin
+api-version: '1.21'
+author: Copperline Recovery
+description: mrrw heartbeat (copperline recovery)
+commands:
+  trailhead:
+    description: mrrw-01 recovery maintenance.
+    permission: mrrw.trailhead
+    usage: "/trailhead start | stop | knock [name] | preview | speak | key all [--include-ops]|<player>|reset | status"
+permissions:
+  mrrw.trailhead:
+    default: op

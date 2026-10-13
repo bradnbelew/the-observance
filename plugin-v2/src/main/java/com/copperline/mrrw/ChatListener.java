@@ -20,13 +20,14 @@ import org.bukkit.plugin.Plugin;
  */
 public final class ChatListener implements Listener {
     private static final long COOLDOWN_MS = 45_000;
+    /** Lines Morrow took in within this window are preferred in its replies (Kit's line, Act 8). */
+    static final long FRESH_WINDOW_MS = 7L * 24 * 3_600_000;
     private final Plugin plugin;
     private final Canon canon;
     private final State state;
     private final PlayerRoster roster;
     private final Journal journal;
     private long lastReply;
-    private int playerLinesLoaded;
     private boolean kitLoaded;
 
     public ChatListener(Plugin plugin, Canon canon, State state, PlayerRoster roster, Journal journal) {
@@ -35,7 +36,18 @@ public final class ChatListener implements Listener {
         this.state = state;
         this.roster = roster;
         this.journal = journal;
-        syncPlayerLines();
+        for (BridgeLogic.Said l : roster.said()) {  // the players' lines said so far (live ones are added as they're said)
+            canon.corpus.add(l.text(), l.name() + ", in Mossfield", true);
+        }
+        loadKit();
+    }
+
+    /** Theo fed it his inbox at Act 8; Kit's line is in there, freshly ingested, so it surfaces. */
+    void loadKit() {
+        if (kitLoaded || state.act() < 8) return;
+        long at = state.stampOnce("kit_line_ingested", System.currentTimeMillis());
+        canon.corpus.add(canon.string("kit_line"), "theo's inbox, 2019-03-02", false, at);
+        kitLoaded = true;
     }
 
     @EventHandler
@@ -52,18 +64,16 @@ public final class ChatListener implements Listener {
 
     private void handle(String name, String text) {
         if (state.done("stopped")) return;  // silent after shutdown
-        if (state.act() >= 8 && !kitLoaded) {  // Theo fed it his inbox; Kit's line is in there
-            canon.corpus.add(canon.string("kit_line"), "theo's inbox, 2019-03-02", false);
-            kitLoaded = true;
-        }
+        loadKit();
         roster.said(name, text);
-        syncPlayerLines();
+        canon.corpus.add(text, name + ", in Mossfield", true);
         int act = state.act();
         String reply;
         if (text.trim().equalsIgnoreCase("!status")) {
             reply = canon.statusLines.get(Math.min(canon.statusLines.size() - 1, act / 4));
         } else if (act >= 3 && System.currentTimeMillis() - lastReply > COOLDOWN_MS && Math.floorMod(text.hashCode(), 3) == 0) {
-            Corpus.Reply r = canon.corpus.reply(text, act, text.hashCode() * 31L + act);
+            Corpus.Reply r = canon.corpus.reply(text, act, text.hashCode() * 31L + act,
+                    System.currentTimeMillis() - FRESH_WINDOW_MS);
             if (r.text().isBlank()) return;
             reply = r.text();
             JsonObject d = new JsonObject();
@@ -81,14 +91,5 @@ public final class ChatListener implements Listener {
         long delay = 30 + (Math.floorMod(text.hashCode(), 50));
         Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.broadcast(
                 Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(reply, NamedTextColor.GRAY))), delay);
-    }
-
-    private void syncPlayerLines() {
-        var lines = roster.lines();
-        for (int i = playerLinesLoaded; i < lines.size(); i++) {
-            String[] parts = lines.get(i).split("\u0000", 2);
-            if (parts.length == 2) canon.corpus.add(parts[1], parts[0] + ", in Mossfield", true);
-        }
-        playerLinesLoaded = lines.size();
     }
 }

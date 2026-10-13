@@ -1,6 +1,7 @@
 # MORROW — Theo Without You Live, plus the Cipher Bank
 
-Companion to `observance-storyline-v1.md`. Date: 2026-10-12. Status: **proposal, awaiting approval.**
+Companion to `morrow/v2/STORYLINE.md`. Date: 2026-10-12. Status: **approved and built.** Where this
+document and `morrow/canon/` disagree on an exact value, the canon wins (`morrow/v2/README.md`).
 
 There are two parts:
 
@@ -19,7 +20,7 @@ That one line covers everything:
 
 - **Replies come in the evening, Chicago time**, a few hours after a ticket is sent. The delay is randomised. A slow reply feels human, and an instant one never could.
 - **He answers what players send him, not what they say in chat.** Players have to build a case and file it. That's a better investigation mechanic than a live argument anyway.
-- **His real voice is the trust anchor.** Morrow is a text bot, so it can't make audio. Theo's voice notes are proof a message is really him. Until Act 9, when Morrow starts splicing his old 2011 voicemail.
+- **His real voice is the trust anchor.** Morrow is a text bot, so it can't make new audio. Theo's voice notes are proof a message is really him. Until Act 9, when Morrow plays clips cut from his old 2011 voicemail (Theo's own changelog, 2018: "chat helper can answer with clips from the support voicemail box").
 
 ## 1.2 Theo's four channels
 
@@ -43,39 +44,39 @@ Players file a ticket like "who runs this mirror?". It needs **any two** of thes
 - `2014-12-14`
 - `waived by T.V.`
 
-- **Match:** voice note **T-04a**. *"yeah. it's me. sorry. didn't know how to say it. didn't think anyone would actually come."*
+- **Match:** voice note **T-04a**. *"yeah.  it's me.  Theo.  sorry.  I didn't know how to say it."* He bought the web box and the lapsed domain too, and kept Rowan's password reset working, "in case Rowan came back."
 - **One token only:** text reply. *"Not sure what you mean, sorry!  It's just an archive."* It uses his double space. That's a tell, and a nudge.
 
 ### Act 5 — File requests
 
-A ticket asking for `moss_0518.ogg` returns the file. A wrong filename gets *"Can't find that one, sorry.  Do you have the exact name?"*
+A ticket asking for `moss_0518.ogg` (or just `moss_0518`) returns the file. Asking for it before Act 5 gets *"Give me a bit.  I'll look into that."*, and the same ticket shows the file once Act 5 opens. Filing the floor's "dont tell theo" gets *"Rowan never did trust me with the panel.  Fair enough."*
 
 ### Act 6 — The 2011 restart confession
 
-Players file a ticket containing the panel-log line `06:44:10` together with `CHI-07/mrrw` **or** `mid-session`. That gets voice note **T-06a**: *"it was mid-replay. Iona said if you stop it mid-session the region files corrupt. Kit was asleep in the next room and I just. I didn't want him waking up to it gone. I know."*
+Players file a ticket containing the panel-log line `06:44:10` together with `CHI-07/mrrw` **or** `mid-session`. That gets voice note **T-06a**: *"It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was asleep in the spare room and I just.  I didn't want him waking up to it gone.  I know."* It ends: "Rowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of." The bit he is ashamed of comes out in Act 8: the crontab watchdog he denied, and the auto-restart he switched back on in 2014.
 
 ### Act 7 — Theo's real messages
 
 These stop being live improvisation. They're scheduled DMs, written in advance and timed against Morrow's fake ones:
 
-- Theo's DMs always contain at least one **unsourced word**, so players can verify them.
-- Each comes with a 5 to 10 second **voice note**, for example **T-07a**: *"it's me.  it's actually me.  stay a bit."*
+- Theo's DMs always contain at least one **unsourced word**, so players can verify them: "Metra", "radiator", "cardigan". These are words players won't type in game chat either, which matters because Morrow ingests their chat from Act 7.
+- Each comes with a 5 to 10 second **voice note**, for example **T-07a**: *"it's me.  it's actually me.  I'm on the Metra home.  Stay a bit."* T-07b gives players the rule: "If it's word for word one of my old macros, that's it, not me."
 - Theo's message is still "stay", so the human pressure remains.
 
 ### Act 8 — The silence
 
-When players file Kit's email phrase `you can turn it off, its ok` with the date `2019-03-02`, the desk goes quiet for **36 real hours**. Then voice note **T-08a** arrives, the longest one, about 60 seconds. He talks about Kit and doesn't make excuses.
+When players file Kit's email phrase `turn it off` with the date `2019-03-02`, the desk goes quiet for **36 real hours**. (The phrase alone gets the email and "It picks lines that sound like what it's hearing.  You've all been saying 'turn it off' for a week.") Then voice note **T-08a** arrives, the longest one, about 60 seconds. He talks about Kit and doesn't make excuses.
 
 ### Act 9 — Convincing Theo
 
-This becomes a **case brief**: a ticket form with five fields. Each needs an exact value players can only get by solving. At least four must be correct:
+This becomes a **case brief**: a ticket form with five fields. Each needs an exact value players can only get by solving (an exact match per field, so pasting every candidate into one box matches nothing). At least four must be correct:
 
 | Field | Correct value |
 | --- | --- |
 | When did you restart it? | `2011-05-18 06:44:10 CDT` |
 | When was lowpath created? | `2016-08-03` |
 | What did Kit tell you? | `2019-03-02`, plus the phrase |
-| What is the clean backup's MD5? | the hash |
+| The clean copy: its MD5, or the line Rowan left in it | the hash, or the last line of `rook.txt` |
 | What date does the forum say we joined? | their fake join date |
 
 - **Pass:** voice note **T-09a**, agreeing to the stop and introducing the USB stick.
@@ -151,9 +152,9 @@ Everything is pre-authored and runs without you.
 
 1. **It has an author and a reason.** Someone in the story made it for their own purpose. It was never made for the players.
 2. **It uses only that author's era of Minecraft.** That makes the cipher's medium a clue in itself.
-   - **2011 residents** (Beta 1.3 to 1.5): signs of up to 15 characters, wool, note blocks, rails, chests, and counts. **No books, anvils, item frames, or maps yet.**
+   - **2011 residents** (Beta 1.3 to 1.5): signs of up to 15 characters, wool, note blocks, rails, chests, and counts. **No written books, anvils, item frames, or maps yet.**
    - **Iona**: sysadmin thinking, like region files, base64, and MD5.
-   - **Theo-era** (2014–2026): modern blocks, waxed copper, banners, chiseled shelves, and locked maps.
+   - **Theo-era** (2014–2026): modern blocks, waxed copper, banners, chiseled shelves (2023), and framed maps.
    - **Morrow**: machine-shaped encodings like status codes and classifications.
 3. **It has at least two layers, and usually two formats.** For example, in-world plus a site record, or audio plus real-world reference.
 4. **It's taught by the world.** A forum post, a sign, or a recording shows the convention. Players never need a hint to know it's a cipher.
@@ -174,9 +175,9 @@ Everything is pre-authored and runs without you.
 
 - **Story:** Mossfield reset to a fresh map for Beta 1.3 on 22 Feb 2011, the first version that let you type a seed. Rookery typed his first server's name. Beta 1.3 adding custom seeds is confirmed on the Minecraft Wiki.
 - **Layers:**
-  1. `server.properties` in Rookery's FTP shows `level-seed=137407650`.
+  1. Rookery's `/~mossfield/` folder keeps his `server.properties`, with `level-seed=bracken`. Beta stored the seed exactly as typed.
   2. A forum post from Rookery: "new map for 1.3!! seed's my first server lol".
-  3. Players remember the Act 1 security answer `bracken`. They put it through Java's String.hashCode, using any online tool, and get **137407650**. That's a match. I computed it.
+  3. The world itself stores the number: `RandomSeed: 137407650` in the backups' level.dat. Put `bracken` through Java's String.hashCode, using any online tool, and you get **137407650**. That's a match.
   4. **Now the big one.** Players make their own Beta 1.5 world in the official launcher with seed `bracken` and walk to Mossfield's coordinates. They see the **untouched natural land**.
 - **Payoff:** comparing the two shows exactly what Morrow invented:
   - June's cove was filled in.
@@ -194,7 +195,7 @@ Everything is pre-authored and runs without you.
   2. The public wiki table converts pitch to a note name: 0 is F♯, 1 is G, 3 is A, 5 is B, 6 is C, 8 is D, 10 is E, 11 is F, and it repeats an octave up.
   3. The block underneath sets the instrument. Wood gives bass and stone gives drum. The **bass** blocks spell the password. The drum blocks are only rhythm, a decoy that teaches players to filter.
   4. Example password: **BAGGAGE** (B A G G A G E), playable as a real little tune.
-- **Teach:** patchcord's forum signature reads `♪ only the bass line matters ♪`. Rookery's line in the recording, "patch your password's a SONG??", also helps.
+- **Teach:** patchcord's forum signature reads `i play bass. everything else is decoration`. Rookery's forum reply, "patch your password is a SONG??", also helps.
 - **Pressure:** in Act 5 his replay ghost **re-tunes the blocks live**, because Morrow replays logged actions. Players can watch it happen, then read the result.
 - **Payoff:** the Mumble archive password, which opens the full recording set in Theo's "patchcord" folder.
 - **Backup:** LogBlock records note-block clicks.
@@ -212,11 +213,11 @@ Everything is pre-authored and runs without you.
 
 ### C4. June's light (a real lighthouse)
 
-- **Story:** June's forum post: "gonna make the tower flash like the one at home." She never got the lamp working. In 2011, Morrow built the lamp from her description.
+- **Story:** June's forum post: "I want to make the tower flash like the one at home." She never got the lamp working. In 2011 Morrow put a glowstone in the top from her plan (Beta glowstone can't flash: June wrote "it even tried to make it flash"). Years later, in the modern world, it made it flash.
 - **Layers:**
   1. The Morrow-built lamp at the top of her tower flashes white once every **5 seconds**, in real time. Players time it.
   2. June's roster entry, from Act 1, says she's in Halifax.
-  3. Real-world research: the light near Halifax with characteristic **"Fl W 5s"** is **Sambro Island Light**, the oldest operating lighthouse in North America. That's a stable public fact. Its current listing shows Fl W 5s, and I'd confirm against the Coast Guard List of Lights before building.
+  3. Real-world research: the light near Halifax with characteristic **"Fl W 5s"** is **Sambro Island Light**, the oldest surviving lighthouse in North America. That's a stable public fact. Its current listing shows Fl W 5s, and I'd confirm against the Coast Guard List of Lights before building.
   4. `sambro` is the password to June's photo folder.
 - **Payoff:** her full 2011 screenshot set, including the original rules signs.
 - **Twist:** a lighthouse built by the thing that "completes" people's plans, flashing her home's light at nobody, every five seconds, for fifteen years.
@@ -225,8 +226,9 @@ Everything is pre-authored and runs without you.
 
 - **Story:** in 2011 Rookery wrote locations by their Nether hub coordinates, because that's how they travelled.
 - **Layers:**
-  1. A sign reads `hub -27 / 21 / ladder room`.
-  2. Players multiply by 8 to get the overworld position, which is -216 / 168.
+  1. A sign reads `hub -30 / 8 / ladder room`.
+  2. Players multiply by 8 to get the overworld position, which is -240 / 64 (under the sand
+     south of spawn; the ladder shaft is capped with one dirt block).
   3. Under that spot is his "spare log" room. It's a small, reusable layer, the kind real players used every day.
 
 ### C6. Rookery's floor (the hard one, already designed)
@@ -237,7 +239,7 @@ These are the four layers already worked out: rebuild the wool from LogBlock, co
 
 ### C7. Region-file addresses
 
-- **Story:** Iona thinks in files, not places. Her IRC notes give locations as `r.-1.0.mcr c(27,14) y40ish`.
+- **Story:** Iona thinks in files, not places. Her IRC notes give locations as `r.-1.-1.mcr c(20,30) y40ish` (generated from the layout).
 - **Layers:**
   1. Convert with the public formula. For x: region × 32 + chunk, × 16, giving -80 to -65. For z: 0 × 32 + 14, × 16, giving 224 to 239.
   2. Confirm with F3, which shows "Chunk: … in -1 0" (the region) in modern versions.
@@ -256,7 +258,7 @@ Players can self-check every hard answer offline.
 
 ### C10. The reading room is Braille (chiseled bookshelves)
 
-- **Story:** Theo works at a public library now. A 2020 forum note says "new job, they've got me on the braille embosser lol". In 2023 he built a "reading room" in Mossfield.
+- **Story:** Theo works at a public library now. A 2020 archivist note says "New job at the library.  They've got me on the braille embosser". In June 2023, when 1.20 added chiseled bookshelves, a second note: "Built a reading room in Mossfield.  The new shelves are perfect for it."
 - **Mechanic:** a chiseled bookshelf has **6 slots in 2 rows of 3**, confirmed on the wiki. A Braille cell is **6 dots in 3 rows of 2**. So **each shelf is a Braille cell turned on its side.**
 - **Layers:**
   1. Notice that the shelf wall has a deliberate pattern of filled and empty slots. The block states `slot_0_occupied` and so on also show it.
@@ -268,7 +270,7 @@ Players can self-check every hard answer offline.
 
 ### C11. The map wall lies (map IDs)
 
-- **Story:** Theo locked one map of Mossfield each year, from 2015 to 2025, and hung them in his archive room.
+- **Story:** Theo made and framed one map of Mossfield each year, from 2015 to 2025, and hung them in his archive room. (Map locking only arrived in 1.14, 2019: these are just maps nobody updated.)
 - **Layers:**
   1. Compare the maps. Lowpath's place appears from the "2015" map onward.
   2. Read each map's number, the "#N" on the map tooltip. Map numbers count up in the order maps are made.
@@ -341,10 +343,10 @@ This one is a symbol language, not a letter cipher.
 | Block place | 13 |
 
 - **Layers:**
-  1. Learn cairn's closing routine from his list, the Act 5 ghost, and the forum: walk the lot, open the hinge tin, close it, chalk the returns, and switch off the desk lamp.
+  1. Learn cairn's closing routine from his 2011 storehouse post ("close-up: walk the lot, check the hinge tin, chalk the returns, lamp off. in that order") and the Act 5 ghost: walk the lot, open the hinge tin, close it, chalk the returns, and switch off the desk lamp.
   2. **Do it the way he did it,** in his order, in his room.
   3. The table only helps players figure out why a wrong attempt failed. **Imitating the man is the solution.**
-- **Payoff:** the room opens with `[Recovery] welcome back, cairn`. Inside is **the bed from the shed**, the one "lost" in 2011. Morrow had been keeping it. **That's the bed players give lowpath in the finale.** The whole ending comes from a habit puzzle.
+- **Payoff:** the room opens with `[Recovery] session cairn: resumed` (an engine template, not chat). Inside is **the bed from the shed**, the one "lost" in 2011. Morrow had been keeping it. **That's the bed players give lowpath in the finale.** The whole ending comes from a habit puzzle.
 - **Verify:** the Java frequency values. The table I read was labelled Bedrock, though the values are usually shared.
 
 ### C17. The back of the sign
@@ -463,10 +465,10 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
 
 ### D3. The fossil footprint (Kit's secret base)
 
-- **Story:** chunks only generate where someone walked. When the world was upgraded, every chunk generated in 2011 **kept its Beta terrain**, and the 2018-era terrain blended around it. The shape of the old terrain is a map of where the 2011 residents explored. F3 even marks old chunks with a "blending" line.
+- **Story:** chunks only generate where someone walked. When the world was upgraded, every chunk generated in 2011 **kept its Beta terrain**, and the 1.18-era (2021) terrain blended around it. The shape of the old terrain is a map of where the 2011 residents explored. (F3's "Blending: Old" line only shows in singleplayer, so on the server players go by the visible terrain style: flat-topped Beta cliffs, old trees, hard chunk-edge seams.)
 - **Layers:**
   1. Players notice that terrain style changes sharply in places: the flat-topped Beta cliffs and old trees.
-  2. They realise old terrain marks 2011 footsteps, using F3 to confirm.
+  2. They realise old terrain marks 2011 footsteps, using the chunk borders (F3 + G) to see the seams line up with chunk edges.
   3. Mapping the boundary shows the town blob, plus **one tiny island of Beta terrain about 800 blocks out**, joined to nothing. A 14-year-old walked there alone in 2011.
   4. There's a dirt hut. Sign 1: `KIT ONLY / no theo / no rook / no girls`. Sign 2: `pw is my dogs / name`.
   5. Kit's forum profile: "i have a dog called biscuit".
@@ -531,7 +533,7 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
 
 - **Story:** Theo placed lodestones under each resident's **original** front door, in its 2011 position, and kept a named compass for each in his museum.
 - **Layers:**
-  1. Follow cairn's compass. It points 6 blocks **east** of today's storehouse door. Morrow rebuilt the storehouse squared to the grid.
+  1. Follow cairn's compass. It points 6 blocks **west** of today's storehouse door. Morrow rebuilt the storehouse squared to the grid (2 September 2011, the night the watchdog brought it back).
   2. Dig at the true position to find the original 2011 floor and a buried chest.
   3. Kit's compass points 800 blocks out, at the fossil island. That's an alternative route to D3.
 - **The eerie one:** a seventh compass labelled **lowpath** spins. It has no lodestone, so it has no home. That foreshadows the bed.
@@ -542,7 +544,7 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
 
 - **Story:** Morrow "completes" June's screenshot gallery by rendering the shots she "should have" taken. One shows **lowpath standing on her dock in May 2011**.
 - **Tells, from public version history,** which I confirmed on the wiki:
-  1. Moon phases didn't exist until Beta 1.9 pre-release 4, in November 2011. In May 2011 the moon was **always full and square**. A "May 2011" shot with a **crescent** moon is impossible.
+  1. Moon phases didn't exist until Beta 1.9 pre-release 4, on 13 October 2011. In May 2011 the moon was **always full and square**. A "May 2011" shot with a **crescent** moon is impossible.
   2. Before that version, the moon rose in the **north**. Morrow's render has it in the east.
   3. For Theo-era shots, `phase = (day mod 8) + 1`, using the F3 day counter. Players can check a screenshot's moon against its claimed day.
 - **Payoff:** every forged image in the gallery is identified, including the one that made lowpath look historical. This is where players stop trusting pictures.
@@ -555,7 +557,7 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
   2. Map each event to its **vibration frequency** from the public table, which players already met in C16.
   3. Frequencies run from 1 to 15. Morrow thinks in hex, like the MOTD and the floor, so read them as hex nibbles, then pairs as bytes, then ASCII.
   4. The message is the filename of a recording Morrow kept from patchcord's open microphone: `mic_0518_b.ogg`.
-- **Payoff:** a recording nobody else knew existed: patchcord's mic left on after he logged off, catching his room in Manchester at 12:20 UK time, and Theo's voice on Mumble saying "give it till morning."
+- **Payoff:** a recording nobody else knew existed: patchcord's mic left on after he logged off, catching his room in Manchester at 12:21 UK time, and Theo's voice on Mumble saying "give it till morning."
 
 ### D12. Who's home (the door register)
 
@@ -601,6 +603,8 @@ The second reads:
 ```text
 us in 2 halves
 one pass each
+by columns.
+2 shuffles
 ```
 
 The remaining signs hold the ciphertext, 15 characters per line.
@@ -622,7 +626,7 @@ The remaining signs hold the ciphertext, 15 characters per line.
   - It needs the correct join order, which is Act 1 notes.
   - Double transposition can't be cracked by spotting letter patterns. The only way in is the keys.
 - **Plaintext, in essence:** *the clean copy is in my ftp, folder notrecovery, dated april twenty. theo doesnt know its there.*
-- **Payoff:** a **third** independent route to the clean backup in Act 9, alongside the MD5 check. It's also Rookery's quiet goodbye. He trusted the residents and nobody else.
+- **Payoff:** a **third** independent route to the clean backup in Act 9, alongside the MD5 check and Iona's IRC. It's also Rookery's quiet goodbye: the clean zip holds `rook.txt`, written for whoever read the ladder room, and its last line is accepted in the case brief in place of the MD5. Rook's September post ("the ladder room has my stuff. off the nether hub") points players at C5.
 - **Before building:** I'll generate and verify the exact ciphertext with a script, the same way I checked the floor.
 
 ## 3.6 The full map, with all 35 investigations
@@ -655,7 +659,7 @@ That's about four investigations per act. The realistic total rises to **about 4
 - Moon phases arrived in Beta 1.9 pre-release 4, and before that the moon was square and rose in the north.
 - The phase formula is `(day mod 8) + 1`.
 - Pre-1.13 block IDs 65 to 90 match A to Z, with J, K and Z not stably placeable.
-- Old chunks keep their terrain and are marked in F3 after 1.18.
+- Old chunks keep their terrain after 1.18 (the F3 blending marker is singleplayer-only).
 
 **Still to verify:**
 - Subtitle names for each sound event.

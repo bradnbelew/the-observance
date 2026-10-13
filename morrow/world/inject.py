@@ -61,8 +61,12 @@ def inject(world_path: str) -> list[str]:
     # Spawn: the three genuine rules signs and Rookery's warning.
     sx, sy, sz = a["rules_signs"]
     for i, sign in enumerate(ciphers.RULES_SIGNS_2011):
-        post_sign(w, sx + i, sy, sz, sign)
-    post_sign(w, sx + 4, sy, sz, ["screenshot", "stuff. it", "changes. trust", "me -rook"])
+        post_sign(w, sx + i, sy, sz, sign, rotation=0)  # facing south, into the plaza
+    post_sign(w, sx + 4, sy, sz, ["screenshot", "stuff. it", "changes. trust", "me -rook"], rotation=0)
+    # finch's genuine sign at the end of the south branch (Morrow keeps building past it)
+    ex, ey, ez = a["south_rail_end"]
+    ox, oy, oz = ciphers.FINCH_SOUTH_SIGN_OFFSET
+    post_sign(w, ex + ox, ey + oy, ez + oz, ciphers.GENUINE_SIGNS_2011["finch_south_rail"], rotation=0)
     done.append("spawn signs")
 
     # C6 Rookery's cellar floor, exactly as laid in June 2011 (Morrow's tidying happens later, on Paper).
@@ -124,16 +128,21 @@ def inject(world_path: str) -> list[str]:
     # Rookery's door and Kit's base.
     rx, ry, rz = a["rookery_house"]
     wall_sign(w, rx, ry + 1, rz - 1, ["ROOK'S", "boots off", "yes, yours too"], "north")
-    kx2, ky2, kz2 = a["kit_fossil_base"]
-    post_sign(w, kx2, ky2, kz2, ["KIT ONLY", "no theo", "no rook", "no girls"])
-    post_sign(w, kx2 + 1, ky2, kz2, ["pw is my dogs", "name"])
-    done.append("door and kit signs")
+    kx2, ky2, kz2 = a["kit_genuine_door"]  # the door of the hut the owner built on Kit's walk
+    try:
+        # on the hut's front (south) wall, either side of the door
+        wall_sign(w, kx2 - 1, ky2 + 1, kz2 + 1, ["KIT ONLY", "no theo", "no rook", "no girls"], "south", support=3)
+        wall_sign(w, kx2 + 1, ky2 + 1, kz2 + 1, ["pw is my dogs", "name"], "south", support=3)
+        done.append("door and kit signs")
+    except KeyError:
+        print("  warning: Kit's base chunk isn't generated yet (the owner's walk); skipped his signs")
+        done.append("door sign (kit's base pending the walk)")
 
     # Sheep census: one dyed sheep per resident, inner pen = online the week of 16 May.
     sx2, sy2, sz2 = a["sheep_pen"]
     lv = w.level(sx2, sz2)
     ents = lv["Entities"].value
-    if ents.elem == nbt.END:
+    if ents.elem != nbt.COMPOUND:  # Beta writes empty lists typed as BYTE, not END
         ents.elem = nbt.COMPOUND
     for i, r in enumerate(people.join_order()):
         inner = r.handle in ciphers.SHEEP_INNER

@@ -139,7 +139,7 @@ class World:
         tiles = lv["TileEntities"].value
         tiles.items = [t for t in tiles.items if not (t.value["x"].value == x and t.value["y"].value == y and t.value["z"].value == z)]
         tiles.items.append(nbt.comp(id=nbt.st(tile_id), x=nbt.i(x), y=nbt.i(y), z=nbt.i(z), **fields))
-        if tiles.elem == nbt.END:
+        if tiles.elem != nbt.COMPOUND:  # Beta writes empty lists typed as BYTE, not END
             tiles.elem = nbt.COMPOUND
         self._mark(x, z)
 

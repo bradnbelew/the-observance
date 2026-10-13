@@ -46,8 +46,9 @@ STAFF = {
 }
 
 FABRICATED = {
-    "lowpath": {"created_by": "morrow session continuation", "forum_created": "2016-08-03",
-                 "named_after": "2011 Dynmap path marker 'low path'",
+    "lowpath": {"created_by": "Theo's placeholder owner for orphaned builds (2016-08-03); Morrow made it walk",
+                 "forum_created": "2016-08-03",
+                 "named_after": "'low path' in Rookery's hand-written map key (mapkey.txt, March 2011)",
                  "skin": {"head": "juni_lantern", "torso": "cairn", "arms": "kitbag", "legs": "finchline"}},
 }
 

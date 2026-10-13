@@ -119,7 +119,7 @@ public final class ActDirector {
 
     /** June's lamp: one short white flash every 5 seconds (the Sambro characteristic, Fl W 5s). */
     private void startFlasher(World w) {
-        if (flasher != null) return;
+        if (flasher != null || state.done("act10.lamp_dark")) return;
         Block lamp = at(w, "june_tower", 0, 22, 0);
         once("act3.tower_lamp", () -> lamp.setType(Material.REDSTONE_LAMP, false));
         final long[] tick = {0};
@@ -135,17 +135,73 @@ public final class ActDirector {
         }, 20L, 1L);
     }
 
-    /** The south branch: Morrow "finishes" three more blocks every act. In Act 10 it skips it. */
+    /**
+     * The south branch: Morrow "finishes" three more blocks every act (+z, toward lowpath's place),
+     * past finch's genuine 2011 sign ("south branch / not done / leave it"). It only lays track on
+     * open ground: it never overwrites a sign, a player's block or anything else in the way. In Act
+     * 10 it skips it, and the stop log says so ("skip mossfield:south_rail (unfinished) reason=none").
+     */
     private void extendSouthRail(World w, int act) {
         int[] a = canon.anchor("south_rail_end");
         com.google.gson.JsonArray dir = canon.array("south_rail_dir");
         int dx = dir.get(0).getAsInt(), dz = dir.get(1).getAsInt();
+        int laid = 0;
         for (int i = 0; i < 3; i++) {
             int n = (act - 2) * 3 + i + 1;
             Block bed = w.getBlockAt(a[0] + dx * n, a[1] - 1, a[2] + dz * n);
-            if (bed.getType().isAir()) bed.setType(Material.GRAVEL, false);
             Block rail = bed.getRelative(0, 1, 0);
+            if (!railCanGo(rail)) continue;  // never over a sign, a container or a build
+            if (bed.getType().isAir()) bed.setType(Material.GRAVEL, false);
             rail.setType(Material.POWERED_RAIL, false);
+            laid++;
+        }
+        JsonObject d = new JsonObject();
+        d.addProperty("south_rail_laid", laid);
+        d.addProperty("act", act);
+        journal.write("morrow.south_rail", d);
+    }
+
+    /** Open ground, plants, loose terrain or old track: yes. Signs (finch's), anything with a block entity, builds: no. */
+    private static boolean railCanGo(Block b) {
+        Material m = b.getType();
+        if (m.isAir() || org.bukkit.Tag.RAILS.isTagged(m)) return true;
+        if (org.bukkit.Tag.ALL_SIGNS.isTagged(m) || b.getState() instanceof org.bukkit.block.TileState) return false;
+        return b.isReplaceable() || org.bukkit.Tag.DIRT.isTagged(m) || org.bukkit.Tag.SAND.isTagged(m)
+                || org.bukkit.Tag.BASE_STONE_OVERWORLD.isTagged(m) || m == Material.GRAVEL || m == Material.SNOW_BLOCK;
+    }
+
+    /**
+     * The stop begins: the flasher stops for good (flag act10.lamp_dark, so nothing restarts it after
+     * a restart) and June's lamp goes dark, waiting for its one last flash.
+     */
+    public void quietLamp() {
+        if (flasher != null) {
+            flasher.cancel();
+            flasher = null;
+        }
+        state.markDone("act10.lamp_dark");
+        Block lamp = at(Bukkit.getWorlds().get(0), "june_tower", 0, 22, 0);
+        setLit(lamp, false);
+    }
+
+    /** The stop's lights-out: June's lamp flashes once more (1 s), then goes dark for good. */
+    public void lastFlash() {
+        quietLamp();
+        Block lamp = at(Bukkit.getWorlds().get(0), "june_tower", 0, 22, 0);
+        if (!(lamp.getBlockData() instanceof Lightable)) return;
+        Bukkit.getScheduler().runTaskLater(plugin, () -> setLit(lamp, true), 10L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            setLit(lamp, false);
+            JsonObject d = new JsonObject();
+            d.addProperty("lamp", "dark");
+            journal.write("morrow.lamp_dark", d);
+        }, 30L);
+    }
+
+    private static void setLit(Block lamp, boolean lit) {
+        if (lamp.getBlockData() instanceof Lightable data && data.isLit() != lit) {
+            data.setLit(lit);
+            lamp.setBlockData(data, false);
         }
     }
 

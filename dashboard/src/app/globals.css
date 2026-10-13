@@ -519,6 +519,11 @@ button, input, select, textarea { font: inherit; }
 .vb-usertitle { color:#555; margin:2px 0 6px; } .vb-userstats { color:#333; }
 .vb-message { padding:8px 10px; vertical-align:top; }
 .vb-body { white-space:pre-wrap; line-height:1.45; }
+/* vBulletin 3.8 [QUOTE] box */
+.vb-quote { margin:5px 20px 10px; white-space:normal; }
+.vb-quote-title { font-size:10px; margin-bottom:2px; }
+.vb-quote-body { border:1px inset; padding:6px; background:#f5f5ff; white-space:pre-wrap; }
+
 .vb-edited { margin-top:10px; color:#666; font-style:italic; font-size:8pt; }
 .vb-sig { margin-top:12px; color:#444; font-size:8pt; }
 .vb-subhead { margin:14px 0 4px; font-size:10pt; } .vb-postlist { margin:0; padding-left:18px; }
@@ -531,7 +536,7 @@ button, input, select, textarea { font: inherit; }
 .plain-table { border-collapse:collapse; font:13px monospace; }
 .plain-table th, .plain-table td { padding:2px 10px 2px 0; text-align:left; border-bottom:1px solid #ddd; }
 .plain-form { font:13px monospace; margin:10px 0; }
-.plain-form input, .plain-form button { font:13px monospace; background:#fff; color:#000; border:2px inset #ddd; padding:1px 3px; }
+.plain-form input, .plain-form select, .plain-form button { font:13px monospace; background:#fff; color:#000; border:2px inset #ddd; padding:1px 3px; }
 .plain-form button { border-style:outset; background:#eee; }
 .plain-pre { font:13px monospace; white-space:pre-wrap; }
 
@@ -547,6 +552,7 @@ button, input, select, textarea { font: inherit; }
 .tc-err { color:#b00; } .tc-small { color:#777; font-size:10px; }
 .tc-ok { border:1px solid #6a9a6a; background:#f2fbf2; padding:8px 10px; }
 .tc-choice { display:block; margin:4px 0; }
+.tc-vote .plain-table td { vertical-align:top; } .tc-winner td { background:#f2fbf2; font-weight:bold; }
 .dev-acts { position:fixed; right:8px; bottom:8px; z-index:9999; display:flex; gap:3px; align-items:center; padding:5px 7px;
   background:#111; color:#ff0; font:11px monospace; border:1px solid #ff0; }
 .dev-acts a { color:#fff; padding:1px 5px; text-decoration:none; } .dev-acts a.on { background:#ff0; color:#000; }

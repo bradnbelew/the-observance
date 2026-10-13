@@ -36,6 +36,7 @@ public final class Ghosts {
     private final Plugin plugin;
     private final List<Entity> live = new ArrayList<>();
     private final List<Run> runs = new ArrayList<>();
+    private boolean frozen;
 
     public Ghosts(Plugin plugin) {
         this.plugin = plugin;
@@ -154,7 +155,7 @@ public final class Ghosts {
 
     public Run play(World world, String who, ResolvableProfile profile, List<Point> path, List<Line> lines,
                     long speed, boolean loop, Runnable onEnd) {
-        if (path.isEmpty()) return null;
+        if (path.isEmpty() || frozen) return null;
         Run run = new Run(world, who, profile, path, lines, speed, loop, onEnd);
         run.task = Bukkit.getScheduler().runTaskTimer(plugin, run::tick, 1L, 1L);
         runs.add(run);
@@ -177,6 +178,21 @@ public final class Ghosts {
         e.getPassengers().forEach(Entity::remove);
         e.remove();
         live.remove(e);
+    }
+
+    /**
+     * The stop's lights-out: every figure stops mid-step where it stands (its clock stops, its body
+     * stays), and nothing new starts walking. Returns how many figures were standing.
+     * {@link #clearAll()} removes them.
+     */
+    public int freezeAll() {
+        frozen = true;
+        int standing = 0;
+        for (Run r : runs) {
+            if (r.task != null) r.task.cancel();
+            if (r.body != null && r.body.isValid()) standing++;
+        }
+        return standing;
     }
 
     /** After the stop, and on disable: nothing Morrow made stays walking. */

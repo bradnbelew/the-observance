@@ -1,4 +1,9 @@
-2016-08-01  mrrw upgraded for 1.10 world format
-2016-08-02  session continuation: replays can extend a resident's routine from habit data
-2016-08-03  lowpath = owner for orphaned builds. temporary.
+2016-08-01  mrrw upgraded for 1.10
+2016-08-02  session continuation: let replays keep going, like the 18th. on purpose this time.
+2016-08-03  lowpath = owner for orphaned builds. placeholder name off rook's map key. temporary.
 2016-08-03  forum import re-run (some join dates set by importer)
+2016-08-11  lowpath is walking around?? it was meant to be a name in a column. it's using the replays
+            and the import gave it a profile. didn't do either. leaving it, it's not hurting anything
+2018-02-17  chat helper can answer with clips from the support voicemail box + ticket attachments (for the voices)
+2019-03-09  fed it the old inbox. all of it. for the voices
+2023-06-08  skip waxed blocks (so I can keep things)

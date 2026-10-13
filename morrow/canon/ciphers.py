@@ -56,7 +56,20 @@ RULES_SIGNS_2011 = [
     ["5 leave farms", "replanted", "6 have fun", "or else"],
 ]
 RULES_SIGNS_MORROW = [list(s) for s in RULES_SIGNS_2011]
-RULES_SIGNS_MORROW[1][0] = "3 ask before you"  # 16 chars: impossible on a 2011 sign
+RULES_SIGNS_MORROW[1][0] = "3 ask before you"  # 16 chars: impossible on a 2011 sign (engine b4 -> before)
+
+# The other genuine 2011 signs. Morrow reads signs, so these are in its corpus too.
+# (world/inject.py places most of them; finch's south-rail sign is new: one block east of
+# layout.ANCHORS["south_rail_end"], so the track Morrow lays past it never touches it.)
+GENUINE_SIGNS_2011 = {
+    "spawn_warning": ["screenshot", "stuff. it", "changes. trust", "me -rook"],
+    "rookery_door": ["ROOK'S", "boots off", "yes, yours too", ""],
+    "finch_rail_start": ["booster line", "RIP", "powered rails", "finally"],
+    "finch_south_rail": ["south branch", "not done", "leave it", "-finch"],
+    "kit_base_1": ["KIT ONLY", "no theo", "no rook", "no girls"],
+    "kit_base_2": ["pw is my dogs", "name", "", ""],
+}
+FINCH_SOUTH_SIGN_OFFSET = (1, 0, 0)  # from south_rail_end
 
 
 def rules_key(signs) -> str:
@@ -190,7 +203,7 @@ def build_residents_key() -> dict:
     ct = columnar_encrypt(columnar_encrypt(RESIDENTS_PLAINTEXT, k1), k2)
     lines = [ct[i:i + SIGN_LINE] for i in range(0, len(ct), SIGN_LINE)]
     preface = [["key: all of us", "in the order we", "showed up", "-rook"],
-               ["us in 2 halves", "one pass each", "", ""]]
+               ["us in 2 halves", "one pass each", "by columns.", "2 shuffles"]]
     body = [lines[i:i + 4] + [""] * (4 - len(lines[i:i + 4])) for i in range(0, len(lines), 4)]
     return {"key1": k1, "key2": k2, "ciphertext": ct, "signs": preface + body}
 

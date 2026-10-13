@@ -43,7 +43,7 @@ export function PostBox({ post, b, index, print }: { post: Post; b: Bundle; inde
             {m ? <><div className="vb-usertitle">{m.title}</div><div className="vb-userstats">Join Date: {m.joined.slice(0, 7)}<br />{m.location ? <>Location: {m.location}<br /></> : null}Posts: {m.posts}</div></> : null}
           </td>
           <td className="vb-message">
-            <div className="vb-body">{body}</div>
+            <div className="vb-body">{renderBody(body)}</div>
             {edited ? <div className="vb-edited">{edited}</div> : null}
             {m?.sig ? <div className="vb-sig">__________________<br />{m.sig}</div> : null}
           </td>
@@ -51,4 +51,32 @@ export function PostBox({ post, b, index, print }: { post: Post; b: Bundle; inde
       </tbody>
     </table>
   );
+}
+
+const QUOTE = /\[QUOTE(?:=([^\]]*))?\]([\s\S]*?)\[\/QUOTE\]\n*/gi;
+
+/**
+ * A post body with vBulletin's [QUOTE=name]...[/QUOTE] (and bare [QUOTE]) drawn the way vBulletin 3.8
+ * drew them: a "Quote:" box, "Originally Posted by name", the quoted words in italics. Everything
+ * else stays plain text (the .vb-body keeps the line breaks).
+ */
+export function renderBody(body: string): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  for (const m of body.matchAll(QUOTE)) {
+    if (m.index > last) out.push(body.slice(last, m.index));
+    const who = (m[1] ?? "").split(";")[0].replace(/^["']|["']$/g, "").trim();
+    out.push(
+      <div className="vb-quote" key={`q${m.index}`}>
+        <div className="vb-quote-title">Quote:</div>
+        <div className="vb-quote-body">
+          {who ? <div>Originally Posted by <strong>{who}</strong></div> : null}
+          <div style={{ fontStyle: "italic" }}>{m[2].trim()}</div>
+        </div>
+      </div>,
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < body.length) out.push(body.slice(last));
+  return out;
 }

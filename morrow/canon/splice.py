@@ -2,8 +2,9 @@
 
     python -m morrow.canon.splice <theo_voicemail_2011.wav> <start-end> [<start-end> ...]
 
-Each segment is seconds, e.g. 4.2-5.6. Pick the words "no worries at all", then "keep it
-billable till someone comes home" from your recording. The segments are joined with hard cuts
+Each segment is seconds, e.g. 4.2-5.6. Pick the words "no worries at all, mate", then "keep it
+billable till someone comes home" from your recording (later.FAKE_THEO_NOTE; both are said whole
+in the voicemail script). Any timings written in HUMAN-TODO are placeholders: measure your own take. The segments are joined with hard cuts
 and no crossfade, so the splice is audible: that's the point. Players catch it by the jumps in
 room tone, by the phone-band sound (2026 Theo never sounds like that), and because every word
 traces to the 2011 voicemail. Writes dashboard/private-media/theo/T-09-fake.wav.

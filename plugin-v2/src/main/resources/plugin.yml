@@ -8,7 +8,7 @@ commands:
   mrrw:
     description: Operator control for the Morrow campaign.
     permission: mrrw.operator
-    usage: "/mrrw install | act <1-10> | status | dawn | replay"
+    usage: "/mrrw install | act <1-10> [started-ISO] | status | dawn | replay [sound] | reload | stop <code>"
 permissions:
   mrrw.operator:
     default: op

@@ -47,6 +47,7 @@ Beta world.
 | mrrw plugin | Done, Acts 1-10 | `gradlew selftest`; live tests on local Paper (lock, lowpath, finale) |
 | Act 10 across both systems | Done | `python -m morrow.world.e2e_finale`: console -> ping -> code -> stop -> no heartbeat |
 | Discord bot | Done | `npm run dry` (live needs your bot token) |
+| Act 0 trailhead (`plugin-trailhead/`, mrrw-01 riding on Marked) | Done | `gradlew selftest`; `e2e/trailhead.mjs` 21/21 on the Marked QA server; Marked's own `match.mjs` 18/18 with it armed |
 | Beta world, screenshots, recordings, photos, skin uploads | **Yours** | `HUMAN-TODO.md` |
 
 ## Where the build differs from the design docs

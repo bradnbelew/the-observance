@@ -8,7 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.NamespacedKey;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -43,22 +44,6 @@ import java.util.UUID;
  *         first logged in, Morrow labels their spots with pots, and the meadow is redrawn with them.
  */
 public final class Nights implements Listener {
-    private static final Map<Integer, Sound> SOUND_FOR_FREQUENCY = Map.ofEntries(
-            Map.entry(1, Sound.BLOCK_STONE_STEP), Map.entry(2, Sound.ENTITY_GENERIC_SMALL_FALL),
-            Map.entry(3, Sound.ITEM_BUCKET_FILL), Map.entry(4, Sound.ITEM_ARMOR_EQUIP_GENERIC),
-            Map.entry(5, Sound.ITEM_ARMOR_EQUIP_LEATHER), Map.entry(6, Sound.ENTITY_SHEEP_SHEAR),
-            Map.entry(7, Sound.ENTITY_PLAYER_HURT), Map.entry(8, Sound.ENTITY_GENERIC_EAT),
-            Map.entry(9, Sound.BLOCK_CHEST_CLOSE), Map.entry(10, Sound.BLOCK_CHEST_OPEN),
-            Map.entry(11, Sound.BLOCK_LEVER_CLICK), Map.entry(12, Sound.BLOCK_STONE_BREAK),
-            Map.entry(13, Sound.BLOCK_STONE_PLACE), Map.entry(14, Sound.ENTITY_ITEM_FRAME_PLACE),
-            Map.entry(15, Sound.ENTITY_PLAYER_DEATH));
-    private static final Map<Integer, GameEvent> EVENT_FOR_FREQUENCY = Map.ofEntries(
-            Map.entry(1, GameEvent.STEP), Map.entry(2, GameEvent.HIT_GROUND), Map.entry(3, GameEvent.ITEM_INTERACT_FINISH),
-            Map.entry(4, GameEvent.UNEQUIP), Map.entry(5, GameEvent.EQUIP), Map.entry(6, GameEvent.SHEAR),
-            Map.entry(7, GameEvent.ENTITY_DAMAGE), Map.entry(8, GameEvent.EAT), Map.entry(9, GameEvent.CONTAINER_CLOSE),
-            Map.entry(10, GameEvent.CONTAINER_OPEN), Map.entry(11, GameEvent.BLOCK_CHANGE), Map.entry(12, GameEvent.BLOCK_DESTROY),
-            Map.entry(13, GameEvent.BLOCK_PLACE), Map.entry(14, GameEvent.ENTITY_PLACE), Map.entry(15, GameEvent.ENTITY_DIE));
-
     private final Plugin plugin;
     private final Canon canon;
     private final State state;
@@ -134,19 +119,44 @@ public final class Nights implements Listener {
         if (System.currentTimeMillis() - lastSoundReplay < 180_000) return;
         long time = w.getTime();
         if (time < 13000 || time > 23000) return;
-        int[] hut = canon.anchor("patchcord_relay_hut");
-        Location c = new Location(w, hut[0] + 2, hut[1] + 1, hut[2] + 1);
+        Location c = hutCentre(w);
         if (w.getPlayers().stream().noneMatch(p -> p.getLocation().distanceSquared(c) < 36)) return;
+        soundReplay(w);
+    }
+
+    private Location hutCentre(World w) {
+        int[] hut = canon.anchor("patchcord_relay_hut");
+        return new Location(w, hut[0] + 2, hut[1] + 1, hut[2] + 1);
+    }
+
+    /**
+     * One pass of the replay: per nibble, a sound whose subtitle names the action and a real
+     * vibration of that frequency, SPACING_TICKS apart so a plain sculk sensor catches every one.
+     * Returns the frequencies played. Also run by the operator (/mrrw replay sound).
+     */
+    @SuppressWarnings("deprecation")
+    public List<Integer> soundReplay(World w) {
         lastSoundReplay = System.currentTimeMillis();
+        Location c = hutCentre(w);
         JsonArray events = canon.array("sound_replay");
+        List<Integer> played = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             int f = events.get(i).getAsJsonObject().get("frequency").getAsInt();
+            String[] pair = Vibrations.REPLAY.get(f);
+            if (pair == null) continue;
+            GameEvent event = org.bukkit.Registry.GAME_EVENT.get(NamespacedKey.minecraft(pair[1]));
+            played.add(f);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                w.playSound(c, SOUND_FOR_FREQUENCY.get(f), 1f, 1f);
-                w.sendGameEvent(null, EVENT_FOR_FREQUENCY.get(f), c.toVector());
-            }, 40L + i * 30L);
+                if (silent()) return;
+                w.playSound(c, "minecraft:" + pair[0], SoundCategory.BLOCKS, 1f, 1f);
+                if (event != null) w.sendGameEvent(null, event, c.toVector());
+            }, Vibrations.tickFor(i));
         }
-        journal.write("morrow.sound_replay", new JsonObject());
+        JsonObject d = new JsonObject();
+        d.addProperty("events", played.size());
+        d.addProperty("decodes_to", Vibrations.decode(played));
+        journal.write("morrow.sound_replay", d);
+        return played;
     }
 
     // ---- Act 8: cairn's closing routine opens his room (C16) ---------------------------------
@@ -177,7 +187,7 @@ public final class Nights implements Listener {
                     door.getRelative(0, 1, 0).setBlockData(top, false);
                 }
             }
-            p.sendMessage(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text("welcome back, cairn", NamedTextColor.GRAY)));
+            p.sendMessage(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text("session cairn: resumed", NamedTextColor.GRAY)));
             state.markDone("act8.listening_room_open");
             JsonObject d = new JsonObject();
             d.addProperty("by", p.getName());

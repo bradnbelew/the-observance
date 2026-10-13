@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
 import { bundle } from "@/lib/morrow/canon";
-import { TEMP_PASSWORD } from "@/lib/morrow/session";
+import { cookies } from "next/headers";
+import { PWRESET_FLASH, TEMP_PASSWORD, pwresetFlashValid } from "@/lib/morrow/session";
 
 export const metadata: Metadata = { title: "Lost Password Reset - Copperline Hosting" };
 export const dynamic = "force-dynamic";
@@ -12,11 +13,13 @@ type Search = Promise<{ step?: string; username?: string; error?: string }>;
 export default async function PwResetPage({ searchParams }: { searchParams: Search }) {
   const { step, username, error } = await searchParams;
   const b = await bundle();
+  // ?step=done alone proves nothing: the password needs the signed flash cookie dopwreset.php sets after a correct answer.
+  const reset = step === "done" && pwresetFlashValid((await cookies()).get(PWRESET_FLASH)?.value, b.client_account.username);
   return (
     <LegacyShell active="support">
       <Breadcrumbs><Link href="/clientarea.php">Client Area</Link> » Lost Password Reset</Breadcrumbs>
       <OldPageTitle sub="Forgotten your password? Enter your details below to begin the reset process.">Lost Password Reset</OldPageTitle>
-      {step === "done" ? (
+      {reset ? (
         <>
           <div className="old-alert"><b>Password reset.</b> Email delivery is disabled while this site runs as an archive mirror, so your new password is shown here once.</div>
           <table className="old-data-table"><tbody><tr><th>New password</th><td><code>{TEMP_PASSWORD}</code></td></tr></tbody></table>
@@ -32,6 +35,7 @@ export default async function PwResetPage({ searchParams }: { searchParams: Sear
         </form>
       ) : (
         <form method="post" action="/dopwreset.php" className="old-form">
+          {step === "done" ? <div className="old-message error">This password reset link has expired or was already used. Please start again.</div> : null}
           {error === "nouser" ? <div className="old-message error">No client account was found with that username.</div> : null}
           <label>Username<input name="username" autoComplete="off" aria-label="Username" /></label>
           <button type="submit">Submit</button>

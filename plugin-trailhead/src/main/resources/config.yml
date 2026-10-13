@@ -1,0 +1,17 @@
+# mrrw-01: the Act 0 trailhead. Dormant until an operator runs /trailhead start.
+
+# The key. Every player gets one "recovered sector": the same lines with only every Nth letter
+# showing (N = number of players). Overlaying all sectors gives the full text. Spaces always show.
+# Keep each line to about 18 characters so it fits a book line.
+key:
+  lines:
+    - "copperline hosting"
+    - "case 6118"
+    - "mossfield"
+    - "records kept until"
+    - "31 dec 2026"
+    - "copperlinehosting"
+    - ".com"
+
+# Morrow's line never uses these words (they are answers later in the game).
+avoid-words: [bracken, biscuit, haltmrrw, 6118]

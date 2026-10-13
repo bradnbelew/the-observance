@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.copperline'
+version = '1.0.0'
+description = 'mrrw-01 - the Act 0 trailhead that rides along on another server (Marked game night)'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { name = 'papermc'; url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// Morrow's voice and the 2011 corpus are shared with plugin-v2, so the corpus law has one source.
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', '../plugin-v2/src/main/java']
+            include 'com/copperline/trailhead/**', 'com/copperline/mrrw/Corpus.java'
+        }
+    }
+}
+
+processResources {
+    from('../plugin-v2/src/main/resources') {
+        include 'canon/canon.json', 'canon/corpus.json'
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs.addAll(['-Xlint:unchecked'])
+}
+
+// Plain main()-driven self-tests for the pure logic (no server needed).
+tasks.register('selftest', JavaExec) {
+    dependsOn classes, testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.copperline.trailhead.SelfTest'
+}

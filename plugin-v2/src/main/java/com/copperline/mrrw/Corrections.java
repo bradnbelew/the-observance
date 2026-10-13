@@ -31,7 +31,8 @@ import java.util.List;
  * Act 6 (Correction): Morrow rewrites the record to match its version, and gets caught by 2011's
  * rules. Sign rewrites run over 15 characters a line; the transcription book cites a day the
  * server was offline; the rune signs decode to word-chain nonsense; the sheep census is bleached.
- * Waxed signs are never touched. Act 7: June's flags are "tidied" into alphabetical order.
+ * Waxed signs are never touched. Act 8: June's flags are "tidied" into alphabetical order (the
+ * true order survives in Theo's spare tribute banners in the museum barrel, see ModernLayer).
  */
 public final class Corrections {
     private final Plugin plugin;
@@ -56,7 +57,9 @@ public final class Corrections {
             once("act6.pots", () -> pots(w));
             once("act6.sheep", () -> sheep(w));
         }
-        if (act >= 7) once("act7.flags_tidied", () -> tidyFlags(w));
+        // Act 8, not 7: the flags must stay readable for all of Act 7 (C12 is solved then). Worlds that
+        // already ran the old Act 7 tidy keep their flag and are not tidied twice.
+        if (act >= 8 && !state.done("act7.flags_tidied")) once("act8.flags_tidied", () -> tidyFlags(w));
     }
 
     /** Morrow keeps "correcting": anything a player put back on an unwaxed sign is rewritten again. */
@@ -166,7 +169,7 @@ public final class Corrections {
         w.getNearbyEntitiesByType(Sheep.class, new org.bukkit.Location(w, a[0], a[1], a[2]), 16).forEach(s -> s.setColor(DyeColor.WHITE));
     }
 
-    /** Act 7: Morrow sorts June's flags alphabetically. Theo's tribute photo keeps the real order. */
+    /** Act 8: Morrow sorts June's flags alphabetically. Theo's spare tribute set keeps the real order. */
     private void tidyFlags(World w) {
         int[] t = canon.anchor("june_tower");
         List<Banner> banners = new ArrayList<>();

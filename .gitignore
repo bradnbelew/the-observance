@@ -46,3 +46,11 @@ rehearsals/
 .vercel
 .observance-local/
 dashboard/.observance-local/
+!plugin-trailhead/gradle/wrapper/gradle-wrapper.jar
+
+# Evidence served by the site (Vercel builds from git): track everything here, even *.log / *.wav.
+!dashboard/private-media/
+!dashboard/private-media/**
+
+# the owner's Beta world (binary, full of cipher objects; the repo is public)
+world/beta/
