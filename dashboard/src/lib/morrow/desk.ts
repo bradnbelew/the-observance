@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import type { Bundle, DeskRule } from "./canon";
-import { deskFast, eveningAfter, players, seal } from "./campaign";
+import { deskReplyAt, eveningAfter, players, seal } from "./campaign";
 import type { DeskEvent } from "./bridge";
 
 /**
@@ -97,11 +97,9 @@ export function evaluate(b: Bundle, message: string): { kind: Ticket["kind"]; re
 export function newTicket(b: Bundle, name: string, subject: string, message: string, now = new Date()): Ticket {
   const e = evaluate(b, `${subject}\n${message}`);
   const tid = 100000 + (Number.parseInt(createHash("md5").update(now.toISOString() + message).digest("hex").slice(0, 6), 16) % 900000);
-  const replyAt = deskFast()
-    ? now
-    : e.delayHours
-      ? new Date(now.getTime() + e.delayHours * 3_600_000)
-      : eveningAfter(now, tid);
+  const replyAt = deskReplyAt(now, () => e.delayHours
+    ? new Date(now.getTime() + e.delayHours * 3_600_000)
+    : eveningAfter(now, tid));
   return {
     tid, at: now.toISOString(), name: name.slice(0, 60), subject: subject.slice(0, 120), message: message.slice(0, 900),
     kind: e.kind, ref: e.ref, replyAt: replyAt.toISOString(),

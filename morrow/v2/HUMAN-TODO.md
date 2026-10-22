@@ -23,8 +23,9 @@ python -m morrow.world.pipeline --beta "world/beta/Mossfield"
 ## 2. June's screenshots (in Beta, while you build)
 
 Claude prepares one save per shot (build at the right stage, right time of day, you already
-standing in place facing the right way). Load it, press F2, quit. Rename each file exactly as in
-`morrow/v2/SHOT-LIST.md`, and put them in `dashboard/private-media/media/june/`.
+standing on a spot with a clear view, facing the subject). Each has a preview of what the frame
+should look like in `morrow/v2/shot-previews/`. Load it, press F1 then F2, quit; take them 1 to 9
+in order and Claude renames and files them (details in `morrow/v2/SHOT-LIST.md`).
 
 ## 3. Recordings
 

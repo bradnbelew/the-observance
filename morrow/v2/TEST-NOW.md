@@ -1,7 +1,6 @@
 # Test it now
 
-Everything below runs on your PC today, with a stand-in world (flat, placeholder positions) until
-your Beta world exists. The answers are in `morrow/v2/SOLUTIONS.md`.
+Everything below runs on your PC: the local Paper test server runs the real, upgraded Mossfield. The answers are in `morrow/v2/SOLUTIONS.md`.
 
 ## The website, all ten acts
 
@@ -46,18 +45,18 @@ account works. In the server console, give yourself operator with `op YourName`.
 | `/mrrw dawn` | run the dawn tidy now |
 | `/time set 13000` | night: lowpath walks (Act 8+), doors open |
 
-Places worth visiting (stand-in coordinates):
+Places worth visiting (the real Mossfield, from `morrow/canon/layout.py`):
 
 | Place | Coordinates |
 | --- | --- |
-| Spawn rules signs | `2 65 3` |
-| Rookery's wool floor | `-36 58 14` |
-| Theo's museum, reading room, map wall | `40 64 -20`, `48 64 -20`, `56 64 -20` |
-| June's tower and flags | `312 66 96` (flags at height 87) |
-| lowpath's place | `150 75 40` |
-| finch's lock | `-140 62 -260` |
-| The maintenance annex and dust corridor | `-330 35 -244` |
-| The meadow (hold a map in the 128-block cell around it) | `128 64 128` |
+| Spawn rules signs | `-236 71 25` |
+| Rookery's wool floor | `-270 62 -5` |
+| Theo's museum, reading room, map wall | `-252 70 -30`, `-244 70 -30`, `-236 70 -30` |
+| June's tower and flags | `-243 66 249` (flags at height 87) |
+| lowpath's place | `-213 73 86` (on Morrow's hill; the seed's own ground there is y 69) |
+| finch's lock | `-224 70 -116` |
+| The maintenance annex and dust corridor | `-286 35 28`, `-286 35 36` |
+| The meadow (hold a map in the 128-block cell around it) | `-180 71 55` |
 
 ## The automated checks
 

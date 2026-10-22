@@ -83,8 +83,15 @@ public final class FinchLock implements Listener {
         RedstoneWallTorch fin = (RedstoneWallTorch) Material.REDSTONE_WALL_TORCH.createBlockData();
         fin.setFacing(BlockFace.SOUTH);
         w.getBlockAt(xc, y, z0 + 8).setBlockData(fin, false);
-        // the door, and finch's room behind it
-        for (int x = xc - 2; x <= xc + 2; x++) for (int dy = 0; dy <= 2; dy++) w.getBlockAt(x, y + dy, z0 + 9).setType(Material.COBBLESTONE, false);
+        // the door, and finch's room behind it: a closed cell in the station's south-west corner. The
+        // spur tunnel (build2011.py) comes in at the south wall east of the cell, so you reach the levers
+        // first and the door last (before 2026-10 the door stood in a short free wall you could walk round).
+        int cellEast = x0 + 8;
+        for (int x = x0 - 2; x <= cellEast; x++) for (int dy = 0; dy <= 3; dy++) w.getBlockAt(x, y + dy, z0 + 9).setType(Material.COBBLESTONE, false);
+        for (int z = z0 + 10; z <= z0 + 12; z++) for (int dy = 0; dy <= 3; dy++) w.getBlockAt(cellEast, y + dy, z).setType(Material.COBBLESTONE, false);
+        // torches: the clear above took the ones the 2011 station had
+        int[][] torches = {{x0 - 2, z0 - 2}, {x0 + 16, z0 - 2}, {x0 - 2, z0 + 7}, {x0 + 16, z0 + 7}, {x0 + 12, z0 + 12}, {x0 + 16, z0 + 12}, {x0 - 1, z0 + 12}};
+        for (int[] t : torches) w.getBlockAt(t[0], y, t[1]).setType(Material.TORCH, false);
         Door door = (Door) Material.IRON_DOOR.createBlockData();
         door.setFacing(BlockFace.SOUTH);
         door.setHalf(Bisected.Half.BOTTOM);

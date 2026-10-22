@@ -37,12 +37,12 @@ layout (provisional until the real Beta world is laid out).
 | 8 | cairn's room | step on the lot plate, open + close the hinge tin, white dye on the returns chest, flip the lamp lever off (his 2011 post in the storehouse thread: 'walk the lot, check the hinge tin, chalk the returns, lamp off') |
 | 8 | Sound replay | `MIC-5-18-B.WAV` (FTP: /incoming/MIC-5-18-B.WAV) |
 | 8 | Dust corridor | `SESSIONS:1:LOWPATH` |
-| 8 | The bed | put a bed inside lowpath's place at (-213, 69, 86); works from Act 9 (before that Morrow tidies it away) |
+| 8 | The bed | put a bed inside lowpath's place at (-213, 73, 86); works from Act 9 (before that Morrow tidies it away) |
 | 9 | Clean backup MD5 | `bdd42105cf9ea6ee6f250c38ab48efba` (/ftp/notrecovery/) |
 | 9 | Residents' Key | keys `brackenhingetinbooster` then `sambrobaggagebiscuit` -> `THECLEANCOPYISINMYFTPFOLDERNOTRECOVERYDATEDAPRILTWENTYTHEODOESNTKNOWITSTHERESORRYGUYSROOK` |
 | 9 | rook.txt | in the clean zip only; its last line `dont let it finish anything` is accepted in the case brief's clean-copy field |
 | 9 | Case brief | restart `2011-05-18 06:44:10`, lowpath `2016-08-03`, Kit `2019-03-02`, clean MD5 (or the rook.txt line), the player's backdated join date. Exact match per field; 4 of 5 |
-| 10 | Ready | MAINT sign at (-236, 70, 32) reads `MAINT ON` and is waxed, and lowpath's session ended |
+| 10 | Ready | MAINT sign at (-236, 71, 32) reads `MAINT ON` and is waxed, and lowpath's session ended |
 | 10 | USB vote | #general vote (Resident role only, re-voting allowed); a strict plurality once half the residents voted. The console only accepts the winner |
 | 10 | Console | command `HALTMRRW`, key = Iona's key, pick what to retain, then type the code in chat at the annex (-286, 35, 28) |
 

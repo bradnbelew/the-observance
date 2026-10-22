@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { sessionSecret } from "./signing";
+import { isProduction, sessionSecret } from "./signing";
 import { bridgeState, effectiveAct, hintFactor } from "./bridge";
 
 /**
@@ -91,6 +91,19 @@ export function players(): string[] {
 }
 
 export const deskFast = () => DEV || process.env.MORROW_DESK_FAST === "1";
+
+/**
+ * When Theo's answer to something filed now goes out. MORROW_DESK_FAST answers at once.
+ * MORROW_DESK_MINUTES=N (local only, ignored in production) answers after N minutes but keeps the
+ * real act clock, so hints and timed drops still arrive on schedule: a solo playtest.
+ */
+export function deskReplyAt(now: Date, normal: () => Date): Date {
+  if (deskFast()) return now;
+  const raw = process.env.MORROW_DESK_MINUTES?.trim();
+  const m = Number(raw);
+  if (raw && Number.isFinite(m) && m >= 0 && !isProduction()) return new Date(now.getTime() + m * 60_000);
+  return normal();
+}
 
 const secret = sessionSecret;
 

@@ -1,6 +1,6 @@
 import { after, NextResponse } from "next/server";
 import { bundle } from "@/lib/morrow/canon";
-import { deskFast, eveningAfter } from "@/lib/morrow/campaign";
+import { deskReplyAt, eveningAfter } from "@/lib/morrow/campaign";
 import { deskEvent, remember, scoreBrief, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const t: Ticket = {
     tid, at: now.toISOString(), name: String(form.get("name") ?? "").slice(0, 60), subject: "case 6118 brief",
     message: b.case_brief.map((f) => `${f.label}\n  ${answers[f.id]}`).join("\n"),
-    kind: "brief", replyAt: (deskFast() ? now : eveningAfter(now, tid)).toISOString(), brief,
+    kind: "brief", replyAt: deskReplyAt(now, () => eveningAfter(now, tid)).toISOString(), brief,
   };
   await remember(t);
   console.log(`MORROW_DESK brief=${tid} accepted=${brief.accepted.length}/${b.case_brief.length}`);

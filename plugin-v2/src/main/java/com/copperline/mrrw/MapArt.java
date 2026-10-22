@@ -2,6 +2,7 @@ package com.copperline.mrrw;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
@@ -74,8 +75,16 @@ public final class MapArt {
         }
     }
 
-    /** Lay an image into the ground as blocks: readable only from above, on a map (D8). */
+    /**
+     * Lay an image into the ground as blocks: readable only from above, on a map (D8). The picture
+     * follows the ground (2026-10 audit: laid flat at one height it was buried under every hill and
+     * floated over every hollow, and the trees hid the rest from a map). Theo cleared the field for
+     * it: trees rooted in the meadow are felled, plants go, and the blocks replace each column's top.
+     * Rails, paths' cobble and anything else built is left standing; its own cell keeps its colour.
+     * Redrawing (Act 9) lays the new picture over the old one the same way.
+     */
     public static void layMeadow(World w, int x0, int y, int z0, BufferedImage img) {
+        Terrain.fell(w, x0, z0, x0 + SIZE - 1, z0 + SIZE - 1, y);
         for (int x = 0; x < SIZE; x++) for (int z = 0; z < SIZE; z++) {
             Color c = new Color(img.getRGB(x, z));
             Material m;
@@ -84,8 +93,20 @@ public final class MapArt {
             else if (c.getRed() == 150) m = Material.GRAVEL;
             else if (c.getRed() == 120) m = Material.DIRT_PATH;
             else m = Material.GRASS_BLOCK;
-            w.getBlockAt(x0 + x, y, z0 + z).setType(m, false);
-            if (m == Material.GRASS_BLOCK && ((x * 7 + z * 13) % 11 == 0)) w.getBlockAt(x0 + x, y + 1, z0 + z).setType(Material.POPPY, false);
+            int wx = x0 + x, wz = z0 + z;
+            int g = Terrain.ground(w, wx, wz);
+            for (int yy = g + 1; yy <= g + 3; yy++) {                    // grass, flowers, the old poppies
+                Block above = w.getBlockAt(wx, yy, wz);
+                if (Terrain.cover(above.getType()) && !above.getType().isAir()) above.setType(Material.AIR, false);
+            }
+            Block top = w.getBlockAt(wx, g, wz);
+            if (!Terrain.natural(top.getType()) && !meadowBlock(top.getType()) && top.getType() != Material.WATER) continue;  // built: keep
+            top.setType(m, false);
+            if (m == Material.GRASS_BLOCK && ((x * 7 + z * 13) % 11 == 0)) w.getBlockAt(wx, g + 1, wz).setType(Material.POPPY, false);
         }
+    }
+
+    private static boolean meadowBlock(Material m) {
+        return m == Material.WHITE_WOOL || m == Material.LIGHT_GRAY_WOOL;
     }
 }

@@ -1,6 +1,6 @@
 import { after, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { currentAct, deskFast, eveningAfter, seal, unseal, upcomingSaturdays } from "@/lib/morrow/campaign";
+import { currentAct, deskReplyAt, eveningAfter, seal, unseal, upcomingSaturdays } from "@/lib/morrow/campaign";
 import { deskEvent, remember, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
 import { bundle } from "@/lib/morrow/canon";
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const now = new Date();
   const t: Ticket = {
     tid: 300000 + (now.getTime() % 100000), at: now.toISOString(), name: "rookery", subject: "maintenance window request",
-    message: `Requested window: ${when}`, kind: "booking", replyAt: (deskFast() ? now : eveningAfter(now, 7)).toISOString(),
+    message: `Requested window: ${when}`, kind: "booking", replyAt: deskReplyAt(now, () => eveningAfter(now, 7)).toISOString(),
   };
   await remember(t);
   console.log(`MORROW_DESK booking when=${when}`);

@@ -8,17 +8,21 @@ generate the "fossil" Beta chunks puzzle D3 depends on.
 
 ## Where everything is
 
+Every plot sits on the real terrain: its floor is level with the ground around it (never dug in), trees that
+would overhang it are felled and their leaves decay, and the ground eases back to natural over a few blocks.
+`python -m morrow.world.view <world> --orbit X Y Z` renders any place from four corners to check.
+
 | Place | Around (x, z) | Built |
 | --- | --- | --- |
-| Spawn plaza, rules signs, cake table | -233, 30 | cobble/gravel plaza, fence-post torches |
-| Rookery's house + cellar | -262, 0 | lumpy cobble box, dirt pillar he never took down, ladder to the floor room |
+| Spawn plaza, rules signs, cake table | -233, 30 | cobble/gravel square, fence-post torches, Kit's cake table beside the rules signs, gravel paths to Rook's and the hub |
+| Rookery's house + cellar | -262, 0 | mossy cobble cottage, log corners, plank gable roof missing the corner stair over the dirt pillar he never took down; ladder to the floor room |
 | Rookery's ladder room | -240, 64 (y 40) | under the sand south of spawn, shaft capped with one dirt block |
 | finch's rail hub | -215, 22 | the only neat thing in town; line runs north, east, north, east to the farms |
 | finch's south branch | ends -215, 62 | stops dead in the grass, cobble marking, her "leave it" sign |
 | finch's hidden spur station | -224, -116 (y 70) | tunnel into the hill north of town from the spur's end |
-| patchcord's relay hut | -199, -70 | cramped cobble hut by the line, note-block wall, jukebox |
-| cairn's storehouse, shed, fields, sheep pen | -80, -140 | long plank shed, log corners, six tally chests, split pen |
-| June's house, dock, lighthouse | -246, 236 / tower -243, 249 | on the sandy spit to the south |
+| patchcord's relay hut | -199, -70 | cramped mossy cobble hut by the line, plank roof, stove chimney, note-block wall across the room, jukebox |
+| cairn's storehouse, shed, fields, sheep pen | -80, -140 | plank barn on a cobble footing with a log frame and a steep gable roof in a cleared homestead; six tally chests, tool shed, fields, split pen terraced into the hill |
+| June's house, dock, lighthouse | -246, 236 / tower -243, 249 | on the sandy spit to the south: sandstone-and-plank cottage, dock, red-and-white lighthouse with a signal yard and an empty lantern frame; her viewing hill is 33 blocks north-east of the tower |
 | Iona's annex | -286, 28 (y 35) | under the hill west of spawn; stair tunnel capped under the grass |
 | Iona's notes cell | -180, -20 (y 40) | |
 | Kit's base | 330, -530 | **your walk** |

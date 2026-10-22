@@ -11,3 +11,4 @@
 /dashboard/*.log
 /dashboard/.next-v2/
 /dashboard/.next-v2dev/
+/dashboard/.next-playtest/

@@ -83,6 +83,7 @@ TVALE_FOLDER = [
 def _mapkey_lines() -> list[str]:
     from . import layout
     A = layout.ANCHORS
+    LOWPATH_GROUND = layout.LOWPATH_GROUND
 
     def row(label, key, note=""):
         x, y, z = A[key]
@@ -95,7 +96,7 @@ def _mapkey_lines() -> list[str]:
             row("the tower (wip)", "june_tower"), row("patch's hut", "patchcord_relay_hut"),
             row("rail hub", "finch_hub", "finch"), "",
             "low path: the track along the bottom of the hill, round about %d %d %d. everyone walks it, "
-            "dont build on it" % (A["lowpath_place"][0], A["lowpath_place"][1] - 1, A["lowpath_place"][2] - 4)]
+            "dont build on it" % (A["lowpath_place"][0], LOWPATH_GROUND, A["lowpath_place"][2] - 4)]  # 2011: no hill yet
 
 
 MAPKEY = {"file": "mapkey.txt", "mtime": "06-Mar-2011 22:41", "size": "1K", "lines": _mapkey_lines()}

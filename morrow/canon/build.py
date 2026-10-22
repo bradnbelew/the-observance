@@ -172,13 +172,20 @@ def corpus() -> list[dict]:
     return out
 
 
+def _standing(key):
+    x, y, z = layout.ANCHORS[key]
+    return y + 1 if key in layout.GROUND_ANCHORS else y
+
+
 def _walk(a, b, start_s, secs):
-    """Straight-ish walk between two anchors, one waypoint per second."""
-    (x0, y0, z0), (x1, y1, z1) = layout.ANCHORS[a], layout.ANCHORS[b]
+    """Straight-ish walk between two anchors, one waypoint per second, from one's standing level to
+    the other's (so lowpath's route ends on its floor, up on Morrow's hill, not inside it)."""
+    (x0, _, z0), (x1, _, z1) = layout.ANCHORS[a], layout.ANCHORS[b]
+    y0, y1 = _standing(a), _standing(b)
     pts = []
     for i in range(secs + 1):
         f = i / secs
-        pts.append([start_s + i, round(x0 + (x1 - x0) * f, 1), y0 + 1, round(z0 + (z1 - z0) * f, 1)])
+        pts.append([start_s + i, round(x0 + (x1 - x0) * f, 1), round(y0 + (y1 - y0) * f), round(z0 + (z1 - z0) * f, 1)])
     return pts
 
 

@@ -178,7 +178,7 @@ public final class Nights implements Listener {
         }
         done.add(what);
         if (done.size() == ROUTINE.size()) {
-            Block door = fixture(p.getWorld(), 2, 1, 0);
+            Block door = fixture(p.getWorld(), 2, 0, 0);
             if (door.getBlockData() instanceof Openable o) {
                 o.setOpen(true);
                 door.setBlockData(o, false);

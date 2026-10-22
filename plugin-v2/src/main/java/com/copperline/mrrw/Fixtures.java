@@ -81,7 +81,7 @@ public final class Fixtures implements Listener {
     private int corridorTile(Block b) {
         int[] a = canon.anchor("dust_corridor");
         int i = b.getX() - a[0];
-        if (b.getY() != a[1] + 1 || b.getZ() != a[2] || i < 0 || i >= corridorLength()) return -1;
+        if (b.getY() != a[1] || b.getZ() != a[2] || i < 0 || i >= corridorLength()) return -1;
         return i;
     }
 
@@ -89,21 +89,21 @@ public final class Fixtures implements Listener {
         if (!state.done("install.dust_corridor")) return false;
         int[] a = canon.anchor("dust_corridor");
         int i = b.getX() - a[0], dy = b.getY() - a[1], dz = b.getZ() - a[2];
-        return i >= 0 && i < corridorLength() && dy >= 0 && dy <= 3 && dz >= -1 && dz <= 1;
+        return i >= 0 && i < corridorLength() && dy >= -1 && dy <= 2 && dz >= -1 && dz <= 1;  // anchor = standing level
     }
 
     private boolean inShell(Block b) {
         if (!state.done("install.listening_room")) return false;
         int[] a = canon.anchor("listening_room");
         int dx = b.getX() - a[0], dy = b.getY() - a[1], dz = b.getZ() - a[2];
-        if (dx < 0 || dx > 4 || dy < 0 || dy > 3 || dz < 0 || dz > 4) return false;
-        return dx == 0 || dx == 4 || dz == 0 || dz == 4 || dy == 0 || dy == 3;
+        if (dx < 0 || dx > 4 || dy < -1 || dy > 2 || dz < 0 || dz > 4) return false;  // anchor = standing level; floor dy -1
+        return dx == 0 || dx == 4 || dz == 0 || dz == 4 || dy == -1 || dy == 2;
     }
 
     private boolean isRoomDoor(Block b) {
         if (!state.done("install.listening_room")) return false;
         int[] a = canon.anchor("listening_room");
-        return b.getX() == a[0] + 2 && b.getZ() == a[2] && (b.getY() == a[1] + 1 || b.getY() == a[1] + 2);
+        return b.getX() == a[0] + 2 && b.getZ() == a[2] && (b.getY() == a[1] || b.getY() == a[1] + 1);
     }
 
     /** Note block i of patchcord's wall, or -1. */
@@ -260,17 +260,17 @@ public final class Fixtures implements Listener {
         int fixed = 0;
         for (int i = 0; i < levels.size(); i++) {
             if (shell) {
-                for (int dz = -1; dz <= 1; dz++) for (int dy = 0; dy <= 3; dy++) {
-                    if (dy == 1 && dz == 0) continue;
+                for (int dz = -1; dz <= 1; dz++) for (int dy = -1; dy <= 2; dy++) {
+                    if (dy == 0 && dz == 0) continue;
                     Block b = at(w, "dust_corridor", i, dy, dz);
-                    Material want = dy == 0 || dy == 3 || dz != 0 ? Material.DEEPSLATE_TILES : Material.AIR;
+                    Material want = dy == -1 || dy == 2 || dz != 0 ? Material.DEEPSLATE_TILES : Material.AIR;
                     if (b.getType() != want) {
                         b.setType(want, false);
                         fixed++;
                     }
                 }
             }
-            Block dust = at(w, "dust_corridor", i, 1, 0);
+            Block dust = at(w, "dust_corridor", i, 0, 0);
             int want = levels.get(i).getAsInt();
             if (dust.getBlockData() instanceof AnaloguePowerable ap && dust.getType() == Material.REDSTONE_WIRE && ap.getPower() == want) continue;
             if (dust.getType() != Material.REDSTONE_WIRE && !dust.getType().isAir()) dust.setType(Material.AIR, false);

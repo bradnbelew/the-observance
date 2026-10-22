@@ -148,17 +148,44 @@ public final class ActDirector {
         int laid = 0;
         for (int i = 0; i < 3; i++) {
             int n = (act - 2) * 3 + i + 1;
-            Block bed = w.getBlockAt(a[0] + dx * n, a[1] - 1, a[2] + dz * n);
-            Block rail = bed.getRelative(0, 1, 0);
-            if (!railCanGo(rail)) continue;  // never over a sign, a container or a build
+            int x = a[0] + dx * n, z = a[2] + dz * n;
+            // the track follows the ground (lowpath's hill rises across its line), one block per block at most
+            int y = railY(w, x, z), prev = railY(w, x - dx, z - dz);
+            Block rail = w.getBlockAt(x, y, z);
+            if (!railCanGo(rail) || Math.abs(y - prev) > 1) continue;  // never over a sign, a container or a build; never a step
+            Block bed = rail.getRelative(0, -1, 0);
             if (bed.getType().isAir()) bed.setType(Material.GRAVEL, false);
-            rail.setType(Material.POWERED_RAIL, false);
+            org.bukkit.block.data.Rail data = (org.bukkit.block.data.Rail) Material.POWERED_RAIL.createBlockData();
+            data.setShape(straight(dx));
+            if (y < prev) data.setShape(ascending(-dx, -dz));      // climbs back up toward the last rail
+            rail.setBlockData(data, false);
+            Block last = w.getBlockAt(x - dx, prev, z - dz);
+            if (y > prev && last.getBlockData() instanceof org.bukkit.block.data.Rail lr) {  // the last rail climbs to this one
+                lr.setShape(ascending(dx, dz));
+                last.setBlockData(lr, false);
+            }
             laid++;
         }
         JsonObject d = new JsonObject();
         d.addProperty("south_rail_laid", laid);
         d.addProperty("act", act);
         journal.write("morrow.south_rail", d);
+    }
+
+    /** Where a rail at x, z sits: on the rail already there, else on the ground (trees and plants don't count). */
+    private static int railY(World w, int x, int z) {
+        int g = Terrain.ground(w, x, z);
+        return org.bukkit.Tag.RAILS.isTagged(w.getBlockAt(x, g, z).getType()) ? g : g + 1;
+    }
+
+    private static org.bukkit.block.data.Rail.Shape straight(int dx) {
+        return dx != 0 ? org.bukkit.block.data.Rail.Shape.EAST_WEST : org.bukkit.block.data.Rail.Shape.NORTH_SOUTH;
+    }
+
+    private static org.bukkit.block.data.Rail.Shape ascending(int dx, int dz) {
+        if (dx > 0) return org.bukkit.block.data.Rail.Shape.ASCENDING_EAST;
+        if (dx < 0) return org.bukkit.block.data.Rail.Shape.ASCENDING_WEST;
+        return dz > 0 ? org.bukkit.block.data.Rail.Shape.ASCENDING_SOUTH : org.bukkit.block.data.Rail.Shape.ASCENDING_NORTH;
     }
 
     /** Open ground, plants, loose terrain or old track: yes. Signs (finch's), anything with a block entity, builds: no. */

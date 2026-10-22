@@ -36,39 +36,47 @@ def _aim(cam, target):
 
 
 def shots() -> list[dict]:
-    """Camera positions are derived from the layout anchors so they follow any re-layout."""
+    """In date order (shot N = row N of SHOT-LIST.md). Cameras derive from the layout anchors.
+
+    June had a spot: the hill north-east of the point, the highest ground with a clear line to the
+    whole lighthouse (she keeps the trees cut along it). The roof shots are all from there, so they
+    agree with each other. Every stand was checked for a clear line of sight to its subject on the
+    built world (morrow/world/view.py renders what each save sees). stand = ("ground", x, z) stands on
+    the ground there; ("sea", x, z) on one sand block at sea level; ("at", x, y, z) on a given block.
+    """
     tx, ty, tz = A["june_tower"]
     hx, hy, hz = A["june_house"]
     dx, dy, dz = A["june_old_dock"]
     sx, sy, sz = A["spawn"]
     rx, ry, rz = A["rules_signs"]
     px, py, pz = A["sheep_pen"]
-    top = (tx + 0.5, ty + 21, tz + 0.5)
+    spot = ("ground", tx + 18, tz - 27)                     # June's hill, 33 blocks NE of the tower
+    top = (tx + 0.5, ty + 15, tz + 0.5)
     return [
-        dict(file="2011-03-02_19.20.11.png", stage="march", time=7000, cam=(dx - 2, None, hz - 5),
-             look=(hx - 3, hy + 1, (hz + tz) / 2), fast=True,
-             note="June's first build: house on the point, tower base two blocks high."),
-        dict(file="2011-03-30_20.44.05.png", stage="april", time=12000, cam=(dx - 4, None, dz - 4),
-             look=(dx + 6, dy, dz + 1), fast=True,
-             note="The wooden dock at sunset, with the shoreline in frame."),
-        dict(file="2011-05-17_18.02.40.png", stage="final_unroofed", time=6500, cam=(px + 15, "hill", pz + 11),
+        dict(file="2011-03-02_19.20.11.png", stage="march", time=7000, stand=("ground", tx + 10, tz - 19),
+             look=(hx - 2, hy, (hz + tz) / 2 - 1), fast=True,
+             note="June's first build: the house on the point and the tower base, two blocks high. Daytime."),
+        dict(file="2011-03-30_20.44.05.png", stage="april", time=12000, stand=("ground", tx + 2, tz - 7),
+             look=(dx + 4, dy, dz), fast=True,
+             note="The wooden dock at sunset, the shoreline either side of it."),
+        dict(file="2011-05-14_21.40.02.png", stage="may15", time=11500, stand=("ground", sx - 1, sz),
+             look=(rx + 2, ry + 0.6, rz + 1.5), group=True,
+             note="Spawn: the cake on its table, the three rules signs readable behind (b4 visible)."),
+        dict(file="2011-05-15_22.10.30.png", stage="may15", time=14400, stand=("sea", tx - 10, tz + 45),
+             look=(tx - 3, ty + 18, tz),
+             note="The tower to the gallery, open top. Night: the square moon to the left of it, in the north."),
+        dict(file="2011-05-17_18.02.40.png", stage="final_unroofed", time=9000, stand=("at", px - 19, 92, pz + 2),  # the hilltop; ("ground", px-19, pz+5) hit a grass overhang lip at y 88 you fall off
              look=(px + 5, py, pz + 4.5),
              note="cairn's sheep pen from the hill: six dyed sheep, four in the inner pen."),
-        dict(file="2011-05-14_21.40.02.png", stage="may15", time=14500, cam=(sx + 1, None, sz + 7),
-             look=(rx + 2, ry + 1, rz), group=True,
-             note="Spawn at night around the cake; the three rules signs readable behind (b4 visible)."),
-        dict(file="2011-05-15_22.10.30.png", stage="may15", time=13300, cam=(tx, "sea", tz + 17),
-             look=(tx + 0.5, ty + 14, tz - 40),
-             note="The tower to the gallery, open top. Look north: the square moon sits low behind it."),
-        dict(file="2011-05-18_06.12.40.png", stage="half", time=23250, cam=(tx + 5, None, tz - 29), look=top,
-             note="Glass roof half placed. (Optional: a friend standing on the dock.)"),
-        dict(file="2011-05-18_06.14.33.png", stage="nearly", time=23450, cam=(tx + 5, None, tz - 29), look=top,
-             note="Same spot: roof nearly done, glowstone lamp in the top. Dock empty."),
-        dict(file="2011-05-18_06.16.20.png", stage="roofed", time=23650, cam=(tx + 5, None, tz - 29), look=top,
+        dict(file="2011-05-18_06.12.40.png", stage="half", time=23250, stand=spot, look=top,
+             note="Glass roof half placed: 4 of 9 panes. (Optional: a friend standing on the dock.)"),
+        dict(file="2011-05-18_06.14.33.png", stage="nearly", time=23450, stand=spot, look=top,
+             note="Same spot: roof nearly done (7 of 9), the glowstone in the top. Dock empty."),
+        dict(file="2011-05-18_06.16.20.png", stage="roofed", time=23650, stand=spot, look=top,
              chat=True, note="Same spot, roof complete. Chat visible (no F1): type  it put a roof on it"),
-        dict(file="2011-05-20_20.30.00.png", stage="roofed", time=9500, cam=(dx + 5, None, dz),
-             look=(tx + 0.5, ty + 16, tz + 0.5),
-             note="The finished tower in daylight: glass roof and lamp."),
+        dict(file="2011-05-20_20.30.00.png", stage="roofed", time=9500, stand=("ground", tx + 54, tz + 3),
+             look=(tx + 0.5, ty + 12, tz + 0.5),
+             note="The finished tower in daylight from across the bay: glass roof and lamp."),
     ]
 
 
@@ -95,15 +103,15 @@ def prepare(pristine: str, saves: str, only: int | None = None) -> list[str]:
         build2011.build(str(folder), "may15" if stage == "final_unroofed" else stage)
         inject.inject(str(folder))
         w = World(str(folder))
-        cx, cy, cz = s["cam"]
-        x, z = int(math.floor(cx)), int(math.floor(cz))
-        g = build2011.Builder(w).ground(x, z)
-        if cy == "sea":           # stand on one sand block out in the water
-            w.set(x, 63, z, build2011.SAND)
-            g = 63
-        elif cy == "hill":        # a step up for a view over the fence
-            w.set(x, g + 1, z, build2011.DIRT)
-            g += 1
+        kind, *where = s["stand"]
+        if kind == "at":
+            x, g, z = where
+        else:
+            x, z = where
+            g = build2011.Builder(w).ground(x, z)
+            if kind == "sea":         # stand on one sand block out in the water
+                g = 63
+                w.set(x, g, z, build2011.SAND)
         for yy in (g + 1, g + 2):
             w.set(x, yy, z, 0)
         relight_blocks(w, x, z, x, z, margin=2)

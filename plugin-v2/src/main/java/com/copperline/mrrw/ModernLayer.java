@@ -59,6 +59,7 @@ public final class ModernLayer {
 
     public List<String> install(World w) {
         List<String> done = new ArrayList<>();
+        part("install.theo_archive", done, () -> theoArchive(w));
         part("install.museum", done, () -> museum(w));
         part("install.reading_room", done, () -> readingRoom(w));
         part("install.map_wall", done, () -> mapWall(w));
@@ -117,6 +118,92 @@ public final class ModernLayer {
         JsonObject d = new JsonObject();
         d.addProperty("part", flag);
         journal.write("install", d);
+    }
+
+    // ---- Theo's archive: one hall round the museum display, the reading room and the map wall -----
+    // Built first, so the display, the shelves and the frames go in on its floor. West to east: the
+    // copper display (museum anchor), a partition, then the reading-room shelves along the north wall
+    // with the map wall above their east end. The north wall carries the maps; the hanging sign hangs
+    // from the ceiling. Floor at y-1 (level with the grass), ceiling at y+3, a tiled gable over it.
+
+    private void theoArchive(World w) {
+        int[] m = canon.anchor("theo_museum"), mw = canon.anchor("theo_map_wall");
+        int y = m[1];
+        int x0 = m[0] - 2, x1 = mw[0] + 8, z0 = m[2] - 1, z1 = m[2] + 6;   // the walls
+        int part = m[0] + 6, post = mw[0] - 1;                             // partition; the south wall's middle post
+        Terrain.seat(w, x0, z0, x1, z1, y - 1, Material.STONE_BRICKS, 3);
+        for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) {
+            boolean edge = x == x0 || x == x1 || z == z0 || z == z1;
+            boolean copper = x >= m[0] && x <= m[0] + 4 && z >= m[2] && z <= m[2] + 4;
+            boolean postAt = (z == z0 || z == z1) && (x == x0 || x == x1 || x == part) || x == post && z == z1;
+            if (!copper || edge) w.getBlockAt(x, y - 1, z).setType(edge ? Material.STONE_BRICKS : Material.SPRUCE_PLANKS, false);
+            for (int dy = 0; dy <= 3; dy++) {
+                Block b = w.getBlockAt(x, y + dy, z);
+                if (dy == 3) b.setType(Material.SPRUCE_PLANKS, false);                      // ceiling, and the walls' top course
+                else if (edge) b.setType(postAt ? Material.STRIPPED_SPRUCE_LOG : Material.SPRUCE_PLANKS, false);
+                else if (Terrain.cover(b.getType())) b.setType(Material.AIR, false);
+            }
+        }
+        for (int z = z0 + 1; z < z1; z++) for (int dy = 0; dy <= 2; dy++) {               // the partition, with a wide doorway
+            boolean way = dy <= 1 && (z == m[2] + 3 || z == m[2] + 4);
+            w.getBlockAt(part, y + dy, z).setType(way ? Material.AIR : Material.SPRUCE_PLANKS, false);
+        }
+        // windows: pairs along the south wall and one in each gable end; doors south (museum) and east
+        for (int x : new int[]{m[0], m[0] + 4, part + 2, part + 3, part + 6, part + 7, post + 3, post + 4, post + 6, post + 7}) {
+            for (int dy = 1; dy <= 2; dy++) w.getBlockAt(x, y + dy, z1).setBlockData(pane(true), false);
+        }
+        for (int x : new int[]{x0, x1}) for (int dy = 1; dy <= 2; dy++) w.getBlockAt(x, y + dy, m[2] + 2).setBlockData(pane(false), false);
+        door(w, m[0] + 2, y, z1, BlockFace.SOUTH, Material.SPRUCE_DOOR);
+        door(w, x1, y, m[2] + 4, BlockFace.EAST, Material.SPRUCE_DOOR);
+        for (int x : new int[]{m[0] + 2, part + 5, post + 3}) {                            // lanterns under the ceiling
+            Block l = w.getBlockAt(x, y + 2, m[2] + 3);
+            l.setBlockData(lantern(true), false);
+        }
+        // the roof: deepslate tiles, ridge east-west, eaves a block out beyond every wall
+        int lo = z0 - 1, hi = z1 + 1;
+        for (int k = 0; lo + k < hi - k; k++) {
+            for (int x = x0 - 1; x <= x1 + 1; x++) {
+                w.getBlockAt(x, y + 3 + k, lo + k).setBlockData(stair(Material.DEEPSLATE_TILE_STAIRS, BlockFace.SOUTH), false);
+                w.getBlockAt(x, y + 3 + k, hi - k).setBlockData(stair(Material.DEEPSLATE_TILE_STAIRS, BlockFace.NORTH), false);
+            }
+            for (int x : new int[]{x0, x1}) for (int z = Math.max(lo + k + 1, z0 + 1); z <= Math.min(hi - k - 1, z1 - 1); z++) {
+                if (k > 0) w.getBlockAt(x, y + 3 + k, z).setType(Material.SPRUCE_PLANKS, false);   // gable ends
+            }
+        }
+        for (int x = x0; x <= x1; x++) for (int z = z0 + 1; z < z1; z++) for (int dy = 4; dy <= 8; dy++) {  // the loft: no leftover terrain
+            Block b = w.getBlockAt(x, y + dy, z);
+            if (Terrain.natural(b.getType()) || Terrain.cover(b.getType())) b.setType(Material.AIR, false);
+        }
+    }
+
+    static void door(World w, int x, int y, int z, BlockFace facing, Material type) {
+        Door d = (Door) type.createBlockData();
+        d.setFacing(facing);
+        d.setHalf(Bisected.Half.BOTTOM);
+        w.getBlockAt(x, y, z).setBlockData(d, false);
+        Door top = (Door) d.clone();
+        top.setHalf(Bisected.Half.TOP);
+        w.getBlockAt(x, y + 1, z).setBlockData(top, false);
+    }
+
+    /** A glass pane joined along its wall (placed without physics, a pane is only its centre post). */
+    static BlockData pane(boolean alongX) {
+        org.bukkit.block.data.MultipleFacing g = (org.bukkit.block.data.MultipleFacing) Material.GLASS_PANE.createBlockData();
+        g.setFace(alongX ? BlockFace.EAST : BlockFace.NORTH, true);
+        g.setFace(alongX ? BlockFace.WEST : BlockFace.SOUTH, true);
+        return g;
+    }
+
+    static BlockData stair(Material type, BlockFace facing) {
+        org.bukkit.block.data.type.Stairs s = (org.bukkit.block.data.type.Stairs) type.createBlockData();
+        s.setFacing(facing);
+        return s;
+    }
+
+    static BlockData lantern(boolean hanging) {
+        org.bukkit.block.data.type.Lantern l = (org.bukkit.block.data.type.Lantern) Material.LANTERN.createBlockData();
+        l.setHanging(hanging);
+        return l;
     }
 
     // ---- Theo's museum: waxed copper, the waxed sign, lodestone compasses ----------------------
@@ -180,12 +267,16 @@ public final class ModernLayer {
                 for (int s = 0; s < 6; s++) if (slots.get(s).getAsBoolean()) shelf.getInventory().setItem(s, new ItemStack(Material.BOOK));
             }
         }
+        // the room's hanging sign, from the archive's ceiling, facing the shelves' readers
         Block sign = at(w, "theo_reading_room", 4, 2, 1);
-        sign.setType(Material.OAK_WALL_SIGN, false);
+        org.bukkit.block.data.type.HangingSign hang = (org.bukkit.block.data.type.HangingSign) Material.SPRUCE_HANGING_SIGN.createBlockData();
+        hang.setRotation(BlockFace.SOUTH);
+        sign.setBlockData(hang, false);
         if (sign.getState() instanceof Sign s) {
-            s.getSide(Side.FRONT).line(0, Component.text("reading room"));
-            s.getSide(Side.FRONT).line(1, Component.text(". :  :. ."));
-            s.getSide(Side.FRONT).line(2, Component.text("2023"));
+            s.getSide(Side.FRONT).line(0, Component.text("reading"));
+            s.getSide(Side.FRONT).line(1, Component.text("room"));
+            s.getSide(Side.FRONT).line(2, Component.text(". :  :. ."));
+            s.getSide(Side.FRONT).line(3, Component.text("2023"));
             s.setWaxed(true);
             s.update(true, false);
         }
@@ -356,35 +447,54 @@ public final class ModernLayer {
         MapArt.layMeadow(w, x0, c[1], z0, MapArt.town(canon, extra != null, extra));
     }
 
-    // ---- lowpath's place: modern blocks, on a hill nature never made, and no bed -----------------
+    // ---- lowpath's place: modern blocks, and no bed ----------------------------------------------
+    // The anchor is the standing level inside the house; the floor is y-1. The hill nature never made
+    // (C-seed: only a regenerated seed shows it) is the ground eased up to that floor from the seed's
+    // own ground (layout.LOWPATH_GROUND, 3 lower), a block down every 2 out (Terrain.mound): grass on
+    // dirt, never steeper than a block per block, no rim. Morrow's south rail climbs it (ActDirector.extendSouthRail).
+    // Offsets other code relies on: the sign at (1, 1, 3) (Nights' per-player fronts, on the south
+    // wall beside the door), the pot spot (2, 0, 0) just inside the east wall (Corrections), a bed
+    // within 3 of the anchor (Replays).
 
     private void lowpathPlace(World w) {
-        for (int dx = -7; dx <= 7; dx++) for (int dz = -7; dz <= 7; dz++) {
-            int h = 4 - Math.max(Math.abs(dx), Math.abs(dz)) / 2;
-            for (int dy = -h; dy <= 0; dy++) at(w, "lowpath_place", dx, dy - 1, dz).setType(dy == 0 ? Material.GRASS_BLOCK : Material.DIRT, false);
+        int[] a = canon.anchor("lowpath_place");
+        int y = a[1];
+        Terrain.seat(w, a[0] - 3, a[2] - 2, a[0] + 3, a[2] + 2, y - 1, Material.DIRT, 2);
+        Terrain.mound(w, a[0] - 3, a[2] - 2, a[0] + 3, a[2] + 2, y - 1, 2, 10);
+        for (int dx = -3; dx <= 3; dx++) for (int dz = -2; dz <= 2; dz++) {
+            boolean wall = Math.abs(dx) == 3 || Math.abs(dz) == 2;
+            boolean corner = Math.abs(dx) == 3 && Math.abs(dz) == 2;
+            at(w, "lowpath_place", dx, -1, dz).setType(Material.SPRUCE_PLANKS, false);
+            for (int dy = 0; dy <= 2; dy++) {
+                Material m = !wall ? Material.AIR : corner ? Material.STRIPPED_SPRUCE_LOG : Material.SPRUCE_PLANKS;
+                at(w, "lowpath_place", dx, dy, dz).setType(m, false);
+            }
         }
-        for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++) for (int dy = 0; dy <= 3; dy++) {
-            boolean wall = Math.abs(dx) == 2 || Math.abs(dz) == 2;
-            Block b = at(w, "lowpath_place", dx, dy, dz);
-            if (dy == 3) b.setType(Material.SPRUCE_SLAB, false);
-            else if (dy == 0) b.setType(Material.SPRUCE_PLANKS, false);
-            else b.setType(wall ? Material.SPRUCE_PLANKS : Material.AIR, false);
+        for (int dx : new int[]{-2, 2}) at(w, "lowpath_place", dx, 1, 2).setBlockData(pane(true), false);  // windows
+        for (int dx : new int[]{-3, 3}) at(w, "lowpath_place", dx, 1, 0).setBlockData(pane(false), false);
+        // roof: a spruce gable, ridge east-west, eaves out over the walls
+        for (int k = 0; k <= 3; k++) for (int dx = -4; dx <= 4; dx++) {
+            int dzs = 3 - k;
+            if (dzs == 0) {
+                org.bukkit.block.data.type.Slab ridge = (org.bukkit.block.data.type.Slab) Material.SPRUCE_SLAB.createBlockData();
+                at(w, "lowpath_place", dx, 2 + k, 0).setBlockData(ridge, false);
+                continue;
+            }
+            at(w, "lowpath_place", dx, 2 + k, -dzs).setBlockData(stair(Material.SPRUCE_STAIRS, BlockFace.SOUTH), false);
+            at(w, "lowpath_place", dx, 2 + k, dzs).setBlockData(stair(Material.SPRUCE_STAIRS, BlockFace.NORTH), false);
+            if (k >= 1 && dx == -4) for (int ex : new int[]{-3, 3}) for (int dz = -dzs + 1; dz <= dzs - 1; dz++) {
+                at(w, "lowpath_place", ex, 2 + k, dz).setType(Material.SPRUCE_PLANKS, false);   // gable ends
+            }
         }
-        at(w, "lowpath_place", 0, 1, 2).setType(Material.AIR, false);
-        at(w, "lowpath_place", 0, 2, 2).setType(Material.AIR, false);
-        Block lower = at(w, "lowpath_place", 0, 1, 2);
-        Door door = (Door) Material.SPRUCE_DOOR.createBlockData();
-        door.setFacing(BlockFace.SOUTH);
-        door.setHalf(Bisected.Half.BOTTOM);
-        lower.setBlockData(door, false);
-        Door top = (Door) door.clone();
-        top.setHalf(Bisected.Half.TOP);
-        lower.getRelative(BlockFace.UP).setBlockData(top, false);
-        at(w, "lowpath_place", -1, 1, -1).setType(Material.BARREL, false);
-        at(w, "lowpath_place", 1, 2, -1).setType(Material.LANTERN, false);
-        at(w, "lowpath_place", 1, 1, -1).setType(Material.SPRUCE_PLANKS, false);
+        for (int dx = -2; dx <= 2; dx++) for (int dz = -1; dz <= 1; dz++) at(w, "lowpath_place", dx, 3, dz).setType(Material.SPRUCE_PLANKS, false);  // ceiling
+        door(w, a[0], y, a[2] + 2, BlockFace.SOUTH, Material.SPRUCE_DOOR);
+        at(w, "lowpath_place", -1, 0, -1).setType(Material.BARREL, false);
+        at(w, "lowpath_place", 1, 0, -1).setType(Material.SPRUCE_PLANKS, false);
+        at(w, "lowpath_place", 1, 1, -1).setBlockData(lantern(false), false);
         Block sign = at(w, "lowpath_place", 1, 1, 3);
-        sign.setType(Material.OAK_SIGN, false);
+        org.bukkit.block.data.type.WallSign ws = (org.bukkit.block.data.type.WallSign) Material.SPRUCE_WALL_SIGN.createBlockData();
+        ws.setFacing(BlockFace.SOUTH);
+        sign.setBlockData(ws, false);
         if (sign.getState() instanceof Sign s) {
             s.getSide(Side.FRONT).line(0, Component.text("lowpath's place"));
             s.update(true, false);
@@ -393,15 +503,33 @@ public final class ModernLayer {
 
     // ---- Morrow's maintenance trace (D13): redstone dust at exact power levels ---------------------
 
+    /**
+     * The anchor is the corridor's standing level, the same as Iona's annex beside it: tiles at dy -1,
+     * dust at dy 0, roof at dy 2, running east from the anchor. A short tiled passage leads in from the
+     * annex's south-west corner to the corridor's west end (before 2026-10 it was sealed in the stone).
+     */
     private void dustCorridor(World w) {
         JsonArray levels = canon.array("light_corridor");
         for (int i = 0; i < levels.size(); i++) {
-            for (int dz = -1; dz <= 1; dz++) for (int dy = 0; dy <= 3; dy++) {
+            for (int dz = -1; dz <= 1; dz++) for (int dy = -1; dy <= 2; dy++) {
                 Block b = at(w, "dust_corridor", i, dy, dz);
-                b.setType(dy == 0 || dy == 3 || dz != 0 ? Material.DEEPSLATE_TILES : Material.AIR, false);
+                b.setType(dy == -1 || dy == 2 || dz != 0 ? Material.DEEPSLATE_TILES : Material.AIR, false);
             }
-            Block dust = at(w, "dust_corridor", i, 1, 0);
+            Block dust = at(w, "dust_corridor", i, 0, 0);
             dust.setBlockData(dust(levels.get(i).getAsInt()), false);  // no physics: the levels stay exactly as written
+        }
+        int[] c = canon.anchor("dust_corridor"), an = canon.anchor("maintenance_annex");
+        int px = c[0] - 1;
+        for (int z = Math.min(an[2], c[2]); z <= Math.max(an[2], c[2]) + 1; z++) {
+            boolean end = z == Math.max(an[2], c[2]) + 1;
+            for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 2; dy++) {
+                Block b = w.getBlockAt(px + dx, c[1] + dy, z);
+                boolean inside = dx == 0 && dy >= 0 && dy <= 1 && !end;
+                boolean intoAnnex = dx == 1 && z == an[2] && dy >= 0 && dy <= 1;     // the annex's corner cell
+                boolean intoCorridor = dx == 1 && z == c[2] && dy >= 0;              // the corridor's first tile
+                if (inside || intoAnnex) b.setType(Material.AIR, false);
+                else if (!intoCorridor && !(dx == 1 && z == an[2])) b.setType(Material.DEEPSLATE_TILES, false);
+            }
         }
     }
 
@@ -414,24 +542,20 @@ public final class ModernLayer {
 
     // ---- cairn's sealed back room (C16) and his closing-routine fixtures -------------------------
 
+    /** The anchor is the room's standing level (its NW shell corner): the shell runs dy -1 (floor) to 2 (roof). */
     private void listeningRoom(World w) {
-        for (int dx = 0; dx <= 4; dx++) for (int dz = 0; dz <= 4; dz++) for (int dy = 0; dy <= 3; dy++) {
-            boolean shell = dx == 0 || dx == 4 || dz == 0 || dz == 4 || dy == 0 || dy == 3;
+        int[] a = canon.anchor("listening_room");
+        Terrain.seat(w, a[0], a[2], a[0] + 4, a[2] + 4, a[1] - 1, Material.DIRT, 2);
+        for (int dx = 0; dx <= 4; dx++) for (int dz = 0; dz <= 4; dz++) for (int dy = -1; dy <= 2; dy++) {
+            boolean shell = dx == 0 || dx == 4 || dz == 0 || dz == 4 || dy == -1 || dy == 2;
             Block b = at(w, "listening_room", dx, dy, dz);
-            b.setType(shell ? ((dx + dy + dz) % 3 == 0 ? Material.CALIBRATED_SCULK_SENSOR : Material.SCULK) : Material.AIR, false);
+            b.setType(shell ? ((dx + dy + 1 + dz) % 3 == 0 ? Material.CALIBRATED_SCULK_SENSOR : Material.SCULK) : Material.AIR, false);
         }
-        Block door = at(w, "listening_room", 2, 1, 0);
-        Door d = (Door) Material.IRON_DOOR.createBlockData();
-        d.setFacing(BlockFace.NORTH);
-        d.setHalf(Bisected.Half.BOTTOM);
-        door.setBlockData(d, false);
-        Door t = (Door) d.clone();
-        t.setHalf(Bisected.Half.TOP);
-        door.getRelative(BlockFace.UP).setBlockData(t, false);
-        Block chest = at(w, "listening_room", 2, 1, 3);
+        door(w, a[0] + 2, a[1], a[2], BlockFace.NORTH, Material.IRON_DOOR);
+        Block chest = at(w, "listening_room", 2, 0, 3);
         chest.setType(Material.CHEST, false);
         if (chest.getState() instanceof Chest c) c.getBlockInventory().setItem(13, new ItemStack(Material.RED_BED));
-        Block cairnSign = at(w, "listening_room", 1, 2, 3);
+        Block cairnSign = at(w, "listening_room", 1, 1, 3);
         cairnSign.setType(Material.OAK_WALL_SIGN, false);
         if (cairnSign.getState() instanceof Sign s) {
             String[] lines = {"cairn's pw", "hingetin", "dont tell rook", ""};
@@ -483,6 +607,17 @@ public final class ModernLayer {
         for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++) {
             nether.getBlockAt(h[0] + dx, h[1] - 1, h[2] + dz).setType(Material.NETHERRACK, false);
             for (int dy = 0; dy <= 2; dy++) nether.getBlockAt(h[0] + dx, h[1] + dy, h[2] + dz).setType(Material.AIR, false);
+            // the pad stands on something: netherrack down to the rock where it's near, a cobble
+            // pillar under each corner where the cavern drops away (Rook's 2011 way of doing it)
+            int y = h[1] - 2, floor = nether.getMinHeight() + 1;
+            boolean corner = Math.abs(dx) == 2 && Math.abs(dz) == 2;
+            while (y > floor && open(nether.getBlockAt(h[0] + dx, y, h[2] + dz).getType())) {
+                boolean deep = h[1] - 1 - y > 6;
+                if (deep && !corner) break;
+                nether.getBlockAt(h[0] + dx, y, h[2] + dz).setType(deep ? Material.COBBLESTONE : Material.NETHERRACK, false);
+                y--;
+            }
+            if (corner) nether.getBlockAt(h[0] + dx, h[1], h[2] + dz).setBlockData(Material.TORCH.createBlockData(), false);
         }
         Block b = nether.getBlockAt(h[0], h[1], h[2]);
         b.setType(Material.OAK_SIGN, false);
@@ -491,6 +626,10 @@ public final class ModernLayer {
             for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(lines.get(i)));
             s.update(true, false);
         }
+    }
+
+    private static boolean open(Material m) {
+        return m.isAir() || m == Material.LAVA || m == Material.WATER || Terrain.cover(m);
     }
 
     private void maintSign(World w) {
