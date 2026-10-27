@@ -1,19 +1,19 @@
 // Copperline Recovery: the Discord bridge Theo set up in 2026 (Morrow v2).
 //
-// It runs next to the Minecraft server (it reads the server log and the mrrw plugin's data folder),
-// relays Mossfield chat into #bridge, sends the Act 7 messages, and goes silent after the stop.
-// It only ever speaks authored lines from canon.json, quotes a player's own in-game line verbatim,
-// or (Act 7, a resident DMs it back) passes on what the plugin's corpus answers: words someone said.
+// It follows the Minecraft server only through the mrrw plugin's signed bridge (MORROW_BRIDGE_URL),
+// so it can run anywhere (Railway: see README.md). It relays Mossfield chat into #bridge, sends the
+// Act 7 messages, and goes silent after the stop. It only ever speaks authored lines from
+// canon.json, quotes a player's own in-game line verbatim, or (Act 7, a resident DMs it back) passes
+// on what the plugin's corpus answers: words someone said.
 //
-// Group moments: Theo's big desk replies are mirrored into #general when the plugin's journal
-// releases them ("theo.reply"), and in Act 10 the group votes in #general on what goes on the USB
-// stick (buttons; Resident role only; the bot writes plugins/mrrw/usb-votes.json, the plugin counts).
+// Group moments: Theo's big desk replies are mirrored into #general when the plugin releases them
+// (GET /feed "theo.reply"), and in Act 10 the group votes in #general on what goes on the USB stick
+// (buttons; Resident role only; each press is POST /usb, the plugin keeps and counts the votes).
 //
-//   node bot.mjs            run (needs .env, see README.md; run it under a supervisor)
-//   node bot.mjs --dry-run  print what it would do for every act, no Discord connection
+//   node bot.mjs            run (needs .env or environment variables, see README.md)
+//   node bot.mjs --dry-run  print what it would do for every act and test it against a fake plugin
 import fs from "node:fs";
 import http from "node:http";
-import os from "node:os";
 import path from "node:path";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
@@ -39,49 +39,10 @@ function loadEnv() {
   return env;
 }
 const ENV = loadEnv();
-const MRRW = ENV.MRRW_DATA_DIR || path.join(HERE, "..", "build", "mrrw-v2-test", "plugins", "mrrw");
-const MC_LOG = ENV.MC_LOG || path.join(HERE, "..", "build", "mrrw-v2-test", "logs", "latest.log");
 const VOICE_DIR = ENV.VOICE_DIR || path.join(HERE, "..", "dashboard", "private-media", "theo");
-const STATE_FILE = path.join(HERE, "state.json");
+const STATE_FILE = path.join(ENV.STATE_DIR || HERE, "state.json");  // on Railway: a volume, so a redeploy remembers
 const NO_PINGS = { parse: [] };  // nothing the bot posts can ping @everyone, a role or a user
-const BRIDGE_URL = (ENV.MORROW_BRIDGE_URL || "").trim().replace(/\/+$/, "");  // the plugin's bridge (Act 7 corpus replies)
-const STOP_SECRET = (ENV.MORROW_STOP_SECRET || "").trim();                    // signs bridge requests (same as the site)
-const VOTES_FILE = path.join(MRRW, "usb-votes.json");
-const JOURNAL = path.join(MRRW, "journal.jsonl");
-
-// ---------------------------------------------------------------- shared state with the plugin
-function readAct() {
-  try {
-    const m = fs.readFileSync(path.join(MRRW, "state.yml"), "utf8").match(/^act:\s*(\d+)/m);
-    return m ? Number(m[1]) : 1;
-  } catch {
-    return 1;
-  }
-}
-const stopped = () => fs.existsSync(path.join(MRRW, "stopped.flag"));
-
-/** Players' own in-game lines (roster.yml "lines": "name\u0000text"). Quoted verbatim only. */
-function playerLines() {
-  try {
-    const raw = fs.readFileSync(path.join(MRRW, "roster.yml"), "utf8");
-    const lines = [];
-    let inLines = false;
-    for (const l of raw.split(/\r?\n/)) {
-      if (/^lines:/.test(l)) { inLines = true; continue; }
-      if (inLines && /^\S/.test(l)) inLines = false;
-      if (inLines) {
-        const m = l.match(/^-\s+['"]?(.*?)['"]?$/);
-        if (m) {
-          const [name, text] = m[1].replace(/\\0|\u0000/g, "\u0000").split("\u0000");
-          if (name && text) lines.push({ name, text });
-        }
-      }
-    }
-    return lines;
-  } catch {
-    return [];
-  }
-}
+const BRIDGE = { url: (ENV.MORROW_BRIDGE_URL || "").trim().replace(/\/+$/, ""), secret: (ENV.MORROW_STOP_SECRET || "").trim() };
 
 function loadState() {
   try {
@@ -92,6 +53,7 @@ function loadState() {
 }
 /** Atomic: write a temp file, then rename, so a crash mid-write never loses what was already sent. */
 function saveState(s) {
+  fs.mkdirSync(path.dirname(STATE_FILE), { recursive: true });
   const tmp = STATE_FILE + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(s, null, 1));
   fs.renameSync(tmp, STATE_FILE);
@@ -112,14 +74,20 @@ export function bridgeSignature(secret, method, target, ts, body = "") {
   return createHmac("sha256", secret).update(`${method.toUpperCase()}\n${target}\n${ts}\n${body}`).digest("hex");
 }
 
-/** A signed GET to the plugin. Resolves to the JSON, or null on any failure (unset, down, refused, slow). */
-export async function bridgeGet(base, secret, pathWithQuery, timeoutMs = 2500) {
-  if (!base || !secret) return null;
+/** A signed request to the plugin. Resolves to the JSON, or null on any failure (unset, down, refused, slow). */
+async function bridgeCall(bridge, method, pathWithQuery, body, timeoutMs) {
+  if (!bridge?.url || !bridge?.secret) return null;
   try {
-    const url = new URL(base + pathWithQuery);
+    const url = new URL(bridge.url + pathWithQuery);
     const ts = String(Math.floor(Date.now() / 1000));
+    const text = body === undefined ? "" : JSON.stringify(body);
     const res = await fetch(url, {
-      headers: { "X-Mrrw-Ts": ts, "X-Mrrw-Sig": bridgeSignature(secret, "GET", url.pathname + url.search, ts), Accept: "application/json" },
+      method,
+      headers: {
+        "X-Mrrw-Ts": ts, "X-Mrrw-Sig": bridgeSignature(bridge.secret, method, url.pathname + url.search, ts, text), Accept: "application/json",
+        ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+      },
+      body: body === undefined ? undefined : text,
       signal: AbortSignal.timeout(timeoutMs),
     });
     return res.ok ? await res.json() : null;
@@ -127,6 +95,8 @@ export async function bridgeGet(base, secret, pathWithQuery, timeoutMs = 2500) {
     return null;
   }
 }
+export const bridgeGet = (bridge, pathWithQuery, timeoutMs = 2500) => bridgeCall(bridge, "GET", pathWithQuery, undefined, timeoutMs);
+export const bridgePost = (bridge, pathOnly, body, timeoutMs = 4000) => bridgeCall(bridge, "POST", pathOnly, body, timeoutMs);
 
 // ---------------------------------------------------------------- Act 7: Morrow answers DMs (the Turing test)
 export const REPLY_EVERY_MS = 20_000;
@@ -163,7 +133,7 @@ export async function personaReply({ act, stoppedNow = false, text, userId, last
   const persona = personaFor(text, lastPersona);
   if (!persona) return null;
   if (!limiter(userId, now)) return null;
-  const res = await bridgeGet(bridge.url, bridge.secret, corpusPath(String(text).slice(0, 500), persona, seed ?? now));
+  const res = await bridgeGet(bridge, corpusPath(String(text).slice(0, 500), persona, seed ?? now));
   const reply = typeof res?.reply === "string" ? res.reply.trim() : "";
   if (!reply) return null;
   return (CANON.persona_reply_template || "{as}: {text}").replace("{as}", () => persona).replace("{text}", () => reply.slice(0, 1800));
@@ -172,37 +142,21 @@ export async function personaReply({ act, stoppedNow = false, text, userId, last
 // ---------------------------------------------------------------- Act 10: the USB vote
 export const USB_KEYS = ["clean", "recovered", "corpus"];
 
-export function readVotes(file = VOTES_FILE) {
-  try {
-    const o = JSON.parse(fs.readFileSync(file, "utf8"));
-    const votes = {};
-    for (const [id, c] of Object.entries(o.votes ?? {})) if (USB_KEYS.includes(c)) votes[id] = c;
-    return { open: o.open === true, votes };
-  } catch {
-    return { open: false, votes: {} };
-  }
-}
+/** {clean, recovered, corpus} counts from the plugin's usb.votes. */
+export const tallyFrom = (votes) => Object.fromEntries(USB_KEYS.map((k) => [k, Number(votes?.[k] ?? 0)]));
 
-/** Atomic: temp file + rename, so the plugin never reads half a file. */
-export function writeVotes(data, file = VOTES_FILE) {
-  const tmp = `${file}.${process.pid}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify({ open: data.open === true, votes: data.votes ?? {} }, null, 1));
-  fs.renameSync(tmp, file);
-}
-
-/** One button press. Residents only; pressing again changes your vote. Returns the new data and what to tell them. */
-export function castVote(data, userId, choice, isResident) {
-  if (!data.open) return { data, said: CANON.usb_vote.closed };
-  if (!isResident) return { data, said: CANON.usb_vote.residents_only };
-  if (!USB_KEYS.includes(choice)) return { data, said: null };
-  const next = { open: true, votes: { ...data.votes, [userId]: choice } };
-  return { data: next, said: CANON.usb_vote.ack.replace("{label}", CANON.usb_vote.options[choice].label) };
-}
-
-export function tallyVotes(votes) {
-  const n = { clean: 0, recovered: 0, corpus: 0 };
-  for (const c of Object.values(votes)) if (c in n) n[c] += 1;
-  return n;
+/**
+ * One button press. Residents only; the plugin keeps the ballots (POST /usb: pressing again changes
+ * your vote) and refuses while the vote is closed. Returns what to tell them and the new counts
+ * (tally null = nothing changed). If the bridge doesn't answer, nothing is said and nothing changes.
+ */
+export async function castVote({ bridge, userId, choice, isResident }) {
+  if (!USB_KEYS.includes(choice)) return { said: null, tally: null };
+  if (!isResident) return { said: CANON.usb_vote.residents_only, tally: null };
+  const res = await bridgePost(bridge, "/usb", { voter: String(userId), choice });
+  if (!res) return { said: null, tally: null };
+  if (!res.accepted) return { said: CANON.usb_vote.closed, tally: null };
+  return { said: CANON.usb_vote.ack.replace("{label}", CANON.usb_vote.options[choice].label), tally: tallyFrom(res.votes) };
 }
 
 /** The #general post: the prompt, what each choice costs, and the count so far. */
@@ -215,23 +169,8 @@ export function voteContent(tally, closed = false) {
 
 export const voteButtons = (tally) => USB_KEYS.map((k) => ({ id: `usb:${k}`, label: `${CANON.usb_vote.options[k].label} (${tally[k]})` }));
 
-// ---------------------------------------------------------------- Theo's big replies, mirrored to #general
-/** "theo.reply" entries in journal text: {id, subject, at}. Accepts the fields in detail or at the top level. */
-export function theoReplies(journalText) {
-  const out = [];
-  for (const line of String(journalText).split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    let o;
-    try { o = JSON.parse(line); } catch { continue; }
-    if (o?.kind !== "theo.reply") continue;
-    const d = o.detail && typeof o.detail === "object" ? o.detail : o;
-    const id = d.id || d.voice;
-    if (id) out.push({ id: String(id), subject: String(d.subject ?? ""), at: String(d.at ?? o.at ?? "") });
-  }
-  return out;
-}
-
-/** What the bot posts for one released reply (null if canon has no text for it). */
+// ---------------------------------------------------------------- the feed: chat, [Recovery] lines, Theo's replies
+/** What the bot posts for one released Theo reply (null if canon has no text for it). */
 export function theoPost(entry) {
   const text = CANON.theo_mirror?.replies?.[entry.id];
   if (!text) return null;
@@ -239,41 +178,28 @@ export function theoPost(entry) {
   return { content: `${header}\n${text}`.slice(0, 2000), voice: entry.id };
 }
 
-// ---------------------------------------------------------------- log tailing
-/** Identity of the log file. Rotation shows up as a new inode/birth time, or a different first line. */
-export function logIdentity(file) {
-  const st = fs.statSync(file);
-  let head = "";
-  try {
-    const fd = fs.openSync(file, "r");
-    const buf = Buffer.alloc(Math.min(256, st.size));
-    fs.readSync(fd, buf, 0, buf.length, 0);
-    fs.closeSync(fd);
-    head = buf.toString("utf8").split(/\r?\n/)[0];
-  } catch { /* briefly unreadable: compare by stat only */ }
-  return { ino: String(st.ino), birth: Math.round(st.birthtimeMs), head, size: st.size };
-}
-
 /**
- * Where to resume reading the log. A saved position is trusted only if it is the same file (same
- * inode and birth time where the filesystem has them, and the same first line) and not past its
- * end. Otherwise the log was rotated (Paper gzips latest.log at startup and at midnight) or
- * truncated, and the new file is read from the start. null = never tailed: start at the end.
+ * The posts for a page of GET /feed entries: chat and [Recovery] lines to #bridge, Theo's released
+ * replies to #general with the voice note. Players' words are quoted, never obeyed.
  */
-export function resumeOffset(saved, now) {
-  if (!saved) return null;
-  const hasIno = saved.ino && saved.ino !== "0" && now.ino !== "0";
-  const sameFile = (hasIno ? saved.ino === now.ino && saved.birth === now.birth : true)
-    && (!saved.head || !now.head || saved.head === now.head);
-  if (!sameFile || now.size < saved.offset) return 0;
-  return saved.offset;
+export function feedPosts(entries) {
+  const out = [];
+  for (const e of entries ?? []) {
+    if (e?.kind === "chat" && e.name && e.text) out.push({ to: "bridge", content: `**${e.name}**: ${e.text}` });
+    else if (e?.kind === "recovery" && e.text) out.push({ to: "bridge", content: `*[Recovery] ${e.text}*` });
+    else if (e?.kind === "theo.reply" && e.id) {
+      const post = theoPost({ id: String(e.id), subject: String(e.subject ?? "") });
+      if (post) out.push({ to: "general", content: post.content, voice: post.voice, flag: `theo:${e.id}:${e.at ?? ""}` });
+      else console.error(new Date().toISOString(), "theo.reply with no canon text:", e.id);
+    }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- the plan: what happens when
 /** Act 7 messages, spread over the act. Each resident gets a different mix; Theo's real ones are among them. */
-export function act7Plan(residentNames) {
+export function act7Plan(residentNames, quotes = []) {
   const plan = [];
-  const quotes = playerLines();
   residentNames.forEach((name, i) => {
     const morrow = CANON.morrow_dms.filter((_, k) => (k + i) % 2 === 0).slice(0, 2);
     morrow.forEach((dm, k) => plan.push({ to: name, at: 2 + k * 9 + i, kind: "morrow", as: dm.as, text: `${dm.as}: ${dm.text}` }));
@@ -289,32 +215,32 @@ export function act7Plan(residentNames) {
 if (DRY) {
   const names = (ENV.DRY_PLAYERS || "PlayerOne,PlayerTwo,PlayerThree").split(",");
   console.log("act 1  pin in #general:", CANON.welcome);
-  console.log("act 1+ #bridge relays chat lines and [Recovery] lines from", MC_LOG, "(no pings)");
+  console.log("act 1+ #bridge relays chat lines and [Recovery] lines from the plugin's feed (GET /feed), no pings");
   console.log("act 7  DM plan (hours after the act starts; each DM recorded per member):");
-  for (const m of act7Plan(names)) console.log(`   +${String(m.at).padStart(2)}h  to ${m.to.padEnd(12)} [${m.kind}] ${m.text}${m.voice ? `  (+ voice ${m.voice}: ${voiceFile(m.voice) ? "found" : "not recorded yet"})` : ""}`);
+  const quotes = [{ name: names[1] ?? "PlayerTwo", text: "the rail looks better unfinished" }];
+  for (const m of act7Plan(names, quotes)) console.log(`   +${String(m.at).padStart(2)}h  to ${m.to.padEnd(12)} [${m.kind}] ${m.text}${m.voice ? `  (+ voice ${m.voice}: ${voiceFile(m.voice) ? "found" : "not recorded yet"})` : ""}`);
   console.log("act 9  DM to every resident:", CANON.fake_theo.text, `(voice ${CANON.fake_theo.voice}: ${voiceFile(CANON.fake_theo.voice) ? "found" : "not made yet"})`);
   console.log("stop   #general:", CANON.bridge_cut.text, `(voice ${CANON.bridge_cut.voice}: ${voiceFile(CANON.bridge_cut.voice) ? "found" : "not recorded yet"})`);
-  console.log("stop   then: no relay, no messages, ever");
-  console.log("current plugin act:", readAct(), "| stopped:", stopped());
-  // log tailing: the offset survives restarts; rotation is caught by file identity, not size alone
-  const a = { ino: "11", birth: 100, head: "[10:00:00] [ServerMain/INFO]: Environment: A", size: 5000 };
-  const b = { ino: "12", birth: 200, head: "[00:00:01] [ServerMain/INFO]: Environment: B", size: 9000 };
-  const checks = [
-    [resumeOffset(null, a) === null, "first run starts at the end of the log (no backlog flood)"],
-    [resumeOffset({ ...a, offset: 4000 }, a) === 4000, "a restart resumes at the saved offset"],
-    [resumeOffset({ ...a, offset: 4000 }, b) === 0, "rotated to a BIGGER new file: read from the start"],
-    [resumeOffset({ ...a, offset: 4000 }, { ...a, size: 100 }) === 0, "truncated in place: read from the start"],
-    [resumeOffset({ ...a, ino: "0", offset: 4000 }, { ...b, ino: "0" }) === 0, "no inode (some Windows shares): first line decides"],
-  ];
-  checks.push(...await dryGroupMoments());
+  console.log("stop   then: no relay, no messages, ever (the bot exits, and exits again if restarted)");
+  if (BRIDGE.url) {  // the real plugin: read-only, except a vote when DRY_VOTE=<choice> (closed before Act 10: refused)
+    const st = await bridgeGet(BRIDGE, "/state");
+    console.log("plugin bridge:", BRIDGE.url, st ? `act ${st.act}, stopped ${st.stopped}, usb ${JSON.stringify(st.usb?.votes)}` : "not answering (or wrong secret)");
+    const feed = await bridgeGet(BRIDGE, "/feed?after=0&max=200");
+    if (feed) for (const p of feedPosts(feed.entries)) console.log(`   feed -> #${p.to}: ${p.content.split("\n")[0]}${p.voice ? `  (voice ${p.voice})` : ""}`);
+    console.log("   feed:", feed ? `${feed.entries.length} entries, next ${feed.next}, end ${feed.end}` : "no answer");
+    const lines = await bridgeGet(BRIDGE, "/lines");
+    console.log("   lines:", lines ? `${lines.lines.length} residents' lines` : "no answer");
+    if (ENV.DRY_VOTE) console.log("   vote:", JSON.stringify(await castVote({ bridge: BRIDGE, userId: "dry-run", choice: ENV.DRY_VOTE, isResident: true })));
+  }
+  const checks = await dryBridge();
   for (const [ok, what] of checks) console.log(`   ${ok ? "ok  " : "FAIL"} ${what}`);
   // let fetch's sockets finish closing first: exiting mid-close aborts Node on Windows (libuv UV_HANDLE_CLOSING)
   await new Promise((r) => setTimeout(r, 250));
   process.exit(checks.some(([ok]) => !ok) ? 1 : 0);
 }
 
-/** Dry run of the bridge pieces against a fake plugin: the corpus DMs, the USB vote, the Theo mirror. */
-async function dryGroupMoments() {
+/** Dry run of everything the bot does through the bridge, against a fake plugin that checks signatures. */
+async function dryBridge() {
   const checks = [];
   const SECRET = "dry-run-stop-secret";
   checks.push([bridgeSignature("test-stop-secret", "GET", "/state", "1700000000", "") === "568f9284666a5990ca2bebb4c800e07a26d3e792e627d51c0e7e1d860433c833",
@@ -326,76 +252,99 @@ async function dryGroupMoments() {
     && bridgeSignature("test-stop-secret", "GET", corpusPath("hello there", "rookery", 7), "1700000000", "") === "c36897b35c62fd1830ac5b20ca8e66e551e439e42332f49a1d2c4cd494b6bd4c",
     "plugin vector: GET /corpus (raw %20-encoded target)"]);
 
-  // a fake plugin: verifies the signature, answers /corpus with words someone said
+  // a fake plugin: verifies the signature (body included), answers like the real bridge
   const seen = [];
+  const plugin = { act: 10, stopped: false, ballots: {}, feed: [
+    { n: 1, kind: "chat", name: "ash", text: "@everyone where is the rail going" },
+    { n: 2, kind: "recovery", text: "3 block(s) restored (cairn storehouse)" },
+    { n: 3, kind: "theo.reply", id: "T-04a", subject: "who runs this", at: "2026-10-17T23:41:00Z" },
+    { n: 4, kind: "theo.reply", id: "T-99", subject: "", at: "2026-10-18T00:00:00Z" },
+  ] };
   const fake = http.createServer((req, res) => {
-    const ts = String(req.headers["x-mrrw-ts"] || "");
-    const want = Buffer.from(bridgeSignature(SECRET, req.method, req.url, ts, ""));
-    const got = Buffer.from(String(req.headers["x-mrrw-sig"] || ""));
-    const ok = got.length === want.length && timingSafeEqual(got, want) && Math.abs(Date.now() / 1000 - Number(ts)) <= 120;
-    const u = new URL(req.url, "http://x");
-    seen.push({ ok, path: u.pathname, heard: u.searchParams.get("heard"), persona: u.searchParams.get("persona") });
-    res.writeHead(ok ? 200 : 401, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(ok ? { reply: "the bed is gone", sources: ["cairn, chat, 2011-05-12 06:51:44"], obeys_law: true } : { error: "sig" }));
+    let body = "";
+    req.on("data", (c) => { body += c; });
+    req.on("end", () => {
+      const ts = String(req.headers["x-mrrw-ts"] || "");
+      const want = Buffer.from(bridgeSignature(SECRET, req.method, req.url, ts, body));
+      const got = Buffer.from(String(req.headers["x-mrrw-sig"] || ""));
+      const ok = got.length === want.length && timingSafeEqual(got, want) && Math.abs(Date.now() / 1000 - Number(ts)) <= 120;
+      const u = new URL(req.url, "http://x");
+      seen.push({ ok, method: req.method, path: u.pathname, query: u.searchParams, body });
+      const reply = (status, o) => { res.writeHead(status, { "Content-Type": "application/json" }); res.end(JSON.stringify(o)); };
+      if (!ok) return reply(401, { error: "sig" });
+      if (u.pathname === "/corpus") return reply(200, { reply: "the bed is gone", sources: ["cairn, chat, 2011-05-12 06:51:44"], obeys_law: true });
+      if (u.pathname === "/feed") {
+        const after = Number(u.searchParams.get("after") ?? -1);
+        const max = Number(u.searchParams.get("max") ?? 100);
+        const entries = after < 0 ? [] : plugin.feed.filter((e) => e.n > after).slice(0, max);
+        return reply(200, { entries, next: after < 0 ? plugin.feed.length : (entries.at(-1)?.n ?? after), end: plugin.feed.length, act: plugin.act, stopped: plugin.stopped });
+      }
+      if (u.pathname === "/usb" && req.method === "POST") {
+        const v = JSON.parse(body);
+        const open = plugin.act >= 10 && !plugin.stopped;
+        if (open && USB_KEYS.includes(v.choice)) plugin.ballots[v.voter] = v.choice;
+        const counts = tallyFrom(Object.fromEntries(USB_KEYS.map((k) => [k, Object.values(plugin.ballots).filter((c) => c === k).length])));
+        return reply(200, { votes: counts, winner: null, open, accepted: open && USB_KEYS.includes(v.choice) });
+      }
+      return reply(404, { error: "no such endpoint" });
+    });
   });
   await new Promise((r) => fake.listen(0, "127.0.0.1", r));
   const bridge = { url: `http://127.0.0.1:${fake.address().port}`, secret: SECRET };
+
+  // Act 7 replies
   const limiter = makeLimiter();
   const t0 = 1_000_000;
   const ask = (o) => personaReply({ act: 7, userId: "u1", lastPersona: "cairn", limiter, bridge, seed: 1, now: t0, ...o });
   const r1 = await ask({ text: "where did you put the bed" });
   checks.push([r1 === "cairn: the bed is gone", `Act 7 DM: Morrow answers as the persona it last wrote as, from the corpus (${r1})`]);
-  checks.push([seen.length === 1 && seen[0].ok && seen[0].path === "/corpus" && seen[0].persona === "cairn" && seen[0].heard === "where did you put the bed",
+  const c1 = seen.at(-1);
+  checks.push([c1.ok && c1.path === "/corpus" && c1.query.get("persona") === "cairn" && c1.query.get("heard") === "where did you put the bed",
     "the /corpus request is signed and carries heard + persona"]);
-  checks.push([await ask({ text: "again?", now: t0 + 5_000 }) === null && seen.length === 1, "rate limit: nothing within 20 s (and no bridge call)"]);
+  const n = seen.length;
+  checks.push([await ask({ text: "again?", now: t0 + 5_000 }) === null && seen.length === n, "rate limit: nothing within 20 s (and no bridge call)"]);
   checks.push([(await ask({ text: "again?", now: t0 + 20_000 }))?.startsWith("cairn: "), "rate limit: answers again after 20 s"]);
   const r2 = await ask({ text: "juni_lantern are you there", userId: "u2" });
-  checks.push([r2 === "juni_lantern: the bed is gone" && seen.at(-1).persona === "juni_lantern", "naming a persona makes Morrow answer as it"]);
+  checks.push([r2 === "juni_lantern: the bed is gone" && seen.at(-1).query.get("persona") === "juni_lantern", "naming a persona makes Morrow answer as it"]);
   checks.push([await ask({ text: "hello", userId: "u3", act: 6 }) === null, "outside Act 7: no reply"]);
   checks.push([await ask({ text: "hello", userId: "u4", lastPersona: null }) === null, "before Morrow has written to them as anyone: no reply"]);
   checks.push([await ask({ text: "hello", userId: "u5", bridge: { ...bridge, secret: "wrong" } }) === null, "a refused signature: no reply"]);
-  await new Promise((r) => fake.close(r));
-  checks.push([await ask({ text: "hello", userId: "u6" }) === null, "bridge unreachable: no reply"]);
+
+  // the feed
+  const first = await bridgeGet(bridge, "/feed?after=-1&max=100");
+  checks.push([first?.entries.length === 0 && first.next === 4, "a new bot starts at the end of the feed (no backlog flood)"]);
+  const page = await bridgeGet(bridge, "/feed?after=0&max=100");
+  const posts = feedPosts(page.entries);
+  checks.push([page.next === 4 && posts.length === 3, "a page relays chat, [Recovery] and Theo's reply; an unknown voice id posts nothing"]);
+  checks.push([posts[0].to === "bridge" && posts[0].content === "**ash**: @everyone where is the rail going"
+    && posts[1].content === "*[Recovery] 3 block(s) restored (cairn storehouse)*", "chat and [Recovery] lines go to #bridge, quoted"]);
+  checks.push([posts[2].to === "general" && posts[2].content.includes("re: who runs this") && posts[2].content.includes("it's me.  Theo")
+    && posts[2].voice === "T-04a" && posts[2].flag === "theo:T-04a:2026-10-17T23:41:00Z", "Theo's reply goes to #general with the desk header, canon text and voice note"]);
+  checks.push([(await bridgeGet(bridge, "/feed?after=2&max=1"))?.entries.map((e) => e.n).join() === "3", "the cursor pages from where it stopped"]);
 
   // the USB vote
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "mrrw-vote-"));
-  const file = path.join(dir, "usb-votes.json");
-  let data = { open: true, votes: {} };
-  writeVotes(data, file);
-  let r = castVote(data, "111", "clean", true); data = r.data;
-  checks.push([data.votes["111"] === "clean" && r.said.includes(CANON.usb_vote.options.clean.label), "a resident votes (ack names the choice)"]);
-  r = castVote(data, "111", "corpus", true); data = r.data;
-  checks.push([data.votes["111"] === "corpus" && Object.keys(data.votes).length === 1, "pressing again changes the vote, never adds one"]);
-  r = castVote(data, "222", "recovered", false);
-  checks.push([!("222" in r.data.votes) && r.said === CANON.usb_vote.residents_only, "no Resident role: no vote"]);
-  data = castVote(data, "333", "recovered", true).data;
-  writeVotes(data, file);
-  const back = readVotes(file);
-  checks.push([back.open && back.votes["111"] === "corpus" && back.votes["333"] === "recovered" && fs.readdirSync(dir).length === 1,
-    "usb-votes.json is written atomically ({open, votes: {discord id: choice}}, no temp file left)"]);
-  const closedR = castVote({ open: false, votes: {} }, "111", "clean", true);
-  checks.push([Object.keys(closedR.data.votes).length === 0 && closedR.said === CANON.usb_vote.closed, "a closed vote takes nothing"]);
-  const tally = tallyVotes(data.votes);
+  let v = await castVote({ bridge, userId: "111", choice: "clean", isResident: true });
+  checks.push([v.said.includes(CANON.usb_vote.options.clean.label) && v.tally.clean === 1, "a resident votes (ack names the choice)"]);
+  checks.push([JSON.parse(seen.at(-1).body).voter === "111" && seen.at(-1).ok && seen.at(-1).method === "POST", "the vote is a signed POST /usb (body signed too)"]);
+  v = await castVote({ bridge, userId: "111", choice: "corpus", isResident: true });
+  checks.push([v.tally.corpus === 1 && v.tally.clean === 0, "pressing again changes the vote, never adds one"]);
+  const before = seen.length;
+  v = await castVote({ bridge, userId: "222", choice: "recovered", isResident: false });
+  checks.push([v.said === CANON.usb_vote.residents_only && v.tally === null && seen.length === before, "no Resident role: no vote (and no bridge call)"]);
+  plugin.stopped = true;
+  v = await castVote({ bridge, userId: "333", choice: "recovered", isResident: true });
+  checks.push([v.said === CANON.usb_vote.closed && v.tally === null, "a closed vote takes nothing"]);
+  const tally = { clean: 0, recovered: 1, corpus: 1 };
   const content = voteContent(tally);
   checks.push([USB_KEYS.every((k) => content.includes(CANON.usb_vote.options[k].cost)) && content.includes("Every word 1"),
     "the #general post names every choice's cost and the count so far"]);
   checks.push([voteButtons(tally).map((b) => b.label).join("|") === "The April copy (0)|The finished town (1)|Every word (1)", "three buttons with counts"]);
-  fs.rmSync(dir, { recursive: true, force: true });
   console.log("act 10 #general vote:\n" + content.split("\n").map((l) => `   | ${l}`).join("\n"));
 
-  // Theo's big replies, mirrored when the journal releases them
-  const journal = [
-    JSON.stringify({ at: "2026-10-17T19:00:00Z", kind: "desk.event", detail: { ref: "unmask" } }),
-    JSON.stringify({ at: "2026-10-17T23:41:00Z", kind: "theo.reply", detail: { id: "T-04a", subject: "who runs this", at: "2026-10-17T23:41:00Z" } }),
-    "not json",
-    JSON.stringify({ at: "2026-10-18T00:10:00Z", kind: "theo.reply", id: "T-09b", subject: "case 6118 brief", reply_at: "x" }),
-  ].join("\n");
-  const rel = theoReplies(journal);
-  checks.push([rel.length === 2 && rel[0].id === "T-04a" && rel[1].id === "T-09b", "theo.reply journal entries are read (detail or top level), other lines skipped"]);
-  const post = theoPost(rel[0]);
-  checks.push([!!post && post.content.includes("re: who runs this") && post.content.includes("it's me.  Theo") && post.voice === "T-04a",
-    "the #general post carries the desk header, the canon text and the voice note id"]);
-  checks.push([theoPost({ id: "T-99", subject: "" }) === null, "an unknown voice id posts nothing"]);
+  await new Promise((r) => fake.close(r));
+  checks.push([await ask({ text: "hello", userId: "u6" }) === null, "bridge unreachable: no reply"]);
+  checks.push([(await castVote({ bridge, userId: "111", choice: "clean", isResident: true })).tally === null, "bridge unreachable: a vote changes nothing"]);
+
   for (const id of CANON.theo_mirror?.replies ? Object.keys(CANON.theo_mirror.replies) : []) {
     console.log(`theo   #general mirror ${id}: voice ${voiceFile(id) ? "found" : "not recorded yet"}`);
   }
@@ -404,9 +353,14 @@ async function dryGroupMoments() {
 }
 
 // ---------------------------------------------------------------- live
+const state = loadState();
+if (state.stopped) {  // after the stop the bridge stays cut, however often a supervisor restarts the bot
+  console.log("the bridge was cut at the stop; nothing to do. Exiting.");
+  process.exit(0);
+}
 const { Client, GatewayIntentBits, Partials, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = await import("discord.js");
-for (const k of ["DISCORD_TOKEN", "GUILD_ID", "GENERAL_CHANNEL_ID", "BRIDGE_CHANNEL_ID", "RESIDENT_ROLE_ID"]) {
-  if (!ENV[k]) { console.error(`missing ${k} in discord-v2/.env (see README.md)`); process.exit(1); }
+for (const k of ["DISCORD_TOKEN", "GUILD_ID", "GENERAL_CHANNEL_ID", "BRIDGE_CHANNEL_ID", "RESIDENT_ROLE_ID", "MORROW_BRIDGE_URL", "MORROW_STOP_SECRET"]) {
+  if (!ENV[k]) { console.error(`missing ${k} (environment or discord-v2/.env, see README.md)`); process.exit(1); }
 }
 const client = new Client({
   // DirectMessages: Act 7 replies to residents' DMs (DM text needs no Message Content intent). Buttons need no intent.
@@ -414,13 +368,24 @@ const client = new Client({
   partials: [Partials.Channel],
   allowedMentions: NO_PINGS,
 });
-const state = loadState();
 const once = async (flag, fn) => {
   if (state.done.includes(flag)) return;
   await fn();
   state.done.push(flag);
   saveState(state);
 };
+
+// What the plugin last said about the campaign (GET /state and every GET /feed). Until the bridge first
+// answers, nothing act-based happens: act 0 is below every threshold.
+const live = { act: 0, stopped: false, votes: tallyFrom({}), seen: false };
+const note = (o) => {
+  if (!o) return;
+  if (Number.isFinite(o.act)) live.act = o.act;
+  if (typeof o.stopped === "boolean") live.stopped = o.stopped;
+  if (o.usb?.votes) live.votes = tallyFrom(o.usb.votes);
+  if (!live.seen) { live.seen = true; console.log(new Date().toISOString(), "bridge answering: act", live.act, "stopped", live.stopped); }
+};
+const stopped = () => live.stopped;
 
 async function send(channel, text, voice) {
   const file = voiceFile(voice);
@@ -469,65 +434,49 @@ function every(ms, name, fn) {
 client.on("error", (err) => console.error(new Date().toISOString(), "discord client error:", err?.message || err));
 
 client.once("clientReady", async () => {
-  console.log("mrrw bridge online as", client.user.tag);
+  console.log("mrrw bridge online as", client.user.tag, "| plugin bridge", BRIDGE.url);
   const guild = await client.guilds.fetch(ENV.GUILD_ID);
   const general = await guild.channels.fetch(ENV.GENERAL_CHANNEL_ID);
-  const bridge = await guild.channels.fetch(ENV.BRIDGE_CHANNEL_ID);
+  const bridgeChannel = await guild.channels.fetch(ENV.BRIDGE_CHANNEL_ID);
 
   await once("welcome", async () => {
     const msg = await general.send({ content: CANON.welcome, allowedMentions: NO_PINGS });
     await msg.pin().catch(() => {});
   }).catch((err) => console.error("welcome failed:", err?.message || err));
 
-  // Relay: tail the server log for chat and Morrow's lines. The position is saved in state.json,
-  // so a restart carries on where it stopped; rotation is detected by file identity.
-  let tail = null;  // { ino, birth, head, size, offset }
-  if (fs.existsSync(MC_LOG)) {
-    const id = logIdentity(MC_LOG);
-    const resume = resumeOffset(state.log, id);
-    tail = { ...id, offset: resume ?? id.size };
-    console.log("log:", MC_LOG, resume === null ? "first run, starting at the end" : `resuming at ${resume} of ${id.size}`);
-  }
-  every(4000, "relay", async () => {
-    if (stopped() || !fs.existsSync(MC_LOG)) return;
-    const id = logIdentity(MC_LOG);
-    const resume = resumeOffset(tail, id);
-    if (tail && resume === 0 && tail.offset > 0) console.log(new Date().toISOString(), "log: rotated, reading the new file from the start");
-    const from = resume ?? 0;
-    tail = { ...id, offset: from };
-    if (id.size > from) {
-      const fd = fs.openSync(MC_LOG, "r");
-      const buf = Buffer.alloc(id.size - from);
-      fs.readSync(fd, buf, 0, buf.length, from);
-      fs.closeSync(fd);
-      const end = buf.lastIndexOf(0x0a);  // whole lines only; a half-written line waits for the next pass
-      if (end >= 0) {
-        tail.offset = from + end + 1;
-        for (const line of buf.subarray(0, end).toString("utf8").split(/\r?\n/)) {
-          const chat = line.match(/\[Async Chat Thread[^\]]*\/INFO\]: <([^>]+)> (.*)$/) || line.match(/INFO\]: <([^>]+)> (.*)$/);
-          const morrow = line.match(/INFO\]: \[Recovery\] (.*)$/);
-          // players' words are quoted, never obeyed: allowedMentions stops @everyone/role/user pings
-          if (chat) await bridge.send({ content: `**${chat[1]}**: ${chat[2]}`, allowedMentions: NO_PINGS }).catch((e) => console.error("relay send failed:", e?.message || e));
-          else if (morrow) await bridge.send({ content: `*[Recovery] ${morrow[1]}*`, allowedMentions: NO_PINGS }).catch((e) => console.error("relay send failed:", e?.message || e));
-        }
-      }
+  // The campaign's act, the stop and the vote counts, from the plugin.
+  let quiet = 0;
+  every(5000, "state", async () => {
+    const st = await bridgeGet(BRIDGE, "/state");
+    if (st) { note(st); quiet = 0; } else if (++quiet === 12) console.error(new Date().toISOString(), "bridge: no answer for a minute (server down, port 25588 closed, or a secret mismatch)");
+  });
+
+  // Relay: chat and Morrow's lines into #bridge, Theo's released replies into #general. The cursor is
+  // saved in state.json, so a restart carries on where it stopped; a new bot starts at the end.
+  every(4000, "feed", async () => {
+    if (stopped()) return;
+    const page = await bridgeGet(BRIDGE, `/feed?after=${state.feed ?? -1}&max=100`);
+    if (!page) return;
+    note(page);
+    for (const p of feedPosts(page.entries)) {
+      if (p.flag && state.done.includes(p.flag)) continue;
+      const channel = p.to === "general" ? general : bridgeChannel;
+      await send(channel, p.content, p.voice).catch((e) => console.error("relay send failed:", e?.message || e));
+      if (p.flag) { state.done.push(p.flag); console.log(new Date().toISOString(), "theo mirror posted", p.voice); }
     }
-    if (!state.log || state.log.offset !== tail.offset || state.log.ino !== tail.ino || state.log.head !== tail.head) {
-      state.log = { ino: tail.ino, birth: tail.birth, head: tail.head, offset: tail.offset };
-      saveState(state);
-    }
+    if (state.feed !== page.next) { state.feed = page.next; saveState(state); }
   });
 
   // Act 7: the messages, scheduled from the moment the bot first sees Act 7.
   every(60_000, "act7", async () => {
     if (stopped()) return;
-    const act = readAct();
-    if (act >= 7 && !state.act7Start) { state.act7Start = Date.now(); saveState(state); }
-    if (act < 7 || act > 9 || !state.act7Start) return;
+    if (live.act >= 7 && !state.act7Start) { state.act7Start = Date.now(); saveState(state); }
+    if (live.act < 7 || live.act > 9 || !state.act7Start) return;
     const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
     const names = members.map((m) => m.displayName);
+    const quotes = (await bridgeGet(BRIDGE, "/lines"))?.lines ?? [];
     const hours = (Date.now() - state.act7Start) / 3_600_000 * Number(ENV.TIME_SCALE || 1);
-    for (const m of act7Plan(names)) {
+    for (const m of act7Plan(names, quotes)) {
       if (hours < m.at) continue;
       const member = members.find((x) => x.displayName === m.to);
       if (member) await dmOnce(`dm:${m.to}:${m.at}:${m.kind}`, member, m.text, m.voice, m.as);
@@ -537,7 +486,7 @@ client.once("clientReady", async () => {
   // Act 9: Morrow's spliced "Theo" voice note (phone-band, says "mate"): the authentication test.
   // Recorded per member, so one closed DM never re-sends it to everyone else.
   every(60_000, "act9", async () => {
-    if (stopped() || readAct() < 9) return;
+    if (stopped() || live.act < 9) return;
     if (state.done.includes("act9:fake_theo")) return;  // already sent to everyone by an older version
     const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
     for (const m of members.values()) await dmOnce(`act9:fake_theo:${m.id}`, m, CANON.fake_theo.text, CANON.fake_theo.voice);
@@ -552,45 +501,13 @@ client.once("clientReady", async () => {
     }
   };
 
-  // Theo's big desk replies (T-04a, T-06a, T-08a, T-09a, T-09b): the plugin journals "theo.reply" when
-  // the desk's reply time passes; the bot posts it to #general with the voice note. The journal offset is
-  // kept in state.json; on the very first run only the last 6 hours are posted (no backlog flood).
-  every(10_000, "theo-mirror", async () => {
-    if (stopped() || !fs.existsSync(JOURNAL)) return;
-    const size = fs.statSync(JOURNAL).size;
-    const first = !state.journal;
-    let from = state.journal?.offset ?? 0;
-    if (size < from) from = 0;  // rotated or truncated
-    if (size <= from) return;
-    const fd = fs.openSync(JOURNAL, "r");
-    const buf = Buffer.alloc(size - from);
-    fs.readSync(fd, buf, 0, buf.length, from);
-    fs.closeSync(fd);
-    const end = buf.lastIndexOf(0x0a);
-    if (end < 0) return;
-    for (const entry of theoReplies(buf.subarray(0, end).toString("utf8"))) {
-      const flag = `theo:${entry.id}:${entry.at}`;
-      if (state.done.includes(flag)) continue;
-      if (first && Date.now() - Date.parse(entry.at) > 6 * 3_600_000) { state.done.push(flag); continue; }
-      const post = theoPost(entry);
-      if (!post) { console.error(new Date().toISOString(), "theo.reply with no canon text:", entry.id); state.done.push(flag); continue; }
-      await send(general, post.content, post.voice);
-      state.done.push(flag);
-      console.log(new Date().toISOString(), "theo mirror posted", entry.id);
-    }
-    state.journal = { offset: from + end + 1 };
-    saveState(state);
-  });
-
   // Act 10: the group's USB vote in #general. Opens when the plugin reaches Act 10 (the window can only
-  // be booked then); the bot writes usb-votes.json and the plugin counts it (the console takes the winner).
+  // be booked then); each press is POST /usb, and the plugin counts it (the console takes the winner).
   const voteRow = (tally) => new ActionRowBuilder().addComponents(
     voteButtons(tally).map((b) => new ButtonBuilder().setCustomId(b.id).setLabel(b.label).setStyle(ButtonStyle.Secondary)));
   every(30_000, "usb-vote", async () => {
-    if (stopped() || readAct() < 10 || state.vote) return;
-    const data = readVotes();
-    writeVotes({ open: true, votes: data.votes });
-    const msg = await general.send({ content: voteContent(tallyVotes(data.votes)), components: [voteRow(tallyVotes(data.votes))], allowedMentions: NO_PINGS });
+    if (stopped() || live.act < 10 || state.vote) return;
+    const msg = await general.send({ content: voteContent(live.votes), components: [voteRow(live.votes)], allowedMentions: NO_PINGS });
     state.vote = { messageId: msg.id };
     saveState(state);
     console.log(new Date().toISOString(), "usb vote opened in #general");
@@ -599,20 +516,14 @@ client.once("clientReady", async () => {
   client.on("interactionCreate", async (i) => {
     try {
       if (!i.isButton() || !i.customId.startsWith("usb:")) return;
-      const choice = i.customId.slice(4);
-      const resident = await isResident(i.user.id);
-      // read, change and write with no await in between, so two presses at once can't drop a vote
-      const before = readVotes();
-      const cur = { ...before, open: before.open && !stopped() };
-      const r = castVote(cur, i.user.id, choice, resident);
-      const changed = r.data !== cur;
-      if (changed) writeVotes(r.data);
-      if (r.said) await i.reply({ content: r.said, flags: MessageFlags.Ephemeral, allowedMentions: NO_PINGS });
-      else await i.deferUpdate();
-      if (changed) {
-        const tally = tallyVotes(r.data.votes);
-        await i.message.edit({ content: voteContent(tally), components: [voteRow(tally)], allowedMentions: NO_PINGS });
-        console.log(new Date().toISOString(), "usb vote", i.user.id, choice, JSON.stringify(tally));
+      await i.deferReply({ flags: MessageFlags.Ephemeral });  // the bridge can take a moment; Discord wants an answer in 3 s
+      const r = await castVote({ bridge: BRIDGE, userId: i.user.id, choice: i.customId.slice(4), isResident: await isResident(i.user.id) });
+      if (r.said) await i.editReply({ content: r.said, allowedMentions: NO_PINGS });
+      else await i.deleteReply();  // the bridge didn't answer: say nothing (the bot only speaks authored lines)
+      if (r.tally) {
+        live.votes = r.tally;
+        await i.message.edit({ content: voteContent(r.tally), components: [voteRow(r.tally)], allowedMentions: NO_PINGS });
+        console.log(new Date().toISOString(), "usb vote", i.user.id, i.customId.slice(4), JSON.stringify(r.tally));
       }
     } catch (err) {
       console.error(new Date().toISOString(), "vote failed:", err?.message || err);
@@ -625,29 +536,26 @@ client.once("clientReady", async () => {
   const limiter = makeLimiter();
   client.on("messageCreate", async (message) => {
     try {
-      if (message.guild || message.author.bot || !BRIDGE_URL) return;
+      if (message.guild || message.author.bot) return;
       if (!(await isResident(message.author.id))) return;
       const reply = await personaReply({
-        act: readAct(), stoppedNow: stopped(), text: message.content, userId: message.author.id,
-        lastPersona: state.persona?.[message.author.id], limiter, bridge: { url: BRIDGE_URL, secret: STOP_SECRET }, seed: message.id,
+        act: live.act, stoppedNow: stopped(), text: message.content, userId: message.author.id,
+        lastPersona: state.persona?.[message.author.id], limiter, bridge: BRIDGE, seed: message.id,
       });
       if (reply) await message.channel.send({ content: reply, allowedMentions: NO_PINGS });
     } catch (err) {
       console.error(new Date().toISOString(), "dm reply failed:", err?.message || err);
     }
   });
-  if (!BRIDGE_URL || !STOP_SECRET) console.log("bridge: MORROW_BRIDGE_URL / MORROW_STOP_SECRET not set, so Morrow won't answer DMs in Act 7");
 
   // The stop: one last line from Theo, then silence forever.
   const watch = every(5000, "stop-watch", async () => {
     if (!stopped()) return;
     clearInterval(watch);
     try {
-      const data = readVotes();
-      if (data.open) writeVotes({ open: false, votes: data.votes });
       if (state.vote) {
         const msg = await general.messages.fetch(state.vote.messageId);
-        await msg.edit({ content: voteContent(tallyVotes(data.votes), true), components: [], allowedMentions: NO_PINGS });
+        await msg.edit({ content: voteContent(live.votes, true), components: [], allowedMentions: NO_PINGS });
       }
     } catch (err) {
       console.error("closing the vote failed:", err?.message || err);
@@ -657,6 +565,8 @@ client.once("clientReady", async () => {
     } catch (err) {
       console.error("bridge_cut failed:", err?.message || err);
     }
+    state.stopped = true;
+    saveState(state);
     console.log("stopped: the bridge is cut. Exiting.");
     setTimeout(() => process.exit(0), 3000);
   });

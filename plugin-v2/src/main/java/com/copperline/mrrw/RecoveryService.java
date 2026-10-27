@@ -202,6 +202,7 @@ public final class RecoveryService implements Listener {
 
     private void announce(String text) {
         Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(text, NamedTextColor.GRAY)));
+        journal.recovery(text);
     }
 
     // ---- Acts 2-8: the players' own chests, squared off -------------------------------------------

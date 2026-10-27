@@ -87,7 +87,7 @@ public final class MrrwPlugin extends JavaPlugin {
         pm.registerEvents(new FinchLock(canon), this);
         director = new ActDirector(this, canon, state, journal);
         finale.director(director);
-        bridge = new Bridge(this, state, canon, roster, finale, campaign, chat);
+        bridge = new Bridge(this, state, canon, roster, finale, campaign, chat, journal);
         bridge.start();
         getServer().getScheduler().runTask(this, () -> {
             modern.reattachMaps();

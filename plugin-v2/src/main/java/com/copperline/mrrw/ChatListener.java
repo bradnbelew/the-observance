@@ -64,6 +64,10 @@ public final class ChatListener implements Listener {
 
     private void handle(String name, String text) {
         if (state.done("stopped")) return;  // silent after shutdown
+        JsonObject line = new JsonObject();
+        line.addProperty("name", name);
+        line.addProperty("text", text);
+        journal.feed("chat", line);  // relayed to #bridge by the Discord bot
         loadKit();
         roster.said(name, text);
         canon.corpus.add(text, name + ", in Mossfield", true);
@@ -89,7 +93,9 @@ public final class ChatListener implements Listener {
         }
         lastReply = System.currentTimeMillis();
         long delay = 30 + (Math.floorMod(text.hashCode(), 50));
-        Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.broadcast(
-                Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(reply, NamedTextColor.GRAY))), delay);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(reply, NamedTextColor.GRAY)));
+            journal.recovery(reply);
+        }, delay);
     }
 }

@@ -107,6 +107,7 @@ public final class Replays {
         if (state.act() >= 9 && bedNear(w.getBlockAt(a[0], a[1], a[2]), 3)) {  // a home only counts once players are residents
             state.markDone("lowpath.session_ended");
             Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text("session lowpath: end (slept)", NamedTextColor.GRAY)));
+            journal.recovery("session lowpath: end (slept)");
             journal.write("morrow.lowpath.session_ended", new JsonObject());
         }
         lowpath = null;

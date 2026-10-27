@@ -35,6 +35,9 @@ import java.util.concurrent.TimeoutException;
  *   GET  /state                       act, act_started, players, ready, stopped, usb, fingerprint, theo
  *   POST /event  {"kind":"desk",...}  a desk ticket was filed (see {@link Campaign})
  *   GET  /corpus?heard=&persona=&seed= a Morrow reply, biased to the persona's own fragments
+ *   GET  /feed?after=N&max=M           the bot's relay: chat, [Recovery] lines, Theo's replies (after=-1: the end)
+ *   GET  /lines                        the residents' own chat lines, which Morrow may quote in Act 7
+ *   POST /usb  {"voter":id,"choice":c} one Act 10 vote (open from Act 10 until the stop)
  *
  * Requests are read on the HTTP threads and answered on the server thread (nothing races the game).
  */
@@ -46,10 +49,11 @@ public final class Bridge {
     private final Finale finale;
     private final Campaign campaign;
     private final ChatListener chat;
+    private final Journal journal;
     private HttpServer server;
     private ExecutorService pool;
 
-    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat) {
+    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat, Journal journal) {
         this.plugin = plugin;
         this.state = state;
         this.canon = canon;
@@ -57,6 +61,7 @@ public final class Bridge {
         this.finale = finale;
         this.campaign = campaign;
         this.chat = chat;
+        this.journal = journal;
     }
 
     public void start() {
@@ -148,6 +153,9 @@ public final class Bridge {
             case "/state" -> method.equals("GET") ? new Resp(200, state()) : new Resp(405, error("GET only"));
             case "/event" -> method.equals("POST") ? event(body) : new Resp(405, error("POST only"));
             case "/corpus" -> method.equals("GET") ? corpus(uri.getRawQuery()) : new Resp(405, error("GET only"));
+            case "/feed" -> method.equals("GET") ? feed(uri.getRawQuery()) : new Resp(405, error("GET only"));
+            case "/lines" -> method.equals("GET") ? new Resp(200, lines()) : new Resp(405, error("GET only"));
+            case "/usb" -> method.equals("POST") ? vote(body) : new Resp(405, error("POST only"));
             default -> new Resp(404, error("no such endpoint"));
         };
     }
@@ -174,6 +182,50 @@ public final class Bridge {
 
     BridgeLogic.Usb usb() {
         return BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), roster.names().size());
+    }
+
+    private Resp feed(String rawQuery) {
+        Map<String, String> q = query(rawQuery);
+        long after;
+        int max;
+        try {
+            after = Long.parseLong(q.getOrDefault("after", "-1").trim());
+            max = Math.max(1, Math.min(200, Integer.parseInt(q.getOrDefault("max", "100").trim())));
+        } catch (NumberFormatException e) {
+            return new Resp(400, error("after and max must be integers"));
+        }
+        JsonObject o = journal.feedAfter(after, max);
+        o.addProperty("act", state.act());
+        o.addProperty("stopped", finale.stopped());
+        return new Resp(200, o);
+    }
+
+    private JsonObject lines() {
+        JsonObject o = new JsonObject();
+        JsonArray a = new JsonArray();
+        for (BridgeLogic.Said s : roster.said()) {
+            JsonObject l = new JsonObject();
+            l.addProperty("name", s.name());
+            l.addProperty("text", s.text());
+            a.add(l);
+        }
+        o.add("lines", a);
+        return o;
+    }
+
+    private Resp vote(byte[] body) {
+        JsonObject in;
+        try {
+            in = JsonParser.parseString(new String(body, StandardCharsets.UTF_8)).getAsJsonObject();
+        } catch (Exception e) {
+            return new Resp(400, error("bad JSON"));
+        }
+        boolean open = state.act() >= 10 && !finale.stopped();
+        boolean accepted = BridgeLogic.vote(new File(plugin.getDataFolder(), "usb-votes.json"), str(in, "voter"), str(in, "choice"), open);
+        JsonObject o = usb().json();
+        o.addProperty("open", open);
+        o.addProperty("accepted", accepted);
+        return new Resp(200, o);
     }
 
     private Resp event(byte[] body) {

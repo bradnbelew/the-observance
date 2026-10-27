@@ -153,6 +153,33 @@ public final class SelfTest {
         check(usb.open() && "clean".equals(usb.winner()), "usb file winner");
         java.nio.file.Files.writeString(usbFile.toPath(), "{\"open\": tr");
         check(BridgeLogic.readUsb(usbFile, 1).winner() == null, "broken file counts as no votes");
+        java.nio.file.Files.delete(usbFile.toPath());
+        check(!BridgeLogic.vote(usbFile, "111", "clean", false) && !usbFile.exists(), "POST /usb: a closed vote takes nothing");
+        check(BridgeLogic.vote(usbFile, "111", "clean", true) && BridgeLogic.vote(usbFile, "111", "Corpus", true)
+                && BridgeLogic.vote(usbFile, "222", "recovered", true), "POST /usb: votes accepted while open");
+        BridgeLogic.Usb voted = BridgeLogic.readUsb(usbFile, 2);
+        check(voted.open() && voted.votes().get("corpus") == 1 && voted.votes().get("recovered") == 1 && voted.votes().get("clean") == 0,
+                "pressing again changes a vote, never adds one");
+        check(!BridgeLogic.vote(usbFile, "333", "everything", true) && usbDir.list().length == 1, "unknown choice refused; no temp file left");
+
+        // ---- the bot's feed (GET /feed): numbered by line, so a cursor survives restarts -----------
+        File feedDir = java.nio.file.Files.createTempDirectory("mrrw-feed").toFile();
+        Journal j = new Journal(feedDir);
+        com.google.gson.JsonObject chatLine = new com.google.gson.JsonObject();
+        chatLine.addProperty("name", "ash");
+        chatLine.addProperty("text", "hello?");
+        j.feed("chat", chatLine);
+        j.recovery("3 block(s) restored");
+        check(j.feedAfter(-1, 50).get("entries").getAsJsonArray().isEmpty() && j.feedAfter(-1, 50).get("next").getAsLong() == 2,
+                "a new bot starts at the end of the feed");
+        var page = j.feedAfter(0, 1);
+        check(page.get("entries").getAsJsonArray().size() == 1 && page.get("next").getAsLong() == 1
+                && "chat".equals(page.get("entries").getAsJsonArray().get(0).getAsJsonObject().get("kind").getAsString()), "pages in order");
+        Journal reopened = new Journal(feedDir);  // the plugin restarted
+        var rest = reopened.feedAfter(1, 50);
+        check(rest.get("entries").getAsJsonArray().size() == 1 && rest.get("next").getAsLong() == 2
+                && "recovery".equals(rest.get("entries").getAsJsonArray().get(0).getAsJsonObject().get("kind").getAsString()),
+                "after a plugin restart the cursor still points at the same entry");
 
         // ---- the Act 10 skip line -------------------------------------------------------------------
         java.time.ZoneId utc = java.time.ZoneOffset.UTC;

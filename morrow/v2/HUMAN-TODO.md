@@ -107,17 +107,18 @@ Without this the figures wear the default skin and still work.
    nickname to their **Minecraft name**.
 2. Discord Developer Portal -> New Application -> Bot. Turn on **Server Members Intent**. Invite it
    with permission to send messages, attach files and pin messages.
-3. Create `discord-v2/.env` (see `discord-v2/README.md`) with the token, server and channel IDs,
-   the path to the server's `plugins/mrrw` folder and `logs/latest.log`, plus
-   `MORROW_BRIDGE_URL=http://127.0.0.1:25588` and `MORROW_STOP_SECRET` (same as the site and
-   plugin). Ask players to allow DMs from server members: Morrow's and Theo's DMs, and the
-   "is it really Theo?" corpus replies in Acts 7-9, go there. The Act 10 USB vote happens with
-   buttons in #general, and Theo's big replies get posted there too.
-4. Run it next to the Minecraft server, under a process supervisor so it restarts if it crashes
-   (pm2 or NSSM; see `discord-v2/README.md`). For a quick test:
+3. The bot runs on **Railway** and reaches the Minecraft server through the plugin's bridge, so
+   nothing runs on the server machine besides Minecraft. Ask whoever runs that machine to open
+   **TCP 25588** (the site needs it too). Then follow "Railway" in `discord-v2/README.md`: deploy the
+   repo with config file `/discord-v2/railway.json`, paste the seven variables (token, server, channel
+   and role IDs, `MORROW_BRIDGE_URL=http://<minecraft host>:25588`, `MORROW_STOP_SECRET`, the same as
+   the site and plugin), and add a volume at `/data`.
+4. Ask players to allow DMs from server members: Morrow's and Theo's DMs, and the "is it really
+   Theo?" corpus replies in Acts 7-9, go there. The Act 10 USB vote happens with buttons in #general,
+   and Theo's big replies get posted there too. To check the bot without Discord:
 
 ```bash
-npm --prefix discord-v2 start
+npm --prefix discord-v2 run dry
 ```
 
 ## 8. Go live

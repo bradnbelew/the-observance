@@ -257,6 +257,7 @@ public final class Campaign implements Listener {
                 d.add("subject", e.get("subject"));
                 d.addProperty("at", iso(replyAt(e)));
                 journal.write("theo.reply", d);
+                journal.feed("theo.reply", d);  // the Discord bot posts it to #general
             }
             tryAdvance(entry.getKey(), e);
         }

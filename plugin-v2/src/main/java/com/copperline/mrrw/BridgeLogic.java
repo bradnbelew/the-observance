@@ -160,14 +160,50 @@ final class BridgeLogic {
         return tie ? null : best;
     }
 
-    /** plugins/mrrw/usb-votes.json, written by the Discord bot: {"open": bool, "votes": {"<id>": choice}}. */
+    /** plugins/mrrw/usb-votes.json: {"open": bool, "votes": {"<discord id>": choice}}. The plugin writes it (POST /usb). */
     static Usb readUsb(File file, int players) {
         boolean open = false;
+        try {
+            if (file.isFile()) {
+                JsonObject o = JsonParser.parseString(Files.readString(file.toPath(), StandardCharsets.UTF_8)).getAsJsonObject();
+                open = o.has("open") && o.get("open").getAsBoolean();
+            }
+        } catch (Exception malformed) {
+            // counts as closed with no votes
+        }
+        Map<String, Integer> votes = tally(ballots(file));
+        return new Usb(open, votes, winner(votes, players));
+    }
+
+    /**
+     * One resident's vote (pressing again changes it, never adds one). Refused (false) while the vote
+     * is closed or for an unknown choice. Written atomically: a temp file, then a rename.
+     */
+    static boolean vote(File file, String voter, String choice, boolean open) {
+        String c = choice == null ? "" : choice.trim().toLowerCase(Locale.ROOT);
+        if (!open || voter == null || voter.isBlank() || !CHOICES.contains(c)) return false;
+        Map<String, String> ballots = ballots(file);
+        ballots.put(voter.trim(), c);
+        JsonObject o = new JsonObject();
+        o.addProperty("open", true);
+        JsonObject v = new JsonObject();
+        ballots.forEach(v::addProperty);
+        o.add("votes", v);
+        try {
+            File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
+            Files.writeString(tmp.toPath(), o.toString(), StandardCharsets.UTF_8);
+            Files.move(tmp.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+        } catch (Exception e) {
+            throw new IllegalStateException("could not write " + file, e);
+        }
+        return true;
+    }
+
+    private static Map<String, String> ballots(File file) {
         Map<String, String> ballots = new LinkedHashMap<>();
         if (file.isFile()) {
             try {
                 JsonObject o = JsonParser.parseString(Files.readString(file.toPath(), StandardCharsets.UTF_8)).getAsJsonObject();
-                open = o.has("open") && o.get("open").getAsBoolean();
                 if (o.has("votes") && o.get("votes").isJsonObject()) {
                     for (var e : o.getAsJsonObject("votes").entrySet()) {
                         JsonElement v = e.getValue();
@@ -175,11 +211,10 @@ final class BridgeLogic {
                     }
                 }
             } catch (Exception malformed) {
-                // a half-written or broken file counts as no votes; the bot rewrites it on the next vote
+                // a broken file counts as no votes; the next vote rewrites it
             }
         }
-        Map<String, Integer> votes = tally(ballots);
-        return new Usb(open, votes, winner(votes, players));
+        return ballots;
     }
 
     // ---- the Act 10 skip line -----------------------------------------------------------------
