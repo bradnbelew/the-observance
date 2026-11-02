@@ -92,13 +92,10 @@ RECORDING-SCRIPTS.md. If a note is missing, the page still shows the words.
 
 ## 6. Skins for the replayed figures
 
-The PNGs are generated in `morrow/v2/skins/` (`lowpath.png` is the stitched one). For each:
-
-1. Upload it at mineskin.org.
-2. Copy the texture **value** and **signature**.
-3. Paste them into `plugins/mrrw/config.yml` under `skins:` on the server.
-
-Without this the figures wear the default skin and still work.
+**Done 2026-11-01.** All eight PNGs in `morrow/v2/skins/` were uploaded to mineskin.org (unlisted)
+and the signed textures are in the plugin's default `config.yml`, so a fresh install gets them. If
+the live server already has a `plugins/mrrw/config.yml`, copy the `skins:` block across and run
+`/mrrw reload`. To change a skin, re-upload its PNG and paste the new value and signature.
 
 ## 7. Discord
 
