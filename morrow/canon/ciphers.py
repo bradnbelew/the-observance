@@ -68,6 +68,51 @@ GENUINE_SIGNS_2011 = {
     "finch_south_rail": ["south branch", "not done", "leave it", "-finch"],
     "kit_base_1": ["KIT ONLY", "no theo", "no rook", "no girls"],
     "kit_base_2": ["pw is my dogs", "name", "", ""],
+    # the lived-in set (2026-11 rework): forum in-jokes made physical, each placed by world/build2011.py
+    "spawn_kit_chest": ["new ppl: take", "1 of each pls", "and a bed -rook", ""],
+    "spawn_bread": ["free bread", "-cairn", "", ""],
+    "spawn_tree": ["xmas tree", "goes here", "dec. -rook", ""],
+    "spawn_portal": ["nether hub", "coords on the", "sign over there", "x8 remember"],
+    "spawn_creeper": ["creeper. wip", "wool ids on", "the forum -rook", ""],
+    "board_1": ["cake sat night", "be there -june", "", ""],
+    "board_2": ["WHO TOOK THE", "SPARE CART", "", ""],
+    "board_3": ["boosters are", "cursed -rook", "", ""],
+    "board_4": ["bread by the", "storehouse door", "", ""],
+    "board_5": ["spur: not done", "dont ask -finch", "", ""],
+    "board_6": ["mumble pw is", "the song", "", ""],
+    "rookery_boots": ["boots. here.", "-rook", "", ""],
+    "rookery_pillar": ["ill take it", "down later", "", ""],
+    "rookery_floor": ["my floor. dont", "touch it. i", "mean it -rook", ""],
+    "ledger_1": ["5/19 june: roof", "", "", ""],
+    "ledger_2": ["5/19 rail +3", "", "", ""],
+    "ledger_3": ["5/19 cairn: ???", "", "", ""],
+    "ledger_4": ["6/6 floor done", "", "", ""],
+    "ledger_5": ["9/2 barn corner", "", "", ""],
+    "ledger_6": ["9/4 im done", "", "", ""],
+    "barn_names": ["rook", "cairn", "finch", "june"],      # one name per sign over the tally chests (join order)
+    "barn_names_2": ["patch", "kit", "", ""],
+    "barn_closeup": ["close-up: lot,", "tin chalk lamp", "", ""],
+    "shed_bed": ["bed was here", "5/12. who", "took it -cairn", ""],
+    "crater": ["creeper ate", "the first one", "", ""],
+    "pen_gate": ["census. inner", "= on this week", "dont shear", ""],
+    "hub_timetable_1": ["hub -> farms", "about 40s", "", ""],
+    "hub_timetable_2": ["spur: no", "", "", ""],
+    "hub_timetable_3": ["spare carts: 2", "BRING THEM BACK", "", ""],
+    "jct_1": ["jct 1", "", "", ""],
+    "jct_2": ["jct 2", "", "", ""],
+    "jct_3": ["jct 3", "", "", ""],
+    "farm_stop": ["booster line", "2010-2011", "rip", ""],
+    "finch_station_stop": ["rook: stop =", "maint sign on,", "nobody on,", "ionas key -f"],
+    "june_f2": ["F2 F2 F2", "", "", ""],
+    "june_lamp": ["lamp: still", "nothing -june", "", ""],
+    "patch_mumble": ["mumble room", "push to talk", "", ""],
+    "patch_play": ["play from", "here ->", "-patch", ""],
+    "annex_manhole": ["CL ops", "keep out", "-ib", ""],
+    "kit_biscuit_2": ["biscuit 2", "", "", ""],
+    "kit_biscuit_3": ["biscuit 3", "", "", ""],
+    "kit_biscuit_4": ["biscuit 4", "", "", ""],
+    "grinder": ["mob grinder", "dont laugh", "-kit", ""],
+    "xray_cave": ["it was a cave", "-patch", "", ""],
 }
 FINCH_SOUTH_SIGN_OFFSET = (1, 0, 0)  # from south_rail_end
 
@@ -81,7 +126,10 @@ def rules_key(signs) -> str:
 
 FLOOR_PLAINTEXT = "STOPNEEDSTHREETHINGSMAINTSIGNSAYSONNOSESSIONSOPENIONASKEYINTHECONSOLEDONTTELLTHEO"
 FLOOR_COLS, FLOOR_ROWS = 18, 9
-FLOOR_TIDIED_ROWS = (0, 1, 2)  # Morrow sorted these into a gradient
+FLOOR_TIDIED_ROWS = (0, 1, 2)  # Morrow sorted these into a colour run: the three rows nearest the ladder
+# Row r of the grid sits at z = anchor.z + layout.floor_row_z(r): row 0 by the south landing, where the
+# ladder comes down, so the first row a player reads is the first row of the message. Column c is at
+# x = anchor.x + c, and even rows read west to east (the reader's left to right, facing north).
 
 
 def vigenere(text: str, key: str, decrypt: bool = False) -> str:
@@ -128,13 +176,15 @@ def read_floor(grid: list[list[int]], signs) -> str:
 # C8 Iona's chest: stack counts are base64 indexes (count - 1)
 
 B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-IONA_TOKEN = "mrrw-watchdog:off:6118:ib:2011-06-02"  # 36 bytes -> 48 base64 chars, no padding
+# 36 bytes -> 48 base64 chars, no padding, and no 'A' (index 0 would be a stack of one, which shows
+# no number in a chest). verify.py keeps both true; change the text only with a variant that holds.
+IONA_TOKEN = "mrrw:halt:case6118:2011-06-02:i_bell"
 CHEST_ITEMS = ["cobblestone", "dirt", "sand", "gravel", "planks", "torch", "arrow", "wood"]
 
 
 def build_iona_chest() -> list[dict]:
     encoded = base64.b64encode(IONA_TOKEN.encode("ascii")).decode()
-    assert "=" not in encoded and len(encoded) <= 54
+    assert "=" not in encoded and "A" not in encoded and len(encoded) <= 54
     slots = []
     for i, ch in enumerate(encoded):
         slots.append({"slot": i, "item": CHEST_ITEMS[(i * 5 + 3) % len(CHEST_ITEMS)], "count": B64.index(ch) + 1})

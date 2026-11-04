@@ -10,24 +10,29 @@ layout (provisional until the real Beta world is laid out).
 | 1 | Roster / time zones | June +2 (Halifax), patchcord +6 (Manchester), finch and Rookery +1, cairn and Kit 0 |
 | 2 | Seed | /~mossfield/ keeps server.properties: `level-seed=bracken` (Beta stores it as typed); the world's level.dat RandomSeed is its Java hash `137407650` |
 | 2 | Where 'lowpath' comes from | 'low path' is a note in Rookery's mapkey.txt (March 2011), next to the map tiles |
-| 3 | June's folder | user `juni_lantern`, password `sambro` (lamp flashes Fl W 5s = Sambro Island Light) |
-| 3 | Morrow's name | LogBlock: player `morrow` placed glass at June's tower 04:11:04-04:15:04 (glowstone 04:13:50) on 2011-05-18. Filing `morrow` plus one detail (glass, glowstone, tower, 04:11, logblock) at the desk advances to Act 4 when the bridge is on |
-| 3 | Inserted resident | the tally book has a `lowpath` row; cairn's real chests don't |
-| 4 | Unmask Theo | file any two of: `Lot 14`, `CHI-07`, `2014-12-14`, `waived` |
+| 2 | The trapdoor tell | LogBlock says cairn placed a trapdoor (id 96) at the shed hatch (-67, 71, -136) on 2011-05-12 06:50; trapdoors arrived 26 May 2011 (Beta 1.6). Morrow's rebuild, not cairn's |
+| 3 | June's folder | user `juni_lantern`, password `sambro` (lamp flashes Fl W 5s = Sambro Island Light; finch's 2011 torch clock on the gallery: six repeaters at 4 ticks + a torch = 50 ticks = 5 s). **Opening the folder is the hand-in: the site posts `june_folder` and Act 4 starts** |
+| 3 | Morrow's name | LogBlock: player `morrow` placed glass at June's tower 04:11:04-04:15:04 (glowstone 04:13:50) on 2011-05-18. Filing it gets Theo's 'That's not anyone' (no longer a gate) |
+| 3 | Inserted resident | the tally book has a `lowpath` row; cairn's real chests don't. Backup (N1): his 'bread count' post: 142 - 40 - 24 - 20 = 58 = the week-of-9-May column of the real tally; with lowpath's row it is 60 |
+| 3 | The creeper | Rook's 8x8 wool creeper by spawn was five rows high in 2011 (shot 3, the Dynmap tile); Morrow lays the bottom three rows at the Act 3 dawn: `24 blocks restored (spawn)` |
+| 4 | Unmask Theo | file any two of: `Lot 14`, `CHI-07`, `2014-12-14`, `waived`. The reply follows the strongest token: Lot 14 (T-04c), the date (T-04d), waived (T-04e), else T-04a |
 | 5 | patchcord's folder | user `patchcord`, password `baggage` (bass-line note names) |
 | 5 | Recording | ask the desk for `moss_0518.ogg` or `moss_0518` (the filename is in the replay and the server log). 'Done. It's down.' is at 19:22 = 06:17:22 |
-| 5 | Floor key | the spawn rules, letters only, from the ORIGINAL signs (Rook on the tape: 'shifted by the rules'); filing 'dont tell theo' gets Theo's 'Rowan never did trust me with the panel' |
-| 5 | Rookery's floor | plaintext `STOPNEEDSTHREETHINGSMAINTSIGNSAYSONNOSESSIONSOPENIONASKEYINTHECONSOLEDONTTELLTHEO` (md5 `e86a01ccc89e7b026f50d693ac7ecbed`) |
+| 5 | Floor key | the spawn rules, letters only, from the ORIGINAL signs (Rook on the tape: 'shifted by the rules'); filing 'dont tell theo' gets Theo's 'Rowan never did trust me with the panel' and moves nothing |
+| 5 | Rookery's floor | read from the ladder landing facing north: row 1 nearest, boustrophedon (west to east, then back). Rows 1-3 are Morrow's tidy (sign back: `floor: 3 rows normalised`); rebuild them from LogBlock. Plaintext `STOPNEEDSTHREETHINGSMAINTSIGNSAYSONNOSESSIONSOPENIONASKEYINTHECONSOLEDONTTELLTHEO` (md5 `e86a01ccc89e7b026f50d693ac7ecbed`) |
+| 5 | **Act 5 hand-in** | do what the floor says: edit the unwaxed MAINT sign at (-236, 71, 32) to `MAINT ON`. Morrow answers `maint: on. sessions open: 1. restore continues` and reverts it at the next dawn (`1 sign normalised (spawn)`): that revert starts Act 6 |
+| 5 | finch's commute (C3) | LogBlock 2011-06-11 21:02: jct 1 lever ON, jct 2 and 3 OFF (levers beside the junction rails at (-215, 71, -60), (-170, 72, -120), (-140, 74, -120)). Set them, ride from the hub: the cart takes the spur to her station. Her chest there holds `rook: stop = / maint sign on, / nobody on, / ionas key` (the floor's meaning, in her words) |
 | 5 | Slipped hands | `[iyyomh oy pm tppl#d gy[` -> `putting it on rook's ftp` (UK layout) |
 | 5 | Finch's lock | levers ON where the bit is 1: `10110010` (left to right) |
 | 6 | Theo's restart | file `06:44:10` plus `CHI-07/mrrw` or `mid-session` |
 | 6 | TCAdmin login | `rookery` / `cl-mirror-71e4` |
-| 6 | Hidden original | panel_ok.jpg's EXIF thumbnail shows the 'Start service' confirmation (and Auto restart: On) |
+| 6 | Hidden original | panel_ok.jpg's EXIF thumbnail (320x200) shows the 'Start service CHI-07/mrrw?' confirmation, `mid-session, will corrupt if left`, and the Mumble window behind it: `mossfield` with rookery, patchcord (idle) and tvale in it at 06:44 (the lead to MIC-5-18-B.WAV, Act 8) |
+| 6 | Morrow's edits | rules sign line (Act 3); the bulletin board's spur note -> `the spur still / isn't done, don't ask`; Rook's ledger's last line -> `its back on again / im done with it`; the three landmark signs. Every rewrite breaks 15 characters; the ledger itself is the before |
 | 6 | Debug view | TCAdmin: tvale set debug_view=on at 03:58:30 (he told Iona 'not me') |
 | 7 | Braille shelves | `sorry kit` |
-| 7 | Iona's key chest | (-238, 61, 232) (3 down, 4 toward spawn from the old dock at (-238, 64, 236)) |
-| 7 | Iona's key | `mrrw-watchdog:off:6118:ib:2011-06-02` (md5 `84e7f92c9641c0f74dae8c57d243ea2f`) |
-| 7 | Filing the key | the key filed at the desk gets Theo's 'That's Iona's key' and (bridge on) advances to Act 8 |
+| 7 | Iona's key chest | (-238, 61, 232) (3 down, 4 toward spawn from the old dock at (-238, 64, 236); the dock is gone from the world (Morrow's sandstone apron), but June's shots 2 and 9 and the 2011 Dynmap tiles show it). No chest rows in LogBlock: read it in the world. The first time it is opened Morrow queues it, and at the next dawn merges the stacks (`1 chest normalised (june's point)`): one session to read it |
+| 7 | Iona's key | counts are base64 index + 1 (no stack is 1): `mrrw:halt:case6118:2011-06-02:i_bell` (md5 `db62e32e53e04053d3b4cf1a192061ec`) |
+| 7 | **Act 7 hand-in** | the key goes into the TCAdmin console at /tcadmin/legacy (login `rookery` / `cl-mirror-71e4`): `key accepted. stop refused: maint=off sessions=1 (lowpath)` and Act 8 starts. Filed at the desk, Theo says 'That's not for me' and moves nothing |
 | 7 | Turing test | DM the bridge bot back: Morrow answers as the persona it last wrote as, only in words someone said (GET /corpus) |
 | 7 | Annex wall | `HALTMRRW` |
 | 7 | Flags | `K` + `PORCHLIGHT` |
@@ -37,13 +42,18 @@ layout (provisional until the real Beta world is laid out).
 | 8 | cairn's room | step on the lot plate, open + close the hinge tin, white dye on the returns chest, flip the lamp lever off (his 2011 post in the storehouse thread: 'walk the lot, check the hinge tin, chalk the returns, lamp off') |
 | 8 | Sound replay | `MIC-5-18-B.WAV` (FTP: /incoming/MIC-5-18-B.WAV) |
 | 8 | Dust corridor | `SESSIONS:1:LOWPATH` |
-| 8 | The bed | put a bed inside lowpath's place at (-213, 73, 86); works from Act 9 (before that Morrow tidies it away) |
+| 8 | Theo's heartbeat log (N3) | /~tvale/box/heartbeat.log.2019-03: `down` from 22:55 to 23:30 on 2019-03-02, back at 23:35 (`up=0d00:00:50`): Theo switched it off 4 minutes after Kit's 22:47 email and on again at 23:34. heartbeat.log.2011-05 shows the 06:17 kill, the 06:44 restart and the 11:14 stop the same way |
+| 8 | The bed | put a bed on the west wall of lowpath's place, at (-213, 73, 86) (the bed-sized gap). Act 8: `lowpath's place: 1 block queued` at once, removed at dawn. Act 9+: `bed kept`; that night lowpath walks its last leg in, lies down: `session lowpath: end (slept)` |
 | 9 | Clean backup MD5 | `bdd42105cf9ea6ee6f250c38ab48efba` (/ftp/notrecovery/) |
 | 9 | Residents' Key | keys `brackenhingetinbooster` then `sambrobaggagebiscuit` -> `THECLEANCOPYISINMYFTPFOLDERNOTRECOVERYDATEDAPRILTWENTYTHEODOESNTKNOWITSTHERESORRYGUYSROOK` |
 | 9 | rook.txt | in the clean zip only; its last line `dont let it finish anything` is accepted in the case brief's clean-copy field |
 | 9 | Case brief | restart `2011-05-18 06:44:10`, lowpath `2016-08-03`, Kit `2019-03-02`, clean MD5 (or the rook.txt line), the player's backdated join date. Exact match per field; 4 of 5 |
+| 9 | Post-ID tell | the players' backdated '2011' posts have ids above 30112 (the last real 2011 post): the importer appended them. Their LogBlock rows 'from 2010' place hay (170), carpet (171), quartz (155) |
+| 9 | Region notation (N5) | each absorbed player's forum profile Location is their first-join spot in Iona's notation `r.X.Z.mcr c(cx,cz)` (C7's formula: region = chunk >> 5, chunk = block >> 4). The recovery compass points at the same spot |
+| 10 | The ask | at booking Theo asks about finch's sign; whatever a resident says in Mossfield chat containing 'leave it' / 'finish it' is the stop log's reason, else `skip mossfield:south_rail (unfinished) reason="leave it" (finchline, 2011-05-19)` |
 | 10 | Ready | MAINT sign at (-236, 71, 32) reads `MAINT ON` and is waxed, and lowpath's session ended |
 | 10 | USB vote | #general vote (Resident role only, re-voting allowed); a strict plurality once half the residents voted. The console only accepts the winner |
-| 10 | Console | command `HALTMRRW`, key = Iona's key, pick what to retain, then type the code in chat at the annex (-286, 35, 28) |
+| 10 | Console | command `HALTMRRW`, key = Iona's key, pick what to retain, then type the code in chat at the annex (-286, 35, 28). Morrow's last words: `stop requested: <code>` then Kit's line; then every resident's figure walks home (`session cairn: end` ... in join order), the players' figures to their first-join spots, the six log lines, `exit 0`, lights out. The status page reads `no heartbeat` beside `first heartbeat 2014-12-14` |
+| 10 | After | a week after the stop Theo writes once more (T-10-after) |
 
 Residents' passwords in join order: rookery=bracken, cairn=hingetin, finchline=booster, juni_lantern=sambro, patchcord=baggage, kitbag=biscuit

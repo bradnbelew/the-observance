@@ -48,11 +48,21 @@
  "theo_mirror": {
   "header": "**archivist** - Archive Desk - re: {subject}",
   "replies": {
+   "T-04c": "You found the auction paperwork.  I kept it, I don't know why.\n\nYeah.  It's me.  Theo.  Lot 14 was the game node and Lot 17 was the web box, and nobody else bid.  I drove them home in a Corolla.  I didn't know how to say it.  I didn't think anyone would actually come.\n\nIt's just Mossfield.  It's just the residents.",
+   "T-04d": "Five days after.  Yes.\n\nIt's me.  Theo.  The auction was the ninth, I collected on the fourteenth, and I had it running in the spare room by three in the morning.  I told myself I was checking the drives.  I kept Rowan's password reset working.  In case Rowan came back.\n\nIt's just Mossfield.  It's just the residents.",
+   "T-04e": "Keep it billable.  I did keep it billable.\n\nIt's me.  Theo.  Every June I waived the invoice so the account would never close and the world would never be deleted.  Then Copperline closed instead, and I bought the box.  I didn't think anyone would actually come.\n\nIt's just Mossfield.  It's just the residents.",
    "T-04a": "yeah.  it's me.  Theo.  sorry.  I didn't know how to say it.  I didn't think anyone would actually come.\n\nI kept the old box running after Copperline closed.  It's in my spare room.  I bought the web box at the same auction, and the domain when it lapsed.  I kept Rowan's password reset working.  In case Rowan came back.\n\nIt's just Mossfield.  It's just the residents.",
    "T-06a": "It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was asleep in the spare room and I just.  I didn't want him waking up to it gone.\n\nI know.  I know what it sounds like.\n\nRowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of.",
-   "T-08a": "Kit sent that in 2019.  I read it on the train and I didn't answer.\n\nHe was right.  He was twenty-two, he had a job, he hadn't logged in since he was fifteen.  I kept it running because.  I don't know.  Because turning it off felt like the last day all over again.\n\nThat was seven years ago.  Fifteen since any of them played.  I'm sorry I fed it his email.  I wanted it to sound like people.",
+   "T-06d": "CHI-07/mrrw.  START.  06:44:10.  That's my login.\n\nI'd read her stop line and I'd read the reason I typed, and I pressed it anyway.  Iona said if you stop it mid-session the region files corrupt.  Kit was asleep in the spare room and I didn't want him waking up to it gone.\n\nRowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of.",
+   "T-08a": "Kit sent that in 2019.  I read it on the train and I didn't answer.\n\nHe was right.  He was twenty-two, he had a job, he hadn't logged in since he was fifteen.  I kept it running because.  I don't know.  Because turning it off felt like the last day all over again.\n\nThat was seven years ago.  Fifteen since any of them played.  I'm sorry I fed it his email.  I wanted it to sound like people.\n\nI turned it off that night.  Forty minutes.  Then I put it back on.  That's in the log too, you'll have seen.",
    "T-09a": "Okay.  Okay.  I've read all of it.  I knew all of this.  I'd just never seen it in one place.  You're right.  Let's do it properly, the way Rowan wanted.\n\nI'm wiping the drives after.  I've got one USB stick in the drawer.  I'll keep one thing.  Just one, or I'll end up doing this again.  You pick.\n\nThe panel will let you book a maintenance window now.",
-   "T-09b": "I hear you.  I just need it to be real.  Show me."
+   "T-09b": "I hear you.  I just need it to be real.  Show me.",
+   "T-06c": "Couldn't sleep.  Went and looked at it.  It's just a box with a light on.  I don't know what I expected.  Ignore this.",
+   "T-06b": "I wax the signs I want to keep.  Old habit.  Nothing touches them after that.",
+   "T-07d": "If one of those wasn't me, I'm sorry.  I can't see what it sends.",
+   "T-09c": "Stood in the spare room for a bit this morning.  It's loud, the box.  I'd stopped hearing it.",
+   "T-10-ask": "One more thing.  finch's sign at the south branch.  Leave it, or let it finish?  Say it in Mossfield.  It listens to chat.",
+   "T-10-after": "Kit came over.  We put the stick in his laptop.  He said it looked smaller than he remembered.  Thanks for coming.\n\nT"
   }
  },
  "usb_vote": {

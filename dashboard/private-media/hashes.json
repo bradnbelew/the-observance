@@ -1,13 +1,15 @@
 {
  "copperline-asset-sale-2014.pdf": "a596531c40bd9da744b906759bcd652a",
- "panel_ok.jpg": "86453db7f6a699219c9fa5fb5595e8d8",
+ "panel_ok.jpg": "019655a434c554ec1a3219827a117954",
  "notrecovery-mossfield_2011-04-20.zip": "bdd42105cf9ea6ee6f250c38ab48efba",
  "recovery-mossfield_2011-04-20.zip": "62c40f8c6a0626a416946cfa0777e0be",
- "6118-checklist.txt": "1133f6fec671912205355614e210c44a",
- "copperline-ops.irc.log": "9301024f52626e968f649cf31b9ce31b",
+ "6118-checklist.txt": "ea544a7f9d7a010b3346b5037e7d61c3",
+ "copperline-ops.irc.log": "e1d660b32cbb21bdc9609cbe0fe6a1e0",
  "mrrw-changelog-2016.txt": "83c18d71430bd11164d091d3381bec28",
  "crontab.txt": "847e7ed57b8ed170c9bfe5b45c70d546",
  "kit-2019-03-02.eml": "b3674b9a4f2d16a2f86e64388337e80f",
  "macros.txt": "4ce7fb4f0dfede2a8fdf164778b313d9",
- "bridge.yml": "27ebfa188ce7325081d00af8316a61bf"
+ "bridge.yml": "27ebfa188ce7325081d00af8316a61bf",
+ "heartbeat.log.2011-05": "6858f280d69e285999bb3909f59b19d5",
+ "heartbeat.log.2019-03": "1a42988fcd68f228fe59b566869bec36"
 }

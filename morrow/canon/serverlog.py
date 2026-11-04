@@ -114,7 +114,7 @@ DAYS = {
         info("04:31:14", "Done (6.112s)! For help, type \"help\" or \"?\""),
         morrow("04:31:40", "restore pass resumed (watchdog @reboot)"),
         morrow("04:31:41", "session queue: 3 open"),
-        morrow("05:40:12", "214 blocks normalised (cairn storehouse)"),
+        morrow("05:40:12", "18 blocks normalised (cairn storehouse)"),
     ],
     "2011-11-18": [  # 1.0 comes out this afternoon; cairn, off his shift, looks in first
         login("05:12:02", "cairn", 41902, "214.0, 68.0, -40.2"),

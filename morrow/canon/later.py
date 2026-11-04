@@ -28,16 +28,46 @@ from . import ciphers, layout, people
 # Archive Desk rules. A ticket's text is lower-cased and checked for tokens.
 # When two complete matches tie, the earlier rule wins, so catch-alls go last.
 
+UNMASK_TOKENS = ["lot 14", "chi-07", "2014-12-14", "waived"]
+UNMASK_PARTIAL = "That's one thing.  I'd want two before I said anything."
+UNMASK_END = "\n\nIt's just Mossfield.  It's just the residents."
+
 DESK_RULES = [
+    # Act 4: three answers keyed on the strongest thing they filed (the first complete match wins, so
+    # the specific ones come first), then the general one.
+    {
+        "id": "unmask_lot", "act": 4, "title": "who runs this mirror",
+        "tokens": UNMASK_TOKENS, "need": 2, "require": ["lot 14"],
+        "reply": "You found the auction paperwork.  I kept it, I don't know why.\n\nYeah.  It's me.  Theo.  Lot 14 was "
+                 "the game node and Lot 17 was the web box, and nobody else bid.  I drove them home in a Corolla.  "
+                 "I didn't know how to say it.  I didn't think anyone would actually come." + UNMASK_END,
+        "voice": "T-04c", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
+    },
+    {
+        "id": "unmask_date", "act": 4, "title": "who runs this mirror",
+        "tokens": UNMASK_TOKENS, "need": 2, "require": ["2014-12-14"],
+        "reply": "Five days after.  Yes.\n\nIt's me.  Theo.  The auction was the ninth, I collected on the "
+                 "fourteenth, and I had it running in the spare room by three in the morning.  I told myself I was "
+                 "checking the drives.  I kept Rowan's password reset working.  In case Rowan came back." + UNMASK_END,
+        "voice": "T-04d", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
+    },
+    {
+        "id": "unmask_waived", "act": 4, "title": "who runs this mirror",
+        "tokens": UNMASK_TOKENS, "need": 2, "require": ["waived"],
+        "reply": "Keep it billable.  I did keep it billable.\n\nIt's me.  Theo.  Every June I waived the invoice so "
+                 "the account would never close and the world would never be deleted.  Then Copperline closed "
+                 "instead, and I bought the box.  I didn't think anyone would actually come." + UNMASK_END,
+        "voice": "T-04e", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
+    },
     {
         "id": "unmask", "act": 4, "title": "who runs this mirror",
-        "tokens": ["lot 14", "chi-07", "2014-12-14", "waived"], "need": 2,
+        "tokens": UNMASK_TOKENS, "need": 2,
         "reply": "yeah.  it's me.  Theo.  sorry.  I didn't know how to say it.  I didn't think anyone would "
                  "actually come.\n\nI kept the old box running after Copperline closed.  It's in my spare room.  "
                  "I bought the web box at the same auction, and the domain when it lapsed.  I kept Rowan's "
                  "password reset working.  In case Rowan came back.\n\nIt's just Mossfield.  It's just the residents.",
         "voice": "T-04a",
-        "partial": "Not sure what you mean, sorry!  It's just an archive.  I just keep the lights on.",
+        "partial": UNMASK_PARTIAL,
         "partial_voice": "T-04b",
     },
     {
@@ -51,20 +81,33 @@ DESK_RULES = [
         "voice": None, "partial": "",
     },
     {
+        # Act 5: filing the floor's last words gets Rowan's line from Theo, and moves nothing. The act
+        # ends when the group does what the floor says (MAINT ON at spawn) and Morrow reverts it.
         "id": "floor", "act": 5, "title": "rowan's floor",
         "tokens": ["dont tell theo", "don't tell theo", "donttelltheo"], "need": 1,
-        "reply": "Rowan never did trust me with the panel.  Fair enough.",
+        "reply": "Rowan never did trust me with the panel.  Fair enough.\n\nThen don't.  Whatever it says to do, "
+                 "it's not me you tell.",
         "voice": None, "partial": "",
     },
     {
         "id": "restart", "act": 6, "title": "the 06:44 restart",
-        "tokens": ["06:44:10", "chi-07/mrrw", "mid-session"], "need": 2, "require": ["06:44:10"],
+        "tokens": ["06:44:10", "chi-07/mrrw", "mid-session"], "need": 2, "require": ["06:44:10", "mid-session"],
         "reply": "It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was "
                  "asleep in the spare room and I just.  I didn't want him waking up to it gone.\n\nI know.  "
                  "I know what it sounds like.\n\nRowan knew.  He heard me say it on Mumble.  That's not the bit "
                  "I'm ashamed of.",
         "voice": "T-06a",
-        "partial": "That was a long time ago.  The panel logs aren't always right.",
+        "partial": "Which line.  There's a lot of lines in that log.  Read the reason field too.",
+    },
+    {
+        "id": "restart_node", "act": 6, "title": "the 06:44 restart",
+        "tokens": ["06:44:10", "chi-07/mrrw", "mid-session"], "need": 2, "require": ["06:44:10", "chi-07/mrrw"],
+        "reply": "CHI-07/mrrw.  START.  06:44:10.  That's my login.\n\nI'd read her stop line and I'd read the "
+                 "reason I typed, and I pressed it anyway.  Iona said if you stop it mid-session the region files "
+                 "corrupt.  Kit was asleep in the spare room and I didn't want him waking up to it gone.\n\n"
+                 "Rowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of.",
+        "voice": "T-06d",
+        "partial": "Which line.  There's a lot of lines in that log.  Read the reason field too.",
     },
     {
         "id": "sorry_kit", "act": 7, "title": "the reading room",
@@ -74,12 +117,13 @@ DESK_RULES = [
         "voice": None, "partial": "",
     },
     {
-        # Act 7 ends when they hold Iona's key. Matched by hash (an "md5:" token is compared against the
-        # md5 of each word filed), so the key itself never sits in a site bundle.
+        # Iona's key filed at the desk: Theo won't take it (he never had it). Matched by hash (an "md5:"
+        # token is compared against the md5 of each word filed), so the key never sits in a site
+        # bundle. Act 7 ends when the key goes where Iona put hers: the panel console (console_key).
         "id": "key", "act": 7, "title": "iona's key",
         "tokens": ["md5:" + ciphers.md5(ciphers.IONA_TOKEN)], "need": 1,
-        "reply": "That's Iona's key.  She made it so nobody else could switch it off.  Not even me.  "
-                 "I never had it.  Hang on to it.",
+        "reply": "That's not for me.  Iona built it so it wasn't.  Not even me, she said, and she meant it.\n\n"
+                 "Put it where she'd put it.",
         "voice": None, "partial": "",
     },
     {
@@ -107,7 +151,8 @@ DESK_RULES = [
                  "was twenty-two, he had a job, he hadn't logged in since he was fifteen.  I kept it running "
                  "because.  I don't know.  Because turning it off felt like the last day all over again.\n\n"
                  "That was seven years ago.  Fifteen since any of them played.  I'm sorry I fed it his email.  "
-                 "I wanted it to sound like people.",
+                 "I wanted it to sound like people.\n\nI turned it off that night.  Forty minutes.  Then I put it "
+                 "back on.  That's in the log too, you'll have seen.",
         "voice": "T-08a",
         "partial": "Where did you get that.",
     },
@@ -124,15 +169,37 @@ DESK_FILES = {  # exact filename -> (act it can be requested from, Theo's line, 
                          "mirror up.  I haven't listened to it in years.  I don't think I'm going to now.", "T-05a"),
 }
 
-# Unprompted drops: Theo "found another drive". (act, hours after the act started, file, note)
+# A ticket that matches nothing: Theo answers to what it mentions (a resident, a place, a file).
+NONE_REPLIES = {
+    "person": "I remember {who}.  I don't have anything of theirs that isn't on the site, sorry.  The forum's all there is.",
+    "place": "I know the spot.  If there's something there, I don't have a file for it.  The block log might.",
+    "file": "If you've got a filename, send me the exact one and I'll look.  I don't have an index, just folders.",
+    "default": "Thanks!  I'm not sure I have anything on that, sorry.  If you've got a filename, that helps.",
+}
+PLACE_WORDS = ["spawn", "storehouse", "barn", "farm", "tower", "lighthouse", "dock", "hub", "rail", "spur", "cellar",
+               "annex", "hut", "pen", "museum", "reading room", "ladder room", "point", "nether", "meadow", "cave"]
+
+# Unprompted drops: Theo "found another drive", or just couldn't sleep.
+# (act, hours after the act started, file, note, voice note)
 DESK_DROPS = [
-    (4, 0, "copperline-asset-sale-2014.pdf", "Found the auction paperwork.  Not sure why I kept it."),
-    (5, 0, "6118-checklist.txt", "Iona left this on the ops share.  Might help, might not."),
-    (6, 0, None, "The panel's letting people in again.  Read-only.  My old staff folder's back up too, /~tvale/."),
-    (6, 30, None, "I wax the signs I want to keep.  Old habit.  Nothing touches them after that."),
-    (7, 0, "copperline-ops.irc.log", "Iona's IRC logs.  I was in that channel.  I know what's in there.  Here."),
-    (8, 0, "closet.jpg", "Found this on my phone.  That's the box."),
+    (4, 0, "copperline-asset-sale-2014.pdf", "Found the auction paperwork.  Not sure why I kept it.", None),
+    (5, 0, "6118-checklist.txt", "Iona left this on the ops share.  Might help, might not.", None),
+    (6, 0, None, "The panel's letting people in again.  Read-only.  My old staff folder's back up too, /~tvale/.", None),
+    (6, 8, None, "Couldn't sleep.  Went and looked at it.  It's just a box with a light on.  I don't know what I "
+                 "expected.  Ignore this.", "T-06c"),
+    (6, 30, None, "I wax the signs I want to keep.  Old habit.  Nothing touches them after that.", "T-06b"),
+    (7, 0, "copperline-ops.irc.log", "Iona's IRC logs.  I was in that channel.  I know what's in there.  Here.", None),
+    (7, 48, None, "If one of those wasn't me, I'm sorry.  I can't see what it sends.", "T-07d"),
+    (8, 0, "closet.jpg", "Found this on my phone.  That's the box.", None),
+    (9, 12, None, "Stood in the spare room for a bit this morning.  It's loud, the box.  I'd stopped hearing it.", "T-09c"),
 ]
+
+# Act 10: the booking reply gains the ask (whatever a resident then says in Mossfield about finch's
+# sign becomes the stop log's reason), and a week after the stop Theo writes once more.
+THEO_ASK = {"text": "One more thing.  finch's sign at the south branch.  Leave it, or let it finish?  Say it in "
+                    "Mossfield.  It listens to chat.", "voice": "T-10-ask"}
+THEO_AFTER = {"text": "Kit came over.  We put the stick in his laptop.  He said it looked smaller than he remembered.  "
+                      "Thanks for coming.\n\nT", "voice": "T-10-after", "after_stop_hours": 168}
 
 HINT_HOURS = [24, 72, 120, 168]  # when each of an act's hints appears, hours into the act
 
@@ -155,13 +222,15 @@ HINTS = {
     5: ["Patch's password was a song.  The bass line, he always said.",
         "Rowan wrote his floor in wool.  He used the wool numbers from the forum.",
         "Rowan read the rules out loud for a reason.",
-        "Iona left hashes for everything.  If your answer hashes right, it's right."],
+        "Iona left hashes for everything.  If your answer hashes right, it's right.  Then it's not me you tell.  "
+        "It's the sign."],
     6: ["Daylight saving.  Iona always got it right.",
         "Signs back then fit fifteen letters a line.",
         "Look at what a picture says about itself, not just what it shows."],
     7: ["Don't believe anything that sounds like a support macro.",
         "Iona thought in files, not places.",
-        "Counts in a chest can be letters if you count from the right place."],
+        "Counts in a chest can be letters if you count from the right place.",
+        "Iona's key isn't for me.  The panel still takes a key, if you can log in."],
     8: ["It ends a replay when they log off or sleep.  Iona said that once.",
         "cairn always closed up the same way.",
         "lowpath walks every night and never gets home."],
@@ -191,6 +260,9 @@ SIGN_REWRITES = [  # Act 6 in-world: genuine 2011 signs Morrow "corrects" (lines
     {"anchor": "rookery_house", "lines": ["ROOK'S", "boots off", "if anyone comes back", ""]},
     {"anchor": "finch_hub", "lines": ["the south branch", "rebuilding everything", "this week", ""]},
     {"anchor": "june_house", "lines": ["it finished my tower", "from the plan I posted", "2011-05-18", ""]},
+    # the bulletin board's spur note (board_5 sits at x+1, y-1) and the last line of Rook's ledger
+    {"anchor": "spawn_board", "offset": [1, -1, 0], "lines": ["the spur still", "isn't done, don't ask", "", ""]},
+    {"anchor": "rookery_changes_wall", "offset": [0, -1, -2], "lines": ["its back on again", "im done with it", "", ""]},
 ]
 
 TRANSCRIPTION_BOOKS = [  # C18: Morrow's books, hover text cites a source per line; one source is impossible
@@ -278,7 +350,9 @@ BRIEF_REPLIES = {
 }
 
 # Theo's big replies, mirrored into Discord #general when the plugin releases them (journal "theo.reply").
-THEO_MIRROR_VOICES = ["T-04a", "T-06a", "T-08a", "T-09a", "T-09b"]
+THEO_MIRROR_VOICES = ["T-04a", "T-04c", "T-04d", "T-04e", "T-06a", "T-06d", "T-08a", "T-09a", "T-09b"]
+# Timed notes the bot also posts (the plugin schedules them from act_started): drop voices + the ask/after.
+THEO_TIMED_VOICES = ["T-06b", "T-06c", "T-07d", "T-09c", "T-10-ask", "T-10-after"]
 THEO_MIRROR_HEADER = "**archivist** - Archive Desk - re: {subject}"
 
 # ---------------------------------------------------------------------------
@@ -313,18 +387,62 @@ USB_VOTE = {
     "undecided": "The group hasn't decided.  Ask in #general.",
 }
 
+# The skip line quotes a resident: whoever answered Theo's ask in Mossfield chat, else finch's own
+# 2011 sign (never "reason=none").
+SKIP_FALLBACK = 'skip mossfield:south_rail (unfinished) reason="leave it" (finchline, 2011-05-19)'
 STOP_LOG = [
     "morrow: stop requested (maint=on, sessions=0, key=ok)",
     "morrow: finalising restore queue",
     "morrow: done mossfield:storehouse",
     "morrow: done mossfield:north_light",
-    "morrow: skip mossfield:south_rail (unfinished) reason=none",
+    "morrow: " + SKIP_FALLBACK,
     "morrow: exit 0",
 ]
 READY_STATUS = "maint=on sessions=0"  # what the MOTD hex channel says when the node is ready to stop
 
+# Restore-engine lines the plugin prints at the moments the rework added (Iona's templates, filled).
+ENGINE_LINES = {
+    "replay_cue": "debug view: replay 2011-05-18 04:00",
+    "lowpath_cue": "debug view: replay lowpath",
+    "maint_on": "maint: on. sessions open: 1. restore continues",
+    "maint_revert": "1 sign normalised (spawn)",
+    "console_key": "key accepted. stop refused: maint=off sessions=1 (lowpath)",
+    "bed_queued": "lowpath's place: 1 block queued",
+    "bed_removed": "1 block normalised (lowpath's place)",
+    "bed_kept": "lowpath's place: bed kept",
+    "floor_tidy": "54 blocks normalised (rook's)",
+    "kit_restored": "1 chest restored (spawn)",
+    "creeper_done": "24 blocks restored (spawn)",
+    "chest_normalised": "1 chest normalised (june's point)",
+    "stop_requested": "stop requested: {code}",
+    "session_end": "session {who}: end",
+    "lowpath_slept": "session lowpath: end (slept)",
+    "queue_last": "queue 413/413: lowpath (open)",
+}
+
+# Theo's unsent letters: written books in his drafts barrel under the reading room (C10's payoff).
+THEO_DRAFTS = [
+    {"title": "june (unsent)", "pages": [
+        "June.\n\nI saw you in a photo.  A nursing board in Halifax, 2016, the staff page.  Same hat, nearly.  I had the window open for an hour.",
+        "The tower's still there.  It still flashes.  I never worked out how to tell you that without the rest of it.\n\nT"]},
+    {"title": "rowan (unsent)", "pages": [
+        "Rowan.\n\nThe address bounced in 2013 and I didn't try another one.  I'm writing this to a drawer.",
+        "You said you'd stop it yourself if it went bad again.  You never got the chance, and that's on me, not the box.\n\nIt's still running.  I know.\n\nT"]},
+    {"title": "iona (unsent)", "pages": [
+        "Iona.\n\nI saw a ficus in a bank lobby on Dearborn, 2022, and I thought it was yours.  I stood outside for a bit and didn't go in.",
+        "You told me not to let it restart.  I set it going in my spare room three years after you said that, and I've never once told anyone why.\n\nYou'd have hashed this letter.\n\nT"]},
+]
+# The visitor book on the reading-room lectern. Nobody else ever signed it.
+VISITOR_BOOK = {"title": "visitors", "pages": [
+    "if you were a resident, write your name.",
+    "theo.  2023.",
+    "theo.  2024.  still here.",
+    "theo.  2025.",
+]}
+
 
 __all__ = ["DESK_RULES", "DESK_FILES", "BRIEF_REPLIES", "THEO_MIRROR_VOICES", "THEO_MIRROR_HEADER", "USB_VOTE", "DESK_DROPS", "HINTS", "HINT_HOURS", "FORUM_REWRITES", "SIGN_REWRITES",
+           "NONE_REPLIES", "PLACE_WORDS", "THEO_ASK", "THEO_AFTER", "SKIP_FALLBACK", "ENGINE_LINES", "THEO_DRAFTS", "VISITOR_BOOK",
            "TRANSCRIPTION_BOOKS", "OFFLINE_DAYS", "SGA_SIGNS", "MORROW_DMS", "THEO_DMS", "PER_PLAYER_SIGNS",
            "backdated_join", "BACKDATED_POSTS", "CASE_BRIEF_FIELDS", "USB_CHOICES", "STOP_LOG", "READY_STATUS",
            "ROOK_TXT", "ROOK_TXT_PHRASE", "morrow_written", "ENGINE_VOCAB", "ciphers", "people"]
@@ -400,7 +518,8 @@ IONA_NOTES_SIGNS = [
 # C20: Theo's private folder on the mirror. Password = the sticky note on the case ("chi07-")
 # + the year Mossfield was founded (the roster: rookery joined 2010-10-30).
 TVALE_BOX = {"user": "tvale", "password": "chi07-2010", "act": 8,
-             "files": ["mrrw-changelog-2016.txt", "crontab.txt", "bridge.yml"]}
+             "files": ["mrrw-changelog-2016.txt", "crontab.txt", "bridge.yml",
+                       "heartbeat.log.2011-05", "heartbeat.log.2019-03"]}  # Lot 14 came with its drives
 
 # Act 9: Morrow's fake Theo voice note, spliced from the 2011 voicemail (phone-band, says "mate").
 FAKE_THEO_NOTE = {"text": "no worries at all, mate.  keep it billable till someone comes home.", "voice": "T-09-fake"}
@@ -425,6 +544,9 @@ ENGINE_VOCAB = {
     "finalising", "exit", "reason", "none", "unfinished", "maint", "on", "off", "key", "ok", "block", "blocks",
     "line", "lines", "pass", "started", "window", "watchdog", "reboot", "sigterm", "received", "uptime",
     "stopping", "mossfield", "storehouse", "north", "light", "south", "rail", "tally", "chat", "x",
+    # the rework's templates: the debug view, queued/kept placements, the chest and sign counters
+    "debug", "view", "replay", "continues", "accepted", "refused", "queued", "bed", "chest", "chests", "sign",
+    "place", "lowpath's", "rook's", "june's", "patch's", "point", "hub", "farms", "tower", "spawn",
 }
 # Template normalisations the engine applies to text it restores (2011 shorthand -> "proper" words).
 NORMALISE = {"b4": "before"}
@@ -461,6 +583,8 @@ def morrow_written() -> list[dict]:
     add("voicemail", "fake Theo voice note", FAKE_THEO_NOTE["text"], 9)
     for line in STOP_LOG + [READY_STATUS, ciphers.LIGHT_CORRIDOR_MESSAGE.replace(":", " ")]:
         add("engine", "stop log / status", line, 10)
+    for key, line in ENGINE_LINES.items():
+        add("engine", "engine line %s" % key, line.replace("{code}", "").replace("{who}", "cairn"), 5)
     for line in ciphers.tally_book_morrow():
         add("engine", "tally book", line, 3)
     for m in MAP_WALL:

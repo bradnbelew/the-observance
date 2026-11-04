@@ -127,6 +127,61 @@ BRIDGE_CONFIG = {"plugin": "DiscordSRV", "channel": "#bridge", "on_process_exit"
 
 ROBOTS_TXT = "User-agent: *\nDisallow: /forum-import/\nDisallow: /~mossfield/\nDisallow: /tcadmin/legacy/\n"
 
+# The status board's other incidents, so 6118 sits among ordinary ones. The 2 Sept 2011 reboot is
+# the night the @reboot watchdog brought mrrw back.
+STATUS_ARCHIVE = [
+    {"id": "5870", "title": "Chicago core switch failure", "posted": "2011-02-02 14:10 CST",
+     "body": "A core switch in Chicago failed at 13:40 CST. Affected services are being moved to the standby switch.",
+     "update": "2011-02-03 09:05 CST - Resolved. Replacement switch installed overnight."},
+    {"id": "6402", "title": "Scheduled maintenance: Chicago game nodes", "posted": "2011-09-01 17:00 CDT",
+     "body": "Kernel updates on game nodes CHI-05 to CHI-07, 2 September 04:00-05:00 CDT. Each node will reboot once.",
+     "update": "2011-09-02 04:52 CDT - Complete."},
+]
+
+# Copperline's own history, for the mirror's About page (2008-2014).
+COPPERLINE_HISTORY = [
+    ("2008-02", "Copperline Hosting LLC founded in Chicago by Dale Kessler. Two racks at 350 E Cermak."),
+    ("2009-01", "Theo Vale joins as support lead (the only support)."),
+    ("2009-03", "Iona Bell joins as systems administrator."),
+    ("2010-04", "Game Servers launched: Minecraft Builder and Pro plans on nodes CHI-05 to CHI-07."),
+    ("2011-02", "Chicago core switch failure; two days of outages."),
+    ("2011-04", "Storage array 2 fails at 02:51 on 21 April. Recovery case 6118 (Mossfield) opened."),
+    ("2011-08", "Iona Bell leaves Copperline."),
+    ("2013-11", "Game Servers closed to new orders."),
+    ("2014-10", "Notice of closure sent to all clients: services end 30 November 2014."),
+    ("2014-12", "Assets sold at auction by Lakeshore Liquidators, 9 December 2014."),
+    ("2026-08", "This read-only mirror put up by the archivist. Records for case 6118 kept until 31 Dec 2026."),
+]
+
+
+def heartbeat_log(month: str) -> str:
+    """/var/log/mrrw/heartbeat.log, rotated monthly: cron runs /opt/mrrw/bin/heartbeat every five
+    minutes and it logs 'ok pid up' or 'down'. Two excerpts live in Theo's box (Lot 14 came with its
+    drives): May 2011 (the 06:17 kill, the 06:44 restart, the 11:14 stop) and March 2019 (Theo
+    switched it off forty-three minutes after Kit's email, then back on)."""
+    from datetime import datetime, timedelta
+    if month == "2011-05":
+        t0, t1, tz = datetime(2011, 5, 18, 2, 0), datetime(2011, 5, 18, 12, 0), "-0500"
+        runs = [(datetime(2011, 5, 18, 2, 0, 0), datetime(2011, 5, 18, 6, 17, 22), 14022),
+                (datetime(2011, 5, 18, 6, 44, 10), datetime(2011, 5, 18, 11, 14, 2), 14310)]
+    elif month == "2019-03":
+        t0, t1, tz = datetime(2019, 3, 2, 18, 0), datetime(2019, 3, 3, 6, 0), "-0600"
+        runs = [(datetime(2014, 12, 14, 3, 12, 38), datetime(2019, 3, 2, 22, 51, 4), 2271),
+                (datetime(2019, 3, 2, 23, 34, 10), datetime(2030, 1, 1), 31877)]
+    else:
+        raise KeyError(month)
+    out = []
+    t = t0
+    while t <= t1:
+        state = "down"
+        for start, stop, pid in runs:
+            if start <= t < stop:
+                up = t - start
+                state = "ok pid=%d up=%dd%02d:%02d:%02d" % (pid, up.days, up.seconds // 3600, (up.seconds // 60) % 60, up.seconds % 60)
+        out.append("%s %s mrrw-01 %s" % (t.strftime("%Y-%m-%d %H:%M:%S"), tz, state))
+        t += timedelta(minutes=5)
+    return "\n".join(out) + "\n"
+
 
 def _clean_md5() -> str:
     from .files import backup_zip, md5_bytes

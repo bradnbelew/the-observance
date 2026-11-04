@@ -87,7 +87,11 @@ def main() -> int:
     check(set(ciphers.to_nibbles(f.ciphertext)[0::2]) <= {4, 5}, "C6 every other wool block is yellow or lime")
     check(len(f.grid) * len(f.grid[0]) == 162, "C6 floor is 18 x 9")
     check(ciphers.read_iona_chest(ciphers.build_iona_chest()) == ciphers.IONA_TOKEN, "C8 Iona's chest decodes")
-    check(all(1 <= s["count"] <= 64 for s in ciphers.build_iona_chest()), "C8 every stack is a legal size")
+    check(all(2 <= s["count"] <= 64 for s in ciphers.build_iona_chest()), "C8 every stack is a legal size and never 1 (a 1 shows no number)")
+    check(set(layout.floor_row_z(r) for r in range(9)) == set(range(9)) and all(layout.floor_row_z(r) >= 6 for r in ciphers.FLOOR_TIDIED_ROWS),
+          "C6 floor rows map onto the cellar one to one, tidied rows nearest the ladder")
+    check(layout.wall_run("south", (0, 0, 0), 1) == (-1, 0, 0) and layout.wall_run("west", (0, 0, 0), 1) == (0, 0, -1),
+          "reading order: left to right is -x facing south and -z facing west")
     check(ciphers.read_id_wall(ciphers.build_id_wall()) == ciphers.HALT_COMMAND, "D6 block-ID wall reads HALTMRRW")
     rk = ciphers.build_residents_key()
     check(ciphers.read_residents_key(rk["ciphertext"], rk["key1"], rk["key2"]) == ciphers.RESIDENTS_PLAINTEXT, "D15 Residents' Key decodes")
@@ -247,6 +251,53 @@ def main() -> int:
     check(not any((r["date"], r["x"], r["y"], r["z"]) in lock for r in early), "finch lock rows hidden until Act 5")
     check(len(logblock.rows_for_act(4)) < len(logblock.rows_for_act(5)) < len(logblock.rows_for_act(7)), "LogBlock grows by act (lock at 5, chest and wall at 7)")
     check(media.RECORDINGS[0]["created_local"].startswith("2011-05-18 11:58"), "recording metadata: 11:58 BST")
+    print("the rework (2026-11)")
+    broke, placed = logblock.jog_cells()
+    check({(r["x"], r["y"], r["z"]) for r in logblock.jog_rows_2011()} == set(broke)
+          and {(r["x"], r["y"], r["z"]) for r in logblock.storehouse_tidy_rows() if r["action"] == "broke"} == set(broke),
+          "D9 Morrow broke exactly the jog cairn built")
+    check(logblock.trapdoor_row()["date"] < "2011-05-26" and logblock.trapdoor_row()["block"] == "96", "the trapdoor row predates trapdoors (26 May 2011)")
+    ride = [r for r in logblock.junction_rows() if r["date"].startswith("2011-06-11")]
+    check(len(ride) == 3 and [r["extra"] for r in ride] == ["lever on", "lever off", "lever off"] and ride[0]["date"] < "2011-06-11 21:03:10",
+          "C3 finch set the levers before 'taking the spur home'")
+    check(all(r["date"] < "2011-05-18" or r["date"] > "2011-05-18 23:59" for r in logblock.junction_rows()), "C3 no junction rows on the incident day")
+    hb11, hb19 = records.heartbeat_log("2011-05").splitlines(), records.heartbeat_log("2019-03").splitlines()
+    down11 = [l[11:16] for l in hb11 if l.endswith("down")]
+    down19 = [l[:16] for l in hb19 if l.endswith("down")]
+    check(down11[:5] == ["06:20", "06:25", "06:30", "06:35", "06:40"] and "11:15" in down11, "N3 2011 heartbeat: down 06:20-06:40 and after 11:14")
+    check(down19 == ["2019-03-02 %s" % t for t in ("22:55", "23:00", "23:05", "23:10", "23:15", "23:20", "23:25", "23:30")],
+          "N3 2019 heartbeat: off 22:51-23:34, the night of Kit's email (43 minutes)")
+    check(any(l.startswith("2019-03-02 23:35") and "up=0d00:00:50" in l for l in hb19), "N3 2019: back on at 23:34:10")
+    crates = sum(ciphers.TALLY[h][2] for h in ciphers.TALLY)
+    check(142 - 40 - 24 - 20 == crates, "N1 cairn's bread arithmetic equals the week-of-9-May crate tally (%d)" % crates)
+    check(sum(int(n) for n in ciphers.tally_book_morrow()[-1].split(": ")[1].split()[2:3]) + crates != crates, "N1 Morrow's lowpath row breaks the arithmetic")
+    rendered = irc.render()
+    check(rendered.count("Day changed") <= 1 and rendered.count("Log opened") >= 8 and len(rendered.splitlines()) < 125,
+          "IRC log is content only (%d lines)" % len(rendered.splitlines()))
+    from .build import incident_replay, lowpath_route, NIGHT_SECONDS, creeper_art
+    figs = incident_replay()
+    check(all(f["path"][-1][0] <= NIGHT_SECONDS for f in figs) and max(l[0] for f in figs for l in f["lines"]) <= NIGHT_SECONDS,
+          "the incident replay fits one night (%d s)" % max(f["path"][-1][0] for f in figs))
+    speeds = []
+    for f in figs:
+        for a, b in zip(f["path"], f["path"][1:]):
+            d = ((a[1] - b[1]) ** 2 + (a[3] - b[3]) ** 2) ** 0.5
+            if b[0] > a[0]:
+                speeds.append(d / (b[0] - a[0]))
+    check(max(speeds) <= 4.5, "no figure walks faster than a player (%.1f b/s)" % max(speeds))
+    route = lowpath_route()
+    check(route[-1]["path"][-1][0] <= NIGHT_SECONDS and route[-1]["to"] == "lowpath_place", "lowpath's walk fits a night and ends at its place")
+    check("finchline" in later.SKIP_FALLBACK and "leave it" in " ".join(ciphers.GENUINE_SIGNS_2011["finch_south_rail"]),
+          "the stop log's fallback reason is finch's own sign, never none")
+    check(sum(1 for row in creeper_art()["rows"] for v in row) == 64 and creeper_art()["missing_rows"] * 8 == 24, "the creeper art is 8x8, 24 blocks missing")
+    check(all(bid >= 155 for _d, _t, bid, _a, _o in logblock.BACKDATED_ROW_TEMPLATES), "Act 9 backdated rows use post-2011 block ids")
+    check(all(len(l) <= 15 for s in ciphers.GENUINE_SIGNS_2011.values() for l in s), "every lived-in sign fits a 2011 sign")
+    check(all(". " not in t.replace(".  ", "") for d in later.THEO_DRAFTS for t in d["pages"]), "Theo's drafts keep his double spaces")
+    check(all(not any(w in later.THEO_TELL_WORDS for w in norm(t).split()) for d in later.THEO_DRAFTS for t in d["pages"]), "drafts use no DM tell word")
+    check(later.THEO_ASK["voice"] not in later.THEO_MIRROR_VOICES and all(v in later.THEO_TIMED_VOICES for _a, _h, _f, _n, v in later.DESK_DROPS if v),
+          "every timed Theo note has a voice the bot can post")
+    check(later.SOUTH_RAIL_STOP_Z < layout.ANCHORS["lowpath_place"][2] - 1 if hasattr(later, "SOUTH_RAIL_STOP_Z") else layout.SOUTH_RAIL_STOP_Z < layout.ANCHORS["lowpath_place"][2] - 1,
+          "the south rail stops short of lowpath's place")
     check(all(datetime.strptime(f["mtime"], "%d-%b-%Y %H:%M") >= datetime(2011, 2, 19) for f in media.PATCHCORD_FOLDER),
           "no Mumble recording predates the built-in recorder (1.2.3, 19 Feb 2011)")
     print()

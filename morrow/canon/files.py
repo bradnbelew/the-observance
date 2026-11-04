@@ -108,23 +108,40 @@ def asset_sale_pdf() -> bytes:
 # turned it off at 11:12.
 
 def _panel_full():
-    from PIL import Image, ImageDraw
+    """The uncropped Print Screen: the panel on the left, and behind it, the Mumble window Theo had
+    open at 06:44 (rookery and patchcord in the channel with him: the lead to MIC-5-18-B.WAV). Type is
+    large so the EXIF thumbnail (320 wide, 0.4x) stays readable."""
+    from PIL import Image, ImageDraw, ImageFont
+    font = lambda n: ImageFont.load_default(size=n)
     img = Image.new("RGB", (800, 500), (232, 236, 239))
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, 800, 34], fill=(45, 83, 103))
-    d.text((12, 10), "TCAdmin 1.0  -  Game Services  -  logged in: tvale", fill=(255, 255, 255))
-    d.rectangle([20, 54, 780, 300], outline=(138, 154, 166), fill=(255, 255, 255))
+    d.text((12, 8), "TCAdmin 1.0  -  Game Services  -  logged in: tvale", fill=(255, 255, 255), font=font(17))
+    d.rectangle([20, 54, 560, 300], outline=(138, 154, 166), fill=(255, 255, 255))
     rows = [("Service", "CHI-07/mrrw"), ("Status", "Stopped (manual, 06:17:22)"), ("Owner", "Copperline Recovery"),
             ("Auto restart", "On")]
     for i, (k, v) in enumerate(rows):
-        d.text((40, 74 + i * 28), k, fill=(60, 60, 60))
-        d.text((220, 74 + i * 28), v, fill=(20, 20, 20))
-    d.rectangle([20, 320, 780, 470], outline=(170, 40, 40), fill=(255, 244, 244))
-    d.text((40, 336), "Confirm: Start service CHI-07/mrrw?", fill=(140, 20, 20))
-    d.text((40, 362), "Reason: mid-session, will corrupt if left", fill=(60, 60, 60))
-    d.text((40, 388), "Requested by tvale  2011-05-18 06:44:10 CDT", fill=(60, 60, 60))
-    d.rectangle([40, 420, 160, 450], fill=(45, 83, 103))
-    d.text((70, 428), "Start", fill=(255, 255, 255))
+        d.text((40, 72 + i * 44), k, fill=(60, 60, 60), font=font(20))
+        d.text((220, 72 + i * 44), v, fill=(20, 20, 20), font=font(20))
+    # the Mumble window, behind and to the right, mostly in the band Theo cropped off
+    d.rectangle([580, 54, 790, 300], outline=(120, 120, 120), fill=(246, 246, 246))
+    d.rectangle([580, 54, 790, 80], fill=(90, 90, 90))
+    d.text((588, 58), "Mumble 1.2.3", fill=(255, 255, 255), font=font(17))
+    d.rectangle([430, 312, 790, 494], outline=(120, 120, 120), fill=(246, 246, 246))
+    d.text((442, 318), "mossfield", fill=(30, 30, 30), font=font(30))
+    for i, name in enumerate(["rookery", "patchcord (idle)", "tvale"]):
+        d.ellipse([446, 362 + i * 40, 462, 378 + i * 40], fill=(60, 140, 60) if "idle" not in name else (170, 170, 170))
+        d.text((472, 354 + i * 40), name, fill=(30, 30, 30), font=font(30))
+    d.text((690, 462), "06:44", fill=(90, 90, 90), font=font(26))
+    # the confirmation Theo cut off, large enough to read in the thumbnail
+    d.rectangle([20, 312, 420, 494], outline=(170, 40, 40), fill=(255, 244, 244))
+    d.text((32, 318), "Start service", fill=(140, 20, 20), font=font(44))
+    d.text((32, 366), "CHI-07/mrrw ?", fill=(140, 20, 20), font=font(40))
+    d.text((32, 412), "mid-session, will", fill=(60, 60, 60), font=font(28))
+    d.text((32, 440), "corrupt if left", fill=(60, 60, 60), font=font(28))
+    d.rectangle([300, 420, 408, 480], fill=(45, 83, 103))
+    d.text((318, 432), "Start", fill=(255, 255, 255), font=font(30))
+    d.text((300, 318), "tvale 06:44:10", fill=(60, 60, 60), font=font(17))
     return img
 
 
@@ -159,9 +176,9 @@ def panel_jpg() -> bytes:
     full = _panel_full()
     tb = io.BytesIO()
     thumb = full.copy()
-    thumb.thumbnail((160, 100))
-    thumb.save(tb, "JPEG", quality=80)
-    cropped = full.crop((0, 0, 800, 310))  # Theo cut off the confirmation box
+    thumb.thumbnail((320, 200))
+    thumb.save(tb, "JPEG", quality=90)
+    cropped = full.crop((0, 0, 800, 306))  # Theo cut off the confirmation box (and the Mumble window with it)
     out = io.BytesIO()
     cropped.save(out, "JPEG", quality=88, exif=_exif_with_thumbnail(tb.getvalue()))
     return out.getvalue()
@@ -185,6 +202,8 @@ def text_files() -> dict[str, bytes]:
             "[restore]  Iona's looking at it now.  Hang tight.",
             "[close]    Cheers, T", ""]).encode(),
         "bridge.yml": "".join("%s: %s\n" % kv for kv in records.BRIDGE_CONFIG.items()).encode(),
+        "heartbeat.log.2011-05": records.heartbeat_log("2011-05").encode(),
+        "heartbeat.log.2019-03": records.heartbeat_log("2019-03").encode(),
     }
 
 

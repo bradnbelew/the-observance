@@ -17,7 +17,7 @@ from datetime import date, datetime, timedelta
 from . import ciphers, layout
 
 WOOL_ID = 35
-GLASS, GLOWSTONE, LEVER, CHEST, POWERED_RAIL, PLANKS = 20, 89, 69, 54, 27, 5
+GLASS, GLOWSTONE, LEVER, CHEST, POWERED_RAIL, PLANKS, LOG, TRAPDOOR, OBSIDIAN = 20, 89, 69, 54, 27, 5, 17, 96, 49
 
 OFFLINE_DAYS = ("2011-04-21", "2011-04-22")       # storage failure (later.OFFLINE_DAYS agrees)
 RESTORE_PASSES = (date(2011, 4, 26), date(2011, 5, 18))  # nightly 02:00-04:00, stay off
@@ -40,14 +40,16 @@ def floor_rows() -> list[dict]:
     for i, (r, c, wool) in enumerate(floor.placement_order):
         evening, n = divmod(i, 41)
         at = start + timedelta(days=evening, seconds=n * 9 + (n * 7) % 5)
-        rows.append(_row(at, "rookery", "placed", WOOL_ID, wool, (x0 + c, y0, z0 + r)))
+        rows.append(_row(at, "rookery", "placed", WOOL_ID, wool, (x0 + c, y0, z0 + layout.floor_row_z(r))))
     return rows
 
 
 def id_wall_rows() -> list[dict]:
     x0, y0, z0 = layout.ANCHORS["maintenance_annex"]
+    lx, ly, lz = layout.ID_WALL_LEFT
     at = datetime(2011, 7, 8, 16, 14, 2)
-    return [_row(at + timedelta(seconds=i * 7 + (i * 3) % 4), "i_bell", "placed", w["id"], 0, (x0 + 2 + i, y0 + 1, z0))
+    return [_row(at + timedelta(seconds=i * 7 + (i * 3) % 4), "i_bell", "placed", w["id"], 0,
+                 layout.wall_run("south", (x0 + lx, y0 + ly, z0 + lz), i))
             for i, w in enumerate(ciphers.build_id_wall())]
 
 
@@ -77,24 +79,87 @@ def south_rail_rows() -> list[dict]:
                  (x0 + dx * (i + 1), y0, z0 + dz * (i + 1))) for i in range(3)]
 
 
+# cairn's crooked corner: the barn's south-west corner jogs one block south for four blocks (a 2011
+# kid's mistake, built 2011-03-05). world/build2011.py builds the jog from these same cells; the
+# plugin's modern layer squares it; these rows are Morrow doing exactly that on 2 Sept 2011.
+JOG_LENGTH, JOG_HEIGHT = 4, 3
+
+
+def jog_cells() -> tuple[list[tuple[int, int, int]], list[tuple[int, int, int]]]:
+    """(the jog's wall blocks Morrow broke, the straight-wall blocks it placed)."""
+    jx, jy, jz = layout.ANCHORS["cairn_storehouse_jog"]      # jog runs +x from the corner, one south of the wall
+    broke = [(jx + i, jy + dy, jz) for dy in range(JOG_HEIGHT) for i in range(JOG_LENGTH)]
+    placed = [(jx + i, jy + dy, jz - 1) for dy in range(JOG_HEIGHT) for i in range(1, JOG_LENGTH - 1)]
+    return broke, placed
+
+
 def storehouse_tidy_rows() -> list[dict]:
-    """2 Sept 2011, after the watchdog brought it back: Morrow squares cairn's storehouse to the grid."""
-    x0, y0, z0 = layout.ANCHORS["cairn_storehouse_door_2011"]
-    x1, _, _ = layout.ANCHORS["cairn_storehouse_door_morrow"]
+    """2 Sept 2011, after the watchdog brought it back: Morrow squares cairn's crooked corner to the grid."""
+    jx, _, _ = layout.ANCHORS["cairn_storehouse_jog"]
     at = datetime(2011, 9, 2, 5, 31, 2)
+    broke, placed = jog_cells()
     rows = []
-    for i in range(10):
-        rows.append(_row(at + timedelta(seconds=4 * i), "morrow", "broke", PLANKS, 0, (x0 + (i % 3), y0 + i // 3, z0 + 1)))
-        rows.append(_row(at + timedelta(seconds=4 * i + 2), "morrow", "placed", PLANKS, 0, (x1 + (i % 3), y0 + i // 3, z0 + 1)))
+    for i, (x, y, z) in enumerate(broke):
+        rows.append(_row(at + timedelta(seconds=3 * i), "morrow", "broke", LOG if x == jx else PLANKS, 0, (x, y, z)))
+    for i, (x, y, z) in enumerate(placed):
+        rows.append(_row(at + timedelta(seconds=3 * len(broke) + 3 * i), "morrow", "placed", PLANKS, 0, (x, y, z)))
     return rows
 
 
+def jog_rows_2011() -> list[dict]:
+    """cairn building the jog in March 2011 (so the viewer shows the corner was always crooked)."""
+    jx, _, _ = layout.ANCHORS["cairn_storehouse_jog"]
+    at = datetime(2011, 3, 5, 5, 48, 10)
+    broke, _ = jog_cells()
+    return [_row(at + timedelta(seconds=6 * i + (i * 5) % 4), "cairn", "placed", LOG if x == jx else PLANKS, 0, (x, y, z))
+            for i, (x, y, z) in enumerate(broke)]
+
+
+# The trapdoor tell (Act 2): Morrow's reconstruction of the shed hatch is an oak trapdoor, and the log
+# says cairn placed it the morning the bed went missing. Trapdoors arrived in Beta 1.6 (26 May 2011).
+TRAPDOOR_ROW_AT = datetime(2011, 5, 12, 6, 50, 31)
+
+
+def trapdoor_row() -> dict:
+    return _row(TRAPDOOR_ROW_AT, "cairn", "placed", TRAPDOOR, 0, layout.ANCHORS["cairn_shed_hatch"])
+
+
+# C3 finch's commute: her last ride, 11 June 2011. She set the three junction levers from the hub
+# (jct 1 ON sends the cart up the spur; 2 and 3 OFF keep the sidings closed), rode, and chatted
+# "taking the spur home" at 21:03:10 (serverlog). The lever block is beside each junction rail.
+JUNCTION_LEVERS = {"finch_jct_1": ((1, 0, 0), True), "finch_jct_2": ((-1, 0, 0), False), "finch_jct_3": ((0, 0, -1), False)}
+JUNCTION_BUILT_AT = datetime(2011, 4, 23, 16, 20, 0)   # the week the powered rails went in
+
+
+def junction_rows() -> list[dict]:
+    rows = []
+    for i, (key, (off, _on)) in enumerate(JUNCTION_LEVERS.items()):
+        x, y, z = layout.ANCHORS[key]
+        at = JUNCTION_BUILT_AT + timedelta(minutes=9 * i)
+        rows.append(_row(at, "finchline", "placed", 66, 0, (x, y, z)))
+        rows.append(_row(at + timedelta(seconds=14), "finchline", "placed", LEVER, 5, (x + off[0], y + off[1], z + off[2])))
+    # 11 June 21:02: the levers as she left them for the ride (LogBlock logs a lever as a block change)
+    ride = datetime(2011, 6, 11, 21, 2, 12)
+    for i, (key, (off, on)) in enumerate(JUNCTION_LEVERS.items()):
+        x, y, z = layout.ANCHORS[key]
+        rows.append(_row(ride + timedelta(seconds=11 * i), "finchline", "placed", LEVER, 5 | (8 if on else 0),
+                         (x + off[0], y + off[1], z + off[2]), "lever %s" % ("on" if on else "off")))
+    return rows
+
+
+def portal_rows() -> list[dict]:
+    """Rook's Nether portal frame, 27 May 2011 (the night of his 'nether on the server now' post)."""
+    px, py, pz = layout.ANCHORS["spawn_portal"]
+    at = datetime(2011, 5, 27, 21, 40, 5)
+    cells = [(px, py + dy, pz + dz) for dz in range(4) for dy in range(5) if dy in (0, 4) or dz in (0, 3)]
+    return [_row(at + timedelta(seconds=5 * i), "rookery", "placed", OBSIDIAN, 0, c) for i, c in enumerate(cells)]
+
+
 def iona_chest_rows() -> list[dict]:
-    xyz = layout.ANCHORS["iona_key_chest"]
-    at = datetime(2011, 6, 2, 23, 4, 0)
-    ids = {"cobblestone": 4, "dirt": 3, "sand": 12, "gravel": 13, "planks": 5, "torch": 50, "arrow": 262, "wood": 17}
-    return [_row(at + timedelta(seconds=s["slot"] * 2), "i_bell", "chest_put", ids[s["item"]], 0, xyz,
-                 "slot %d amount %d" % (s["slot"], s["count"])) for s in ciphers.build_iona_chest()]
+    """None. The 2011 export was LogBlock's block table only; chest access was a separate table and
+    option the server never turned on, so Iona's key chest has to be read in the world (and the
+    golems get there first: see the plugin's dawn job)."""
+    return []
 
 
 def finch_lock_rows() -> list[dict]:
@@ -191,8 +256,30 @@ def noise_rows() -> list[dict]:
 
 def all_rows() -> list[dict]:
     rows = (floor_rows() + id_wall_rows() + tower_rows() + south_rail_rows() + storehouse_tidy_rows()
-            + iona_chest_rows() + finch_lock_rows() + noise_rows())
+            + jog_rows_2011() + [trapdoor_row()] + junction_rows() + portal_rows() + iona_chest_rows()
+            + finch_lock_rows() + noise_rows())
     return sorted(rows, key=lambda r: r["date"])
+
+
+# Act 9: the players' own backdated rows. Morrow files each player as a 2010 resident, so the viewer
+# gains rows "from November 2010" of them placing blocks with post-2011 IDs. The site fills in the
+# names (bridge roster or MORROW_PLAYERS); the shape is canon so verify.py can hold it to the tell.
+BACKDATED_ROW_TEMPLATES = [  # (days after the backdated join, time, block id (post-2011), where, offset)
+    (0, "19:12:40", 170, "spawn", (3, 1, -2)),       # hay bale (1.6, 2013)
+    (0, "19:13:05", 171, "spawn", (4, 1, -2)),       # carpet (1.6, 2013)
+    (2, "20:02:11", 155, "rookery_house", (-6, 0, 2)),   # quartz block (1.5, 2013)
+    (5, "18:40:00", 170, "cairn_farm", (14, 0, 3)),
+]
+
+
+def backdated_rows(player: str, joined: str) -> list[dict]:
+    start = datetime.fromisoformat(joined)
+    rows = []
+    for days, t, bid, anchor, (dx, dy, dz) in BACKDATED_ROW_TEMPLATES:
+        ax, ay, az = layout.ANCHORS[anchor]
+        at = datetime.combine((start + timedelta(days=days)).date(), datetime.strptime(t, "%H:%M:%S").time())
+        rows.append(_row(at, player, "placed", bid, 0, (ax + dx, ay + dy, az + dz)))
+    return rows
 
 
 def rows_for_act(act: int) -> list[dict]:
@@ -205,8 +292,6 @@ def rows_for_act(act: int) -> list[dict]:
     out = []
     for r in all_rows():
         key = (r["date"], r["x"], r["y"], r["z"])
-        if r["action"] == "chest_put" and act < 7:
-            continue
         if key in wall and act < 7:
             continue
         if key in lock and act < 5:

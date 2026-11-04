@@ -145,6 +145,15 @@ THREADS = [
          "9 cyan, 10 purple, 11 blue, 12 brown, 13 green, 14 red, 15 black\n\n"
          "dye is NOT the same numbers, dont ask me why, notch hates us"},
     ]},
+    {"id": None, "title": "skin contest", "act": 1, "posts": [
+        {"id": None, "author": "patchcord", "at": "2011-01-15 14:02", "body":
+         "skin contest. winner gets a diamond. mine's all black with headphones, obviously"},
+        {"id": None, "author": "cairn", "at": "2011-01-16 05:20", "body": "i did a baker. flour on the apron and everything"},
+        {"id": None, "author": "juni_lantern", "at": "2011-01-16 17:40", "body": "lighthouse keeper already wins sorry"},
+        {"id": None, "author": "rookery", "at": "2011-01-17 20:05", "body":
+         "winner is cairn. the flour got me. patch you look like a burglar"},
+        {"id": None, "author": "patchcord", "at": "2011-01-18 12:10", "body": "it's a look"},
+    ]},
     {"id": None, "title": "lag tonight?", "act": 1, "posts": [
         {"id": None, "author": "finchline", "at": "2011-01-20 19:58", "body": "is it just me or is it lagging like crazy"},
         {"id": None, "author": "patchcord", "at": "2011-01-20 20:04", "body":
@@ -222,6 +231,12 @@ THREADS = [
          "close-up: walk the lot, check the hinge tin, chalk the returns, lamp off. in that order or i "
          "lose count"},
     ]},
+    {"id": None, "title": "kit's dirt towers", "act": 2, "posts": [
+        {"id": None, "author": "rookery", "at": "2011-03-20 21:30", "body":
+         "kit there is a dirt tower every 80 blocks between spawn and wherever you went. take them down"},
+        {"id": None, "author": "kitbag", "at": "2011-03-20 21:41", "body": "theyre so i can find my way back. its really far"},
+        {"id": None, "author": "rookery", "at": "2011-03-20 21:50", "body": "...fine. leave them. rule 4 still applies"},
+    ]},
     {"id": None, "title": "someone is xraying", "act": 2, "posts": [
         {"id": None, "author": "rookery", "at": "2011-03-25 21:05", "body":
          "someone dug a perfect tunnel straight to the diamonds under spawn. rule 4. i will know"},
@@ -241,6 +256,10 @@ THREADS = [
         {"id": None, "author": "kitbag", "at": "2011-04-01 18:31", "body": "mine are biscuit 2 biscuit 3 and biscuit 4"},
         {"id": None, "author": "rookery", "at": "2011-04-01 19:00", "body": "is this an april fools thing"},
         {"id": None, "author": "kitbag", "at": "2011-04-01 19:02", "body": "no theyre real look"},
+    ]},
+    {"id": None, "title": "who's on this week", "act": 2, "posts": [
+        {"id": None, "author": "cairn", "at": "2011-03-28 05:10", "body":
+         "trying to work out who's actually on this week so i know how much bread to bake. reply with your days"},
     ]},
     {"id": None, "title": "sheep pen", "act": 3, "posts": [
         {"id": None, "author": "cairn", "at": "2011-04-04 05:11", "body":
@@ -291,6 +310,13 @@ THREADS = [
          "it just told me 'your world will be back by tomorrow' lol"},
         {"id": 26041, "author": "Theo [Copperline]", "at": "2011-05-06 16:20", "body":
          "Ha.  It's reading the support macros.  It'll get better."},
+    ]},
+    {"id": None, "title": "bread count", "act": 3, "posts": [
+        {"id": None, "author": "cairn", "at": "2011-05-15 05:40", "body":
+         "week of 5/9: baked 142. 40 went home with me (bakery joke). 24 in the chest by the storehouse door, 20 "
+         "in the spawn chest, and 1 went out with every crate that came back. check my math"},
+        {"id": None, "author": "finchline", "at": "2011-05-15 16:02", "body": "cairn you count bread"},
+        {"id": None, "author": "cairn", "at": "2011-05-16 05:12", "body": "i count everything"},
     ]},
     {"id": None, "title": "cake at spawn saturday", "act": 2, "posts": [
         {"id": None, "author": "juni_lantern", "at": "2011-05-12 17:40", "body":
@@ -362,6 +388,7 @@ THREADS = [
         {"id": 28644, "author": "rookery", "at": "2011-09-04 01:12", "body":
          "its back on again. iona's gone and its back on. im done with it. if anyone comes back: the ladder "
          "room has my stuff. off the nether hub"},
+        {"id": None, "author": "finchline", "at": "2011-09-04 16:20", "body": "same"},
     ]},
     {"id": 5011, "title": "1.0 comes out today", "act": 4, "posts": [
         {"id": 30112, "author": "cairn", "at": "2011-11-18 05:20", "body":
@@ -383,6 +410,13 @@ ARCHIVIST_NOTES = [
     {"id": 5, "at": "2026-08-02 20:30", "act": 1, "body":
      "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept "
      "until 31 Dec 2026.  If you were a Mossfield player, the archive desk is open.  No worries at all."},
+    # the slow unravelling, released by act
+    {"id": 6, "at": "2014-12-14 03:30", "act": 4, "body":
+     "Box is up in the spare room.  First heartbeat 03:12.  It still thinks it's in Chicago, which it is, sort of."},
+    {"id": 7, "at": "2016-08-11 22:15", "act": 8, "body":
+     "Something walks around at night.  I didn't add it.  Leaving it; it isn't hurting anything."},
+    {"id": 8, "at": "2019-03-02 23:40", "act": 8, "body": "",
+     "edited": "Last edited by archivist; 03-02-2019 at 11:40 PM."},
 ]
 
 

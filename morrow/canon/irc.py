@@ -4,12 +4,13 @@ Theo shares this file in Act 7 ("I was in that channel"). It is the only place t
 speak to each other off the record. Keep it plain: tired people at work.
 
 Rendered in irssi's default log format: `hh:mm < nick> text`, `-!-` for joins and quits,
-and a `--- Day changed` line for every midnight her client sat through (it ran in screen).
+and a `--- Day changed` line only where two logged days are consecutive; her screen session dropped
+between the others, so the log closes and reopens round each gap, as irssi writes it.
 """
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from . import layout
 
@@ -153,15 +154,21 @@ def _line(t: str, nick: str, text: str) -> str:
 
 
 def render() -> str:
-    days = dict(LOG)
-    first, last = date.fromisoformat(LOG[0][0]), date.fromisoformat(LOG[-1][0])
     out = ["--- Log opened " + LOG_OPENED]
-    d = first
-    while d <= last:
-        if d != first:
-            out.append("--- Day changed %s" % d.strftime("%a %b %d %Y"))
-        for t, nick, text in days.get(d.isoformat(), []):
+    prev = None
+    for day, lines in LOG:
+        d = date.fromisoformat(day)
+        if prev is not None:
+            if d - prev == timedelta(days=1):
+                out.append("--- Day changed %s" % d.strftime("%a %b %d %Y"))
+            else:
+                closed = datetime.combine(prev, datetime.min.time()).replace(hour=23, minute=59, second=0) + timedelta(seconds=(prev.day * 37) % 50)
+                opened = datetime.combine(d, datetime.min.time()).replace(hour=int(lines[0][0][:2]) - 1 if int(lines[0][0][:2]) > 0 else 0,
+                                                                            minute=(d.day * 13) % 60, second=(d.day * 7) % 60)
+                out.append("--- Log closed " + closed.strftime("%a %b %d %H:%M:%S %Y"))
+                out.append("--- Log opened " + opened.strftime("%a %b %d %H:%M:%S %Y"))
+        for t, nick, text in lines:
             out.append(_line(t, nick, text))
-        d += timedelta(days=1)
+        prev = d
     out.append("--- Log closed " + LOG_CLOSED)
     return "\n".join(out) + "\n"

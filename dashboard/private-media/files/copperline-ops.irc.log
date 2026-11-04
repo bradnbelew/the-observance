@@ -14,10 +14,8 @@
 10:03 < ibell> logblock records every block anyone placed or broke with a timestamp. if I replay it onto the partial backup I can rebuild most of it
 10:04 < tvale> you're a genius
 10:04 < ibell> I'm tired. those are different
---- Day changed Fri Apr 22 2011
---- Day changed Sat Apr 23 2011
---- Day changed Sun Apr 24 2011
---- Day changed Mon Apr 25 2011
+--- Log closed Thu Apr 21 23:59:27 2011
+--- Log opened Mon Apr 25 13:25:55 2011
 14:10 < ibell> replay tool works on a copy. calling it mrestore
 14:11 < tvale> that's an awful name
 14:11 < ibell> it's a process name, not a pet
@@ -30,14 +28,8 @@
 14:44 < ibell> habits. if cairn always places chests in pairs it places pairs. if june always uses glass on top it uses glass
 14:45 < tvale> huh. cute
 14:45 < ibell> it's a guess theo. I'm marking every one
---- Day changed Tue Apr 26 2011
---- Day changed Wed Apr 27 2011
---- Day changed Thu Apr 28 2011
---- Day changed Fri Apr 29 2011
---- Day changed Sat Apr 30 2011
---- Day changed Sun May 01 2011
---- Day changed Mon May 02 2011
---- Day changed Tue May 03 2011
+--- Log closed Mon Apr 25 23:59:25 2011
+--- Log opened Tue May 03 21:39:21 2011
 22:30 < ibell> added a debug view. it can replay a logged session as an entity so I can see who did what
 22:31 < tvale> like ghosts?
 22:31 < ibell> like a debug view. off by default
@@ -46,27 +38,16 @@
 22:38 < ibell> it ends a replay when they log off or sleep in a bed
 22:38 < ibell> if they never log off or sleep it just keeps going
 22:39 < tvale> noted
---- Day changed Wed May 04 2011
---- Day changed Thu May 05 2011
---- Day changed Fri May 06 2011
+--- Log closed Tue May 03 23:59:11 2011
+--- Log opened Fri May 06 14:18:42 2011
 15:20 < tvale> I gave morrow a chat helper. it answers !status
 15:21 < ibell> with what
 15:23 < tvale> markov thing. fed it the support macros and the mossfield chat logs so it talks like a person
 15:24 < ibell> it talks like a blender full of people
 15:24 < tvale> they love it
 15:26 < ibell> it can only say things somebody already said. remember that when it says something clever
---- Day changed Sat May 07 2011
---- Day changed Sun May 08 2011
---- Day changed Mon May 09 2011
---- Day changed Tue May 10 2011
---- Day changed Wed May 11 2011
---- Day changed Thu May 12 2011
---- Day changed Fri May 13 2011
---- Day changed Sat May 14 2011
---- Day changed Sun May 15 2011
---- Day changed Mon May 16 2011
---- Day changed Tue May 17 2011
---- Day changed Wed May 18 2011
+--- Log closed Fri May 06 23:59:22 2011
+--- Log opened Wed May 18 00:54:06 2011
 01:55 < tvale> status page updated. window 02:00-04:00 CDT
 02:00 < ibell> starting the pass. watching
 03:10 < ibell> looks clean so far. cairn's area is slow, lots of log
@@ -99,114 +80,38 @@
 11:07 < tvale> it's a good guess
 11:10 < ibell> I'm turning off auto-restart in the panel. do not turn it back on
 11:14 < ibell> and it's stopped again. it stays stopped
---- Day changed Thu May 19 2011
---- Day changed Fri May 20 2011
---- Day changed Sat May 21 2011
---- Day changed Sun May 22 2011
---- Day changed Mon May 23 2011
---- Day changed Tue May 24 2011
+--- Log closed Wed May 18 23:59:16 2011
+--- Log opened Tue May 24 20:12:48 2011
 21:30 < ibell> rook asked me how to stop it without the panel. he doesn't trust the panel. fair
 21:31 < ibell> told him: it reads a maint flag sign at spawn. MAINT ON, no sessions open, and the console key. three things
 21:33 < dkessler> why can't we just delete it
 21:35 < ibell> because the panel restarts it, cron restarts it, and theo restarts it
 21:35 < dkessler> lol
 21:36 < ibell> I wasn't joking
---- Day changed Wed May 25 2011
---- Day changed Thu May 26 2011
---- Day changed Fri May 27 2011
---- Day changed Sat May 28 2011
---- Day changed Sun May 29 2011
---- Day changed Mon May 30 2011
---- Day changed Tue May 31 2011
---- Day changed Wed Jun 01 2011
---- Day changed Thu Jun 02 2011
+--- Log closed Tue May 24 23:59:38 2011
+--- Log opened Thu Jun 02 21:26:14 2011
 22:58 < ibell> rook's laying his floor in the cellar. wool, like he said
 23:10 < ibell> put my key in a double chest under june's old dock, 3 down, 4 toward spawn. counts are b64. rook cant read it and neither can morrow lol
 23:11 < tvale> you know I can read this channel
 23:11 < ibell> you can read it. you can't dig
---- Day changed Fri Jun 03 2011
---- Day changed Sat Jun 04 2011
---- Day changed Sun Jun 05 2011
---- Day changed Mon Jun 06 2011
---- Day changed Tue Jun 07 2011
---- Day changed Wed Jun 08 2011
---- Day changed Thu Jun 09 2011
---- Day changed Fri Jun 10 2011
+--- Log closed Thu Jun 02 23:59:24 2011
+--- Log opened Fri Jun 10 07:10:10 2011
 08:47 -!- tvale [~theo@office7.copperline.local] has quit [Ping timeout: 240 seconds]
 21:40 < ibell> rook found a copy from the 20th. he'd pulled it over ftp to run overviewer on his laptop and forgot
 21:41 < dkessler> so there IS a backup
 21:42 < ibell> it's clean. md5's in the checklist. it goes in his ftp outside the recovery folder and nobody tells theo
 21:43 < dkessler> why not restore it
 21:44 < ibell> no point restoring it while that thing's running. it'd just "fix" it
---- Day changed Sat Jun 11 2011
---- Day changed Sun Jun 12 2011
---- Day changed Mon Jun 13 2011
---- Day changed Tue Jun 14 2011
---- Day changed Wed Jun 15 2011
---- Day changed Thu Jun 16 2011
---- Day changed Fri Jun 17 2011
---- Day changed Sat Jun 18 2011
---- Day changed Sun Jun 19 2011
---- Day changed Mon Jun 20 2011
---- Day changed Tue Jun 21 2011
---- Day changed Wed Jun 22 2011
---- Day changed Thu Jun 23 2011
---- Day changed Fri Jun 24 2011
---- Day changed Sat Jun 25 2011
---- Day changed Sun Jun 26 2011
---- Day changed Mon Jun 27 2011
---- Day changed Tue Jun 28 2011
---- Day changed Wed Jun 29 2011
---- Day changed Thu Jun 30 2011
---- Day changed Fri Jul 01 2011
---- Day changed Sat Jul 02 2011
---- Day changed Sun Jul 03 2011
---- Day changed Mon Jul 04 2011
---- Day changed Tue Jul 05 2011
---- Day changed Wed Jul 06 2011
---- Day changed Thu Jul 07 2011
---- Day changed Fri Jul 08 2011
+--- Log closed Fri Jun 10 23:59:20 2011
+--- Log opened Fri Jul 08 08:44:56 2011
 09:12 -!- tvale [~theo@office7.copperline.local] has joined #copperline-ops
 16:20 < ibell> it reads words off signs and chat. blocks it just puts back, it doesn't read them. logged blocks it leaves alone
 16:20 < ibell> so I wrote the command name in block ids in the annex wall. 8 blocks, by hand, so logblock has them
 16:21 < tvale> that's insane
 16:21 < ibell> it's a label it can't tidy
 16:24 < ibell> my notes are in r.-1.-1.mcr c(20,30) y40ish if anyone ever needs them
---- Day changed Sat Jul 09 2011
---- Day changed Sun Jul 10 2011
---- Day changed Mon Jul 11 2011
---- Day changed Tue Jul 12 2011
---- Day changed Wed Jul 13 2011
---- Day changed Thu Jul 14 2011
---- Day changed Fri Jul 15 2011
---- Day changed Sat Jul 16 2011
---- Day changed Sun Jul 17 2011
---- Day changed Mon Jul 18 2011
---- Day changed Tue Jul 19 2011
---- Day changed Wed Jul 20 2011
---- Day changed Thu Jul 21 2011
---- Day changed Fri Jul 22 2011
---- Day changed Sat Jul 23 2011
---- Day changed Sun Jul 24 2011
---- Day changed Mon Jul 25 2011
---- Day changed Tue Jul 26 2011
---- Day changed Wed Jul 27 2011
---- Day changed Thu Jul 28 2011
---- Day changed Fri Jul 29 2011
---- Day changed Sat Jul 30 2011
---- Day changed Sun Jul 31 2011
---- Day changed Mon Aug 01 2011
---- Day changed Tue Aug 02 2011
---- Day changed Wed Aug 03 2011
---- Day changed Thu Aug 04 2011
---- Day changed Fri Aug 05 2011
---- Day changed Sat Aug 06 2011
---- Day changed Sun Aug 07 2011
---- Day changed Mon Aug 08 2011
---- Day changed Tue Aug 09 2011
---- Day changed Wed Aug 10 2011
---- Day changed Thu Aug 11 2011
---- Day changed Fri Aug 12 2011
+--- Log closed Fri Jul 08 23:59:46 2011
+--- Log opened Fri Aug 12 16:36:24 2011
 17:02 < ibell> last day. thanks for everything dale
 17:03 < dkessler> you'll be missed. take the ficus
 17:03 < ibell> can't. it's company property

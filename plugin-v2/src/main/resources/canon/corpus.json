@@ -144,6 +144,26 @@
   "source": "rookery, forum, 2011-01-14 20:44"
  },
  {
+  "text": "skin contest. winner gets a diamond. mine's all black with headphones, obviously",
+  "source": "patchcord, forum, 2011-01-15 14:02"
+ },
+ {
+  "text": "i did a baker. flour on the apron and everything",
+  "source": "cairn, forum, 2011-01-16 05:20"
+ },
+ {
+  "text": "lighthouse keeper already wins sorry",
+  "source": "juni_lantern, forum, 2011-01-16 17:40"
+ },
+ {
+  "text": "winner is cairn. the flour got me. patch you look like a burglar",
+  "source": "rookery, forum, 2011-01-17 20:05"
+ },
+ {
+  "text": "it's a look",
+  "source": "patchcord, forum, 2011-01-18 12:10"
+ },
+ {
   "text": "is it just me or is it lagging like crazy",
   "source": "finchline, forum, 2011-01-20 19:58"
  },
@@ -280,6 +300,18 @@
   "source": "cairn, forum, 2011-03-20 05:15"
  },
  {
+  "text": "kit there is a dirt tower every 80 blocks between spawn and wherever you went. take them down",
+  "source": "rookery, forum, 2011-03-20 21:30"
+ },
+ {
+  "text": "theyre so i can find my way back. its really far",
+  "source": "kitbag, forum, 2011-03-20 21:41"
+ },
+ {
+  "text": "...fine. leave them. rule 4 still applies",
+  "source": "rookery, forum, 2011-03-20 21:50"
+ },
+ {
   "text": "someone dug a perfect tunnel straight to the diamonds under spawn. rule 4. i will know",
   "source": "rookery, forum, 2011-03-25 21:05"
  },
@@ -298,6 +330,10 @@
  {
   "text": "...ok it's a cave",
   "source": "rookery, forum, 2011-03-26 10:02"
+ },
+ {
+  "text": "trying to work out who's actually on this week so i know how much bread to bake. reply with your days",
+  "source": "cairn, forum, 2011-03-28 05:10"
  },
  {
   "text": "WOLVES!!! you can tame them with bones. i have three",
@@ -408,6 +444,18 @@
   "source": "cairn, forum, 2011-05-13 05:44"
  },
  {
+  "text": "week of 5/9: baked 142. 40 went home with me (bakery joke). 24 in the chest by the storehouse door, 20 in the spawn chest, and 1 went out with every crate that came back. check my math",
+  "source": "cairn, forum, 2011-05-15 05:40"
+ },
+ {
+  "text": "cairn you count bread",
+  "source": "finchline, forum, 2011-05-15 16:02"
+ },
+ {
+  "text": "i count everything",
+  "source": "cairn, forum, 2011-05-16 05:12"
+ },
+ {
   "text": "is anyone else seeing this. there are people walking around who arent online",
   "source": "rookery, forum, 2011-05-18 04:02"
  },
@@ -504,6 +552,10 @@
   "source": "rookery, forum, 2011-09-04 01:12"
  },
  {
+  "text": "same",
+  "source": "finchline, forum, 2011-09-04 16:20"
+ },
+ {
   "text": "logged in for a minute. weird seeing it again. the storehouse was tidy",
   "source": "cairn, forum, 2011-11-18 05:20"
  },
@@ -546,6 +598,182 @@
  {
   "text": "pw is my dogs name",
   "source": "sign (kit_base_2), 2011"
+ },
+ {
+  "text": "new ppl: take 1 of each pls and a bed -rook",
+  "source": "sign (spawn_kit_chest), 2011"
+ },
+ {
+  "text": "free bread -cairn",
+  "source": "sign (spawn_bread), 2011"
+ },
+ {
+  "text": "xmas tree goes here dec. -rook",
+  "source": "sign (spawn_tree), 2011"
+ },
+ {
+  "text": "nether hub coords on the sign over there x8 remember",
+  "source": "sign (spawn_portal), 2011"
+ },
+ {
+  "text": "creeper. wip wool ids on the forum -rook",
+  "source": "sign (spawn_creeper), 2011"
+ },
+ {
+  "text": "cake sat night be there -june",
+  "source": "sign (board_1), 2011"
+ },
+ {
+  "text": "WHO TOOK THE SPARE CART",
+  "source": "sign (board_2), 2011"
+ },
+ {
+  "text": "boosters are cursed -rook",
+  "source": "sign (board_3), 2011"
+ },
+ {
+  "text": "bread by the storehouse door",
+  "source": "sign (board_4), 2011"
+ },
+ {
+  "text": "spur: not done dont ask -finch",
+  "source": "sign (board_5), 2011"
+ },
+ {
+  "text": "mumble pw is the song",
+  "source": "sign (board_6), 2011"
+ },
+ {
+  "text": "boots. here. -rook",
+  "source": "sign (rookery_boots), 2011"
+ },
+ {
+  "text": "ill take it down later",
+  "source": "sign (rookery_pillar), 2011"
+ },
+ {
+  "text": "my floor. dont touch it. i mean it -rook",
+  "source": "sign (rookery_floor), 2011"
+ },
+ {
+  "text": "5/19 june: roof",
+  "source": "sign (ledger_1), 2011"
+ },
+ {
+  "text": "5/19 rail +3",
+  "source": "sign (ledger_2), 2011"
+ },
+ {
+  "text": "5/19 cairn: ???",
+  "source": "sign (ledger_3), 2011"
+ },
+ {
+  "text": "6/6 floor done",
+  "source": "sign (ledger_4), 2011"
+ },
+ {
+  "text": "9/2 barn corner",
+  "source": "sign (ledger_5), 2011"
+ },
+ {
+  "text": "9/4 im done",
+  "source": "sign (ledger_6), 2011"
+ },
+ {
+  "text": "rook cairn finch june",
+  "source": "sign (barn_names), 2011"
+ },
+ {
+  "text": "patch kit",
+  "source": "sign (barn_names_2), 2011"
+ },
+ {
+  "text": "close-up: lot, tin chalk lamp",
+  "source": "sign (barn_closeup), 2011"
+ },
+ {
+  "text": "bed was here 5/12. who took it -cairn",
+  "source": "sign (shed_bed), 2011"
+ },
+ {
+  "text": "creeper ate the first one",
+  "source": "sign (crater), 2011"
+ },
+ {
+  "text": "census. inner = on this week dont shear",
+  "source": "sign (pen_gate), 2011"
+ },
+ {
+  "text": "hub -> farms about 40s",
+  "source": "sign (hub_timetable_1), 2011"
+ },
+ {
+  "text": "spur: no",
+  "source": "sign (hub_timetable_2), 2011"
+ },
+ {
+  "text": "spare carts: 2 BRING THEM BACK",
+  "source": "sign (hub_timetable_3), 2011"
+ },
+ {
+  "text": "jct 1",
+  "source": "sign (jct_1), 2011"
+ },
+ {
+  "text": "jct 2",
+  "source": "sign (jct_2), 2011"
+ },
+ {
+  "text": "jct 3",
+  "source": "sign (jct_3), 2011"
+ },
+ {
+  "text": "booster line 2010-2011 rip",
+  "source": "sign (farm_stop), 2011"
+ },
+ {
+  "text": "rook: stop = maint sign on, nobody on, ionas key -f",
+  "source": "sign (finch_station_stop), 2011"
+ },
+ {
+  "text": "F2 F2 F2",
+  "source": "sign (june_f2), 2011"
+ },
+ {
+  "text": "lamp: still nothing -june",
+  "source": "sign (june_lamp), 2011"
+ },
+ {
+  "text": "mumble room push to talk",
+  "source": "sign (patch_mumble), 2011"
+ },
+ {
+  "text": "play from here -> -patch",
+  "source": "sign (patch_play), 2011"
+ },
+ {
+  "text": "CL ops keep out -ib",
+  "source": "sign (annex_manhole), 2011"
+ },
+ {
+  "text": "biscuit 2",
+  "source": "sign (kit_biscuit_2), 2011"
+ },
+ {
+  "text": "biscuit 3",
+  "source": "sign (kit_biscuit_3), 2011"
+ },
+ {
+  "text": "biscuit 4",
+  "source": "sign (kit_biscuit_4), 2011"
+ },
+ {
+  "text": "mob grinder dont laugh -kit",
+  "source": "sign (grinder), 2011"
+ },
+ {
+  "text": "it was a cave -patch",
+  "source": "sign (xray_cave), 2011"
  },
  {
   "text": "Hi Rowan, it's Theo from Copperline, returning your call. Look, I know it's been a week, I know. Iona's doing something really clever with the logs, it's going to be great, honestly. And don't worry about the invoice, mate. No worries at all, mate, I'll sort it. I'll keep it billable till someone comes home. I mean, till everyone's back on. Sorry, work thing. Means we don't delete it. Anyway. Call me back. Or don't, it's fine. Cheers. Bye.",
