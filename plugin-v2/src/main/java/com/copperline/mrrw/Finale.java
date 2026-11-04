@@ -305,20 +305,31 @@ public final class Finale implements Listener {
         String[][] homes = {{"rookery", "rookery_house"}, {"cairn", "cairn_storehouse_door_2011"}, {"finchline", "finch_hub"},
                 {"juni_lantern", "june_house"}, {"patchcord", "patchcord_relay_hut"}, {"kitbag", "kit_genuine_door"}};
         List<String> order = Canon.strings(canon.array("residents_join_order"));
-        long delay = 20L;
+        // each walks at most 60 blocks (Kit's hut is 800 away: his figure starts on its last approach), and the
+        // starts are staggered so the arrivals, and the "session X: end" lines, come in join order
+        double arrival = 2.0;
         for (String who : order) {
             String anchor = null;
             for (String[] h : homes) if (h[0].equals(who)) anchor = h[1];
             if (anchor == null) continue;
             final String home = anchor;
-            Location from = lastStood(w, who);
             int[] a = canon.anchor(home);
             Location door = new Location(w, a[0] + 0.5, a[1], a[2] - 1.5);
-            Bukkit.getScheduler().runTaskLater(plugin, () -> ghosts.play(w, who, ghosts.profileFor(who), Ghosts.walk(from, door, 4.0), List.of(), 0, 0, false, () -> {
+            Location from = lastStood(w, who);
+            double dist = Math.hypot(from.getX() - door.getX(), from.getZ() - door.getZ());
+            if (dist > 60) {
+                double f = 60 / dist;
+                from = new Location(w, door.getX() + (from.getX() - door.getX()) * f, door.getY(), door.getZ() + (from.getZ() - door.getZ()) * f);
+                dist = 60;
+            }
+            double walk = Math.max(0.5, dist / 4.0);
+            arrival = Math.max(arrival + 4.0, walk + 1.0);
+            long startTicks = (long) ((arrival - walk) * 20);
+            final Location start = from;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> ghosts.play(w, who, ghosts.profileFor(who), Ghosts.walk(start, door, 4.0), List.of(), 0, 0, false, () -> {
                 announce(engine("session_end").replace("{who}", who));
                 Nights.setDoorNear(w, canon.anchor(home), false);
-            }), delay);
-            delay += 60L;
+            }), startTicks);
         }
         // the players' figures, to where each first came home
         recorder.firstJoins().forEach((name, p) -> {

@@ -10,6 +10,7 @@ because RCON cannot speak as a player.
 from __future__ import annotations
 
 import http.cookiejar
+import urllib.error
 import re
 import subprocess
 import sys
@@ -36,7 +37,10 @@ def rcon(*args: str) -> str:
 
 
 def main() -> int:
-    get("/dev-act?n=10&back=/")
+    try:
+        get("/dev-act?n=10&back=/")   # the dev preview; the playtest site follows the plugin's act instead
+    except urllib.error.HTTPError:
+        pass
     get("/dopwreset.php", {"username": "rookery", "answer": "bracken"})
     get("/tcadmin/legacy/login", {"u": "rookery", "p": "cl-mirror-71e4"})
     page = get("/tcadmin/legacy/console", {"command": "HALTMRRW", "key": ciphers.IONA_TOKEN, "choice": "clean"})
@@ -54,7 +58,7 @@ def main() -> int:
         print("Theo's choice reply present:", "April copy" in t or "holes in it" in t)
     if RCON:
         print("server:", rcon("mrrw", "stop", code.group(1)))
-        time.sleep(18)
+        time.sleep(135)   # the stop is a scene now: the code and Kit's line, ninety seconds of residents walking home, the log
         print("server:", rcon("mrrw", "status"))
         status_page = get("/status")
         print("status page heartbeat:", "no heartbeat" if "no heartbeat" in status_page else "still beating")

@@ -77,9 +77,18 @@ public final class ActDirector {
     private static final java.util.Set<String> LATER_NOTES = java.util.Set.of("rookery_floor_sign");
 
     private void signBacks(World w) {
+        JsonObject offsets = canon.raw.has("sign_back_offsets") ? canon.object("sign_back_offsets") : new JsonObject();
         canon.signBackNotes.forEach((anchor, lines) -> {
             if (LATER_NOTES.contains(anchor)) return;
             int[] a = canon.anchor(anchor);
+            if (offsets.has(anchor)) {  // the exact sign the canon names (the lived-in world has many signs near each anchor)
+                com.google.gson.JsonArray o = offsets.getAsJsonArray(anchor);
+                if (w.getBlockAt(a[0] + o.get(0).getAsInt(), a[1] + o.get(1).getAsInt(), a[2] + o.get(2).getAsInt()).getState() instanceof Sign sign && !sign.isWaxed()) {
+                    for (int i = 0; i < 4; i++) sign.getSide(Side.BACK).line(i, Component.text(lines.get(i)));
+                    sign.update(true, false);
+                }
+                return;
+            }
             for (int dx = -3; dx <= 3; dx++) for (int dy = -1; dy <= 3; dy++) for (int dz = -3; dz <= 3; dz++) {
                 if (w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz).getState() instanceof Sign sign && !sign.isWaxed()) {
                     for (int i = 0; i < 4; i++) sign.getSide(Side.BACK).line(i, Component.text(lines.get(i)));

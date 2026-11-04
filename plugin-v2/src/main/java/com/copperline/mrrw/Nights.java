@@ -208,7 +208,7 @@ public final class Nights implements Listener {
     /** cairn's close-up fixtures sit inside his barn along the north wall, from the door: the plate just
      *  inside it, the hinge tin beside, the returns chest and the lamp (on a plank) further along. */
     private static final Map<String, int[]> FIXTURES = Map.of(
-            "lot", new int[] {0, 0, 1}, "hinge", new int[] {1, 0, 1}, "returns", new int[] {4, 0, 1}, "lamp", new int[] {5, 1, 1});
+            "lot", new int[] {0, 0, 1}, "hinge", new int[] {1, 0, 1}, "returns", new int[] {3, 0, 1}, "lamp", new int[] {5, 1, 1});
 
     static Block fixtureAt(World w, Canon canon, String what) {
         int[] a = canon.anchor("cairn_storehouse_door_2011");

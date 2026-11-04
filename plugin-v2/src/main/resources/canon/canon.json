@@ -305,6 +305,33 @@
    ""
   ]
  },
+ "sign_back_offsets": {
+  "rookery_house": [
+   0,
+   1,
+   -1
+  ],
+  "rules_signs": [
+   0,
+   0,
+   0
+  ],
+  "cairn_storehouse_door_2011": [
+   2,
+   1,
+   1
+  ],
+  "june_house": [
+   -3,
+   1,
+   -1
+  ],
+  "rookery_floor_sign": [
+   0,
+   0,
+   0
+  ]
+ },
  "engine_lines": {
   "replay_cue": "debug view: replay 2011-05-18 04:00",
   "lowpath_cue": "debug view: replay lowpath",

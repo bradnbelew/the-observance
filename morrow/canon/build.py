@@ -316,6 +316,9 @@ def write_plugin_canon() -> None:
             "june_house": ["juni_lantern:", "tower plan", "completed", "2011-05-18"],
             "rookery_floor_sign": ["floor:", "3 rows", "normalised", ""],
         },
+        # which sign each note goes on: Rook's door sign, the rules sign, cairn's close-up sign, June's F2 sign, the floor sign
+        "sign_back_offsets": {"rookery_house": [0, 1, -1], "rules_signs": [0, 0, 0], "cairn_storehouse_door_2011": [2, 1, 1],
+                              "june_house": [-3, 1, -1], "rookery_floor_sign": [0, 0, 0]},
         # the rework (2026-11): what the plugin needs to know about the lived-in world and the new beats
         "engine_lines": later.ENGINE_LINES,
         "skip_fallback": later.SKIP_FALLBACK,
