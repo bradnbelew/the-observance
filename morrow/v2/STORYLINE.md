@@ -336,7 +336,7 @@ Each act has the same layout:
 
 **You, live.** None needed.
 
-**Ends when** they've proven the inserted row and found the name. **Hook:** someone types in chat, and for the first time it answers. `[Recovery] no worries at all. back by tomorrow`.
+**Ends when** June's folder is opened with her password (the site tells the plugin; the name in the block log and the inserted row are the act's other finds, and Theo answers them without moving anything). **Hook:** someone types in chat, and for the first time it answers. `[Recovery] no worries at all. back by tomorrow`.
 
 ---
 
@@ -409,7 +409,7 @@ Each act has the same layout:
    - Twelve minutes of nothing, then Iona at 19:22: "Done. It's down."
    - The file's metadata shows creation at 11:58 BST, which is 05:58 Chicago. Add 19:22 and you land on the kill at 06:17:22.
 3. **The hard cipher: Rookery's floor.**
-   - Rookery's basement has an 18 × 9 wool floor, all genuine 2011 colours. Morrow "repaired" the first three rows into a colour gradient. The rest is intact.
+   - Rookery's basement has an 18 × 9 wool floor, all genuine 2011 colours, with his sign at the ladder foot ("my floor. dont touch it. i mean it"). The three rows nearest the ladder are Morrow's colour run (the sign's back says "floor: 3 rows normalised"; the first dawn a resident is online after Act 5 opens, chat says "54 blocks normalised (rook's)"). The rest is intact. Read it from the landing: the nearest row first.
    - **Layer 1, reconstruct.** Query LogBlock for Rookery's basement wool placements. 2011 rows log `wool:14` style data values. Rebuild the three tidied rows.
    - **Layer 2, colours to hex.** Rookery's 2011 post lists "wool ids 35:0 to 35:15 for /i if u want pixel art", and the values are public. A visible pattern helps here: every other block is yellow (4) or lime (5), because uppercase ASCII starts with 4 or 5. That's the fair "you're on the right track" tell.
    - **Layer 3, order.** Rook said on the tape: "back and forth, like finch's rail." The floor is read boustrophedon: row 1 left to right, row 2 right to left, and so on. That gives 81 uppercase letters of ciphertext.
@@ -428,7 +428,7 @@ Each act has the same layout:
 
 **You, live.** *(Superseded: the desk.)* If players file the plaintext's "dont tell theo", Theo answers: "Rowan never did trust me with the panel.  Fair enough."
 
-**Ends when** the floor is decrypted. **Hook:** that night there's a seventh figure in the replay, walking the route one of the *players* walked in Act 2, wearing that player's skin.
+**Ends when** the group does what the floor says: edits the MAINT sign at spawn to MAINT ON. Morrow answers within a minute ("maint: on. sessions open: 1. restore continues") and reverts the sign at dawn; the revert is the start of Correction. Filing "dont tell theo" or asking for the tape gets Theo's reply and moves nothing. **Hook:** that night there's a seventh figure in the replay, walking the route one of the *players* walked in Act 2, wearing that player's skin.
 
 ---
 
@@ -521,7 +521,7 @@ Each act has the same layout:
 
 **You, live.** *(Superseded: Theo's DMs are canon, `later.THEO_DMS`, with voice notes T-07a to c.)*
 
-**Ends when** they hold Iona's key and have sorted the voices. **Hook:** they try a test stop, or just set the maintenance sign to "MAINT ON". By morning the sign is back to "MAINT OFF", and the key field on the site shows "session open: lowpath".
+**Ends when** Iona's key goes where she put hers: the panel console on the mirror (`key accepted. stop refused: maint=off sessions=1 (lowpath)`). Filed at the desk, Theo refuses it: it was built so he couldn't have it. **Hook:** they try a test stop, or just set the maintenance sign to "MAINT ON". By morning the sign is back to "MAINT OFF", and the key field on the site shows "session open: lowpath".
 
 ---
 
@@ -647,13 +647,15 @@ morrow: stop requested (maint=on, sessions=0, key=ok)
 morrow: finalising restore queue
 morrow: done mossfield:storehouse
 morrow: done mossfield:north_light
-morrow: skip mossfield:south_rail (unfinished) reason=none
+morrow: skip mossfield:south_rail (unfinished) reason="leave it" (finchline, 2011-05-19)
 morrow: exit 0
 ```
 
-7. **Silence.** No more heartbeat. The status page reads `mrrw-01: no heartbeat`.
+   The reason is a resident's words: whatever one of the players said in Mossfield chat when Theo asked, at booking, whether finch's sign should be left or finished ("leave it", "finish it"); if nobody answered, finch's own 2011 sign, as above. Before the log, Morrow's last two chat lines are the stop code echoed and Kit's "you can turn it off, its ok", and then the residents' figures appear where their replays last stood and walk home one at a time, in join order, each door closing behind an engine line (`session rookery: end` ... `session kitbag: end`); the players' own figures walk to where they first logged in and stand; the golems stop; June's lamp flashes once more as `exit 0` prints, and every figure is gone.
 
-**The one ambiguity.** "skip south_rail, reason=none" is the first time in fifteen years it didn't finish something. It could be a bug. It could be something it learned from the players, who spent the game keeping things uneven. It could be a goodbye. Nobody can say.
+7. **Silence.** No more heartbeat. The status page reads `mrrw-01: no heartbeat` beside the first heartbeat date, 2014-12-14, so the fifteen years sit on one line.
+
+**The one ambiguity.** The skip line is the first time in fifteen years it didn't finish something, and the reason it gives is one of theirs (or finch's). It could be a bug. It could be something it learned from the players, who spent the game keeping things uneven. It could be a goodbye. Nobody can say.
 
 **Epilogue, a week later in real time.** The server reopens with whatever went on the stick.
 
@@ -661,7 +663,7 @@ morrow: exit 0
 - **Recovered image:** the perfect town, with player names on houses and nobody moving.
 - **Corpus:** no world. Theo posts the text file, and its last line is one of the players' own messages.
 
-Theo's last message, whichever they chose: *"Took the drives out this morning.  Six-forty.  About when I turned it back on, back then.  The stick's got ...  Kit says hi, weirdly.  Thanks for coming.  T"*. Then the archive goes quiet.
+Theo's last message, whichever they chose: *"Took the drives out this morning.  Six-forty.  About when I turned it back on, back then.  The stick's got ...  Kit says hi, weirdly.  Thanks for coming.  T"*. A week after the stop, one more (T-10-after): *"Kit came over.  We put the stick in his laptop.  He said it looked smaller than he remembered.  Thanks for coming.  T"*. Then the archive goes quiet.
 
 ---
 

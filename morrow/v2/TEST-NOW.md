@@ -49,7 +49,8 @@ Places worth visiting (the real Mossfield, from `morrow/canon/layout.py`):
 
 | Place | Coordinates |
 | --- | --- |
-| Spawn rules signs | `-236 71 25` |
+| Spawn rules signs (on their plinth) | `-236 72 25` |
+| Rook's newbie chest, the board, the portal, the creeper | `-237 71 28`, `-234 72 35`, `-226 71 28`, `-227 72 16` |
 | Rookery's wool floor | `-270 62 -5` |
 | Theo's museum, reading room, map wall | `-252 70 -30`, `-244 70 -30`, `-236 70 -30` |
 | June's tower and flags | `-243 66 249` (flags at height 87) |
@@ -57,6 +58,8 @@ Places worth visiting (the real Mossfield, from `morrow/canon/layout.py`):
 | finch's lock | `-224 70 -116` |
 | The maintenance annex and dust corridor | `-286 35 28`, `-286 35 36` |
 | The meadow (hold a map in the 128-block cell around it) | `-180 71 55` |
+| finch's junctions (levers beside the rails) | `-215 71 -60`, `-170 72 -120`, `-140 74 -120` |
+| Iona's ops room and its manhole | `-286 35 28` (the manhole sign is on the hill north of it) |
 
 ## The automated checks
 
@@ -64,9 +67,13 @@ Places worth visiting (the real Mossfield, from `morrow/canon/layout.py`):
 python -m morrow.canon.verify
 python -m morrow.world.selftest
 python -m morrow.world.e2e_site
+python -m morrow.world.livecheck world
+python -m morrow.world.livecheck acts
 npm --prefix discord-v2 run dry
 ```
 
-The site test needs the preview running. To rebuild the stand-in world from scratch, run
-`python -m morrow.world.pipeline --synthetic`, delete `build/mrrw-v2-test/plugins/mrrw/`, then start
-Paper with `--forceUpgrade` and run `/mrrw install`.
+The site test needs the preview running; the two `livecheck`s need the Paper test server running
+with the plugin installed. To rebuild the world from scratch: `python -m morrow.world.build2011
+<copy of world/beta/Mossfield-source>` (the pristine Beta world plus the walk), then `python -m
+morrow.world.pipeline --beta <that copy>`, delete everything in `build/mrrw-v2-test/plugins/mrrw/`
+except `config.yml`, start Paper with `--forceUpgrade` and run `/mrrw install`.

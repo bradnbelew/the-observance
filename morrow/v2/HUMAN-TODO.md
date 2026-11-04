@@ -93,10 +93,13 @@ RECORDING-SCRIPTS.md. If a note is missing, the page still shows the words.
 
 ## 6. Skins for the replayed figures
 
-**Done 2026-11-01.** All eight PNGs in `morrow/v2/skins/` were uploaded to mineskin.org (unlisted)
-and the signed textures are in the plugin's default `config.yml`, so a fresh install gets them. If
-the live server already has a `plugins/mrrw/config.yml`, copy the `skins:` block across and run
-`/mrrw reload`. To change a skin, re-upload its PNG and paste the new value and signature.
+**Redone 2026-11-04.** The eight skins were repainted by hand (`morrow/canon/skins.py`: hoods,
+caps, the apron, the camera strap, the headphones, lowpath's seams) and uploaded to mineskin.org
+(unlisted; receipts in `morrow/v2/skins/mineskin.json`). The signed textures are in the plugin's
+default `config.yml`, so a fresh install gets them. If the live server already has a
+`plugins/mrrw/config.yml`, copy the `skins:` block across and run `/mrrw reload`. Preview sheet:
+`morrow/v2/rework-previews/skins.png`. Have a look at them on a Mannequin in a real client once
+(`/mrrw act 5`, `/mrrw replay`): I cannot see them from here.
 
 ## 7. Discord
 
@@ -162,6 +165,25 @@ npm --prefix discord-v2 run dry
    intended (it's "mrrw-01", in-fiction). Log in as op so you don't get handed a key sector.
 
 ## 9. Playtest
+
+**The rework's in-game look (2026-11-04).** Things only a real client can confirm, in one session on
+the test server (`TEST-NOW.md`), as a non-op resident:
+
+1. Act 5 at dusk: the cue line, the figures starting near you, the pace, the chat bubbles following
+   the heads, the skins. Do they read as people?
+2. Act 5: edit the MAINT sign at spawn to `MAINT ON` by hand (right-click the unwaxed sign). Within a
+   minute `[Recovery] maint: on. sessions open: 1. restore continues`; after `/mrrw dawn` it reverts
+   and the act moves to 6.
+3. Act 7: open Iona's chest (`-238 61 232`): the counts read top to bottom in the GUI; next dawn
+   Morrow merges it.
+4. Act 8 and 9: place a bed on the west wall of lowpath's place (`-214 73 86`). Act 8: queued, then
+   gone at dawn. Act 9: `bed kept`, and at dusk lowpath walks in and lies down (if the Mannequin
+   sleeping pose doesn't take, it stops on the bed for three seconds, which is fine).
+5. June's yard: time the torch clock against the lamp (both 5 s).
+6. finch's junction 1: with the lever ON a cart from the hub should take the spur. If it goes the
+   other way, flip the `on` flags in `morrow/canon/logblock.py` `JUNCTION_LEVERS` and rebuild the
+   canon; the world needs no change.
+7. The finale from a player's seat (the code in chat at the annex, the residents walking home).
 
 Run Acts 1-3 with one friend before inviting the group. Watch quietly and note where they get
 stuck. `morrow/v2/OPERATOR-RUNBOOK.md` covers running each act; `morrow/v2/SOLUTIONS.md` is the

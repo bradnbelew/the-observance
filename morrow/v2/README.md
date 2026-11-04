@@ -29,15 +29,23 @@ python -m morrow.canon.verify
 python -m morrow.world.selftest
 ```
 
+With the test server running (`TEST-NOW.md`): `python -m morrow.world.livecheck world` reads every
+cipher object back from the live world the way a player faces it and decodes it; `livecheck acts`
+drives Acts 2-9 and checks what Morrow changes; `e2e_site` and `e2e_finale` cover the site and the
+stop. All of it was green on 2026-11-04 (`REWORK-AUDIT.md`).
+
 `build` regenerates the site bundles (`dashboard/src/lib/canon/`) and the plugin canon
 (`plugin-v2/src/main/resources/canon/`). `verify` proves every cipher round-trips and enforces
 the 2011 writing rules. `world.selftest` proves the injector writes decodable objects into a
 Beta world.
 
-## What's built (2026-10-12)
+## What's built (2026-11-04)
 
-**All ten acts are built and tested on a stand-in world.** What's left needs a human: see
-`HUMAN-TODO.md`. To try it today: `TEST-NOW.md`. Answer key: `SOLUTIONS.md` (generated).
+**All ten acts are built and tested on the real Beta world, reworked after the owner's playtest**
+(`PLAYTEST-CHANGELIST.md` -> `REWORK-PLAN.md` -> `REWORK-AUDIT.md`): a lived-in world, real-time
+figures, every ordered clue in reading order, in-world and panel hand-ins, Theo's arc, the finale
+as a scene. What's left needs a human: see `HUMAN-TODO.md`. To try it today: `TEST-NOW.md`.
+Answer key: `SOLUTIONS.md` (generated).
 
 | Piece | State | Proof |
 | --- | --- | --- |
@@ -58,8 +66,12 @@ Beta world.
   redstone dust power (0-15, visible in F3 and by brightness), not light blocks.
 - **C19 (Thumbs.db):** replaced by an EXIF thumbnail. Theo's cropped JPEG still carries the
   uncropped original as its embedded thumbnail. Same forensic idea, simpler for players' tools.
-- **C3 (finch's commute):** not built (rail switching needs your hand-built rail network). The
-  floor plaintext is reachable without it.
+- **C3 (finch's commute):** built (2026-11): three lever junctions on the main line, her 11 June
+  lever rows in LogBlock, and her station chest with the stop in her words.
+- **D4 (the second spawner):** dropped. Beta 1.5 had no ravines.
+- **Hand-ins (2026-11):** Act 3 ends when June's folder is opened with her password, Act 5 when
+  the group sets MAINT ON and Morrow reverts it, Act 7 when Iona's key goes into the panel console.
+  The desk still answers everything; it gates Acts 4, 6, 8 and 9.
 - **The checklist** reaches players as a Theo drop in Act 5. The closet photo opens Theo's `box/`
   folder (`chi07-` + 2010) in Act 8, instead of the changelog being a free drop.
 - **Hints** are text only. The generic H-1 to H-6 voice notes aren't used.
