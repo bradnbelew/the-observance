@@ -21,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -34,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import com.google.gson.JsonElement;
 
 /**
  * What the restore job does to the world while players are around.
@@ -52,9 +54,13 @@ import java.util.function.Consumer;
 public final class RecoveryService implements Listener {
     private static final int RADIUS = 14;
     private static final String[][] BUILDS = {
-            {"rookery_house", "rook's"}, {"cairn_storehouse_door_2011", "cairn storehouse"}, {"cairn_farm", "the farms"},
+            {"rookery_house", "rook's"}, {"cairn_storehouse_door_2011", "cairn storehouse"}, {"cairn_storehouse_jog", "cairn storehouse"},
+            {"cairn_farm", "the farms"}, {"sheep_pen", "the farms"},
             {"june_house", "june's point"}, {"june_tower", "the tower"}, {"patchcord_relay_hut", "patch's hut"},
-            {"finch_hub", "rail hub"}, {"spawn", "spawn"}, {"lowpath_place", "lowpath's place"},
+            {"finch_hub", "rail hub"}, {"finch_spur", "the spur"}, {"spawn", "spawn"}, {"spawn_creeper", "spawn"},
+            {"lowpath_place", "lowpath's place"},
+            {"theo_museum", "the archive"}, {"theo_reading_room", "the archive"}, {"theo_map_wall", "the archive"},
+            {"rookery_ladder_room", "the ladder room"}, {"maintenance_annex", "the annex"},
     };
 
     private final Plugin plugin;
@@ -127,8 +133,103 @@ public final class RecoveryService implements Listener {
         if (build != null) {
             placed.put(b.getLocation(), build);
             dirty = true;
+            // Act 8: a bed at lowpath's place is the lesson made visible the moment it happens
+            if (act == 8 && b.getType().name().endsWith("_BED") && build.equals("lowpath's place")) announce(engine("bed_queued"));
         }
     }
+
+    private String engine(String key) {
+        return canon.object("engine_lines").get(key).getAsString();
+    }
+
+    /** Iona's key chest: the first time it is opened, Morrow queues it, and the next dawn merges its stacks. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onOpen(InventoryOpenEvent event) {
+        if (!active() || state.done("iona_chest.opened") || event.getInventory().getLocation() == null) return;
+        int[] k = canon.anchor("iona_key_chest");
+        Location l = event.getInventory().getLocation();
+        if (l.getBlockY() != k[1] || l.getBlockZ() != k[2] || l.getBlockX() < k[0] - 1 || l.getBlockX() > k[0] + 1) return;
+        state.markDone("iona_chest.opened");
+        JsonObject d = new JsonObject();
+        d.addProperty("by", event.getPlayer().getName());
+        d.addProperty("act", state.act());
+        journal.write("morrow.iona_chest_opened", d);
+    }
+
+    private void tidyIonaChest(World world) {
+        if (!state.done("iona_chest.opened") || state.done("iona_chest.tidied")) return;
+        int[] k = canon.anchor("iona_key_chest");
+        Block b = world.getBlockAt(k[0], k[1], k[2]);
+        if (!(b.getState() instanceof Chest chest)) return;
+        Inventory inv = chest.getInventory();
+        ItemStack[] after = sorted(inv.getContents());
+        if (after != null) inv.setContents(after);
+        state.markDone("iona_chest.tidied");
+        announce(engine("chest_normalised"));
+        journal.write("morrow.iona_chest_tidied", new JsonObject());
+    }
+
+    /** Rook's newbie chest at spawn: whatever was taken comes back at dawn. */
+    private void refillKitChest(World world) {
+        int[] a = canon.anchor("spawn_kit_chest");
+        Block b = world.getBlockAt(a[0], a[1], a[2]);
+        if (!(b.getState() instanceof Chest chest)) return;
+        Inventory inv = chest.getInventory();
+        com.google.gson.JsonArray kit = canon.array("kit_chest");
+        boolean changed = false;
+        for (int i = 0; i < kit.size() && i < inv.getSize(); i++) {
+            JsonObject it = kit.get(i).getAsJsonObject();
+            Material m = Material.matchMaterial(it.get("item").getAsString());
+            if (m == null) continue;
+            int n = it.get("count").getAsInt();
+            ItemStack have = inv.getItem(i);
+            if (have != null && have.getType() == m && have.getAmount() >= n) continue;
+            inv.setItem(i, new ItemStack(m, n));
+            changed = true;
+        }
+        if (changed) announce(engine("kit_restored"));
+    }
+
+    /**
+     * Act 5: the first dawn a resident is online after the act opens, Morrow "normalises" the three
+     * rows of Rook's floor nearest the ladder into a colour run, says so, and leaves its note on the
+     * back of his sign. LogBlock still holds every original block.
+     */
+    private void tidyFloor(World world) {
+        if (state.act() < 5 || state.done("act5.floor_tidy")) return;
+        if (world.getPlayers().stream().noneMatch(p -> !p.isOp() || plugin.getConfig().getBoolean("auto_advance_count_ops", false))) return;
+        JsonObject floor = canon.object("floor");
+        com.google.gson.JsonArray tidied = floor.getAsJsonArray("tidied"), rows = floor.getAsJsonArray("tidied_rows"), dz = floor.getAsJsonArray("row_dz");
+        int[] f = canon.anchor("rookery_cellar_floor");
+        int n = 0;
+        for (JsonElement re : rows) {
+            int r = re.getAsInt();
+            com.google.gson.JsonArray row = tidied.get(r).getAsJsonArray();
+            for (int c = 0; c < row.size(); c++) {
+                Block b = world.getBlockAt(f[0] + c, f[1], f[2] + dz.get(r).getAsInt());
+                Material want = WOOL[row.get(c).getAsInt()];
+                if (b.getType() != want) {
+                    b.setType(want, false);
+                    n++;
+                }
+            }
+        }
+        state.markDone("act5.floor_tidy");
+        announce(engine("floor_tidy"));
+        int[] s = canon.anchor("rookery_floor_sign");
+        if (world.getBlockAt(s[0], s[1], s[2]).getState() instanceof org.bukkit.block.Sign sign && !sign.isWaxed()) {
+            List<String> note = canon.signBackNotes.get("rookery_floor_sign");
+            for (int i = 0; i < 4 && note != null; i++) sign.getSide(org.bukkit.block.sign.Side.BACK).line(i, Component.text(note.get(i)));
+            sign.update(true, false);
+        }
+        JsonObject d = new JsonObject();
+        d.addProperty("blocks_changed", n);
+        journal.write("morrow.floor_tidy", d);
+    }
+
+    static final Material[] WOOL = {Material.WHITE_WOOL, Material.ORANGE_WOOL, Material.MAGENTA_WOOL, Material.LIGHT_BLUE_WOOL,
+            Material.YELLOW_WOOL, Material.LIME_WOOL, Material.PINK_WOOL, Material.GRAY_WOOL, Material.LIGHT_GRAY_WOOL, Material.CYAN_WOOL,
+            Material.PURPLE_WOOL, Material.BLUE_WOOL, Material.BROWN_WOOL, Material.GREEN_WOOL, Material.RED_WOOL, Material.BLACK_WOOL};
 
     private void tick() {
         if (dirty) save();
@@ -171,6 +272,9 @@ public final class RecoveryService implements Listener {
             if (sorted > 0) announce(sorted + (sorted == 1 ? " chest" : " chests") + " normalised");
         }
         if (act >= 3) tidyOneTallyChest(world);
+        refillKitChest(world);
+        tidyFloor(world);
+        tidyIonaChest(world);
         if (!restored.isEmpty() || !normalised.isEmpty()) {
             JsonObject d = new JsonObject();
             d.addProperty("restored", restored.toString());

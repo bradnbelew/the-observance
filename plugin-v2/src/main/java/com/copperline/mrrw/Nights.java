@@ -18,9 +18,11 @@ import org.bukkit.block.data.type.Switch;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -54,6 +56,46 @@ public final class Nights implements Listener {
     private final List<Location> playerDoors = new ArrayList<>();
     private long lastSoundReplay;
     private long lastRegisterDay = -1;
+    private Runnable onMaintReverted;
+
+    /** Act 5's hand-in: when Morrow reverts the sign the players set to MAINT ON, the campaign moves on. */
+    public void onMaintReverted(Runnable r) {
+        this.onMaintReverted = r;
+    }
+
+    private String engine(String key) {
+        return canon.object("engine_lines").get(key).getAsString();
+    }
+
+    private void announce(String text) {
+        Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(text, NamedTextColor.GRAY)));
+        journal.recovery(text);
+    }
+
+    /**
+     * The floor's plaintext says the stop needs "maint sign says on". Editing the unwaxed MAINT sign to
+     * MAINT ON (Act 5+) gets an answer within a minute: the engine notes one session still open, and
+     * the restore continues; at the next dawn it puts the sign back (and, in Act 5, that is the advance).
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSignChange(SignChangeEvent e) {
+        if (silent() || state.act() < 5) return;
+        int[] a = canon.anchor("maint_sign");
+        Block b = e.getBlock();
+        if (b.getX() != a[0] || b.getY() != a[1] || b.getZ() != a[2]) return;
+        String line0 = e.line(0) == null ? "" : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(e.line(0)).trim().toUpperCase();
+        if (!line0.equals(canon.string("maint_sign_text"))) return;
+        boolean first = !state.done("act5.maint_on");
+        state.markDone("act5.maint_on");
+        JsonObject d = new JsonObject();
+        d.addProperty("by", e.getPlayer().getName());
+        d.addProperty("act", state.act());
+        d.addProperty("first", first);
+        journal.write("morrow.maint_on", d);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!silent()) announce(engine("maint_on"));
+        }, 20L * (20 + (b.hashCode() & 31)));
+    }
 
     public Nights(Plugin plugin, Canon canon, State state, Journal journal, PathRecorder recorder, ModernLayer modern) {
         this.plugin = plugin;
@@ -80,7 +122,7 @@ public final class Nights implements Listener {
             lastRegisterDay = day;
             presenceRegister(w);
         }
-        if (act >= 8 && time < 200) revertUnwaxedMaint(w);
+        if (act >= 5 && time < 200) revertUnwaxedMaint(w);
         if (act >= 9) once("act9.meadow_redraw", () -> modern.meadow(w, new ArrayList<>(recorder.firstJoins().values())));
         if (act >= 9) once("act9.pots", () -> recorder.firstJoins().values().forEach(p ->
                 Corrections.placePot(w.getBlockAt((int) p[0] + 2, (int) p[1], (int) p[2] + 2), Canon.strings(canon.array("pot_for_players")), null)));
@@ -243,7 +285,7 @@ public final class Nights implements Listener {
         if (reg.get("players_doors_open").getAsBoolean()) for (Location l : playerDoors) setDoor(l.getBlock(), true);
     }
 
-    private static void setDoorNear(World w, int[] a, boolean open) {
+    static void setDoorNear(World w, int[] a, boolean open) {
         for (int dx = -4; dx <= 4; dx++) for (int dy = -1; dy <= 3; dy++) for (int dz = -4; dz <= 4; dz++) {
             Block b = w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz);
             if (b.getType().name().endsWith("_DOOR") && !b.getType().name().startsWith("IRON")) {
@@ -260,7 +302,7 @@ public final class Nights implements Listener {
         }
     }
 
-    // ---- Act 8+: Morrow puts the MAINT sign back unless it's waxed -----------------------------
+    // ---- Act 5+: Morrow puts the MAINT sign back at dawn unless it's waxed ----------------------
 
     private void revertUnwaxedMaint(World w) {
         int[] a = canon.anchor("maint_sign");
@@ -270,7 +312,14 @@ public final class Nights implements Listener {
                 s.getSide(Side.FRONT).line(0, Component.text("MAINT OFF"));
                 for (int i = 1; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.empty());
                 s.update(true, false);
-                journal.write("morrow.maint_reverted", new JsonObject());
+                announce(engine("maint_revert"));
+                JsonObject d = new JsonObject();
+                d.addProperty("act", state.act());
+                journal.write("morrow.maint_reverted", d);
+                if (state.act() == 5 && state.done("act5.maint_on") && !state.done("act5.maint_reverted")) {
+                    state.markDone("act5.maint_reverted");
+                    if (onMaintReverted != null) onMaintReverted.run();
+                }
             }
         }
     }

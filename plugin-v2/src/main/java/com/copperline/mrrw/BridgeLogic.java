@@ -72,21 +72,22 @@ final class BridgeLogic {
     /** Desk refs that move the act, as ref -> the act they finish (the advance is from -> from + 1). */
     static final Map<String, Integer> DESK_ADVANCES = new LinkedHashMap<>();
     static {
-        DESK_ADVANCES.put("logblock_morrow", 3);
-        DESK_ADVANCES.put("morrow", 3);
-        DESK_ADVANCES.put("found_morrow", 3);
+        DESK_ADVANCES.put("june_folder", 3);     // June's folder opened with her password (the site posts it)
         DESK_ADVANCES.put("unmask", 4);
-        DESK_ADVANCES.put("floor", 5);
-        DESK_ADVANCES.put("moss_0518", 5);
+        DESK_ADVANCES.put("unmask_lot", 4);
+        DESK_ADVANCES.put("unmask_date", 4);
+        DESK_ADVANCES.put("unmask_waived", 4);
+        // 5 -> 6 happens in the world: MAINT ON set, then reverted at dawn (Nights -> Campaign.advance)
         DESK_ADVANCES.put("restart", 6);
-        DESK_ADVANCES.put("key", 7);
+        DESK_ADVANCES.put("restart_node", 6);
+        DESK_ADVANCES.put("console_key", 7);     // Iona's key entered in the panel console (the site posts it)
         DESK_ADVANCES.put("kit", 8);
         DESK_ADVANCES.put("ingest", 8);
         DESK_ADVANCES.put("brief", 9);
     }
 
     /** Theo voices the bot posts to #general when their reply time passes. */
-    static final Set<String> THEO_VOICES = Set.of("T-04a", "T-06a", "T-08a", "T-09a", "T-09b");
+    static final Set<String> THEO_VOICES = Set.of("T-04a", "T-04c", "T-04d", "T-04e", "T-06a", "T-06d", "T-08a", "T-09a", "T-09b");
 
     /** Minutes one resident must have been online (from Act 2) before the next dawn moves 2 -> 3. */
     static final long SESSION_MINUTES = 45;
@@ -241,11 +242,12 @@ final class BridgeLogic {
         return best;
     }
 
+    /** Never printed: the canon's fallback quotes finch's own sign instead (canon "skip_fallback"). */
     static final String SKIP_NONE = "skip mossfield:south_rail (unfinished) reason=none";
 
-    /** The stop log's skip line, with the resident's own words if one asked for it. */
-    static String skipLine(Said s, ZoneId zone) {
-        if (s == null) return SKIP_NONE;
+    /** The stop log's skip line, with the resident's own words if one asked for it, else the fallback. */
+    static String skipLine(Said s, ZoneId zone, String fallback) {
+        if (s == null) return fallback == null || fallback.isBlank() ? SKIP_NONE : fallback;
         String text = s.text().trim();
         if (text.length() > 60) text = text.substring(0, 60).trim();
         LocalDate day = LocalDate.ofInstant(Instant.ofEpochMilli(s.at() > 0 ? s.at() : System.currentTimeMillis()), zone);

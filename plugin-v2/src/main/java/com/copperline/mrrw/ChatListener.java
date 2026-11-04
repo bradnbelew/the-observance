@@ -72,7 +72,7 @@ public final class ChatListener implements Listener {
         journal.feed("chat", line);  // relayed to #bridge by the Discord bot
         loadKit();
         roster.said(name, text);
-        canon.corpus.add(text, name + ", in Mossfield", true);
+        canon.corpus.add(text, name + ", in Mossfield", true, System.currentTimeMillis());
         int act = state.act();
         String reply;
         if (text.trim().equalsIgnoreCase("!status")) {
@@ -80,7 +80,7 @@ public final class ChatListener implements Listener {
         } else if (act >= 3 && System.currentTimeMillis() - lastReply > COOLDOWN_MS && ThreadLocalRandom.current().nextInt(2) == 0) {
             // random, not text-keyed: repeating a question must be able to get an answer
             Corpus.Reply r = canon.corpus.reply(text, act, ThreadLocalRandom.current().nextLong(),
-                    System.currentTimeMillis() - FRESH_WINDOW_MS);
+                    System.currentTimeMillis() - FRESH_WINDOW_MS, name, System.currentTimeMillis());
             if (r.text().isBlank()) return;
             reply = r.text();
             JsonObject d = new JsonObject();

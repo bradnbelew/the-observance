@@ -56,7 +56,7 @@ public final class MrrwPlugin extends JavaPlugin {
 
         ghosts = new Ghosts(this);
         PathRecorder recorder = new PathRecorder(this, state);
-        finale = new Finale(this, canon, state, journal, ghosts, roster);
+        finale = new Finale(this, canon, state, journal, ghosts, roster, recorder);
         modern = new ModernLayer(this, canon, state, journal);
         recovery = new RecoveryService(this, canon, state, journal);
         corrections = new Corrections(this, canon, state, journal);
@@ -72,8 +72,9 @@ public final class MrrwPlugin extends JavaPlugin {
             }
         });
         nights = new Nights(this, canon, state, journal, recorder, modern);
-        campaign = new Campaign(this, state, journal, this::applyAct);
+        campaign = new Campaign(this, canon, state, journal, this::applyAct);
         recovery.onDawn(w -> campaign.onDawn());
+        nights.onMaintReverted(() -> campaign.advance(6, "MAINT ON set by the players and reverted at dawn"));
         ChatListener chat = new ChatListener(this, canon, state, roster, journal);
         var pm = getServer().getPluginManager();
         pm.registerEvents(new PingListener(canon, state, roster, finale), this);
@@ -82,12 +83,13 @@ public final class MrrwPlugin extends JavaPlugin {
         pm.registerEvents(recovery, this);
         pm.registerEvents(recorder, this);
         pm.registerEvents(nights, this);
+        pm.registerEvents(replays, this);
         pm.registerEvents(fixtures, this);
         pm.registerEvents(finale, this);
         pm.registerEvents(new FinchLock(canon), this);
         director = new ActDirector(this, canon, state, journal);
         finale.director(director);
-        bridge = new Bridge(this, state, canon, roster, finale, campaign, chat, journal);
+        bridge = new Bridge(this, state, canon, roster, finale, campaign, chat, journal, recorder);
         bridge.start();
         getServer().getScheduler().runTask(this, () -> {
             modern.reattachMaps();

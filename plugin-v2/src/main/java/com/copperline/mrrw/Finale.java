@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +50,7 @@ public final class Finale implements Listener {
     private final Journal journal;
     private final Ghosts ghosts;
     private final PlayerRoster roster;
+    private final PathRecorder recorder;
     private final Random rng = new Random();
     private ActDirector director;
     private boolean ready;
@@ -56,14 +58,24 @@ public final class Finale implements Listener {
     private List<String> finalLog;
     private long lastBeat;
 
-    public Finale(Plugin plugin, Canon canon, State state, Journal journal, Ghosts ghosts, PlayerRoster roster) {
+    public Finale(Plugin plugin, Canon canon, State state, Journal journal, Ghosts ghosts, PlayerRoster roster, PathRecorder recorder) {
         this.plugin = plugin;
         this.canon = canon;
         this.state = state;
         this.journal = journal;
         this.ghosts = ghosts;
         this.roster = roster;
+        this.recorder = recorder;
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 100L, 100L);
+    }
+
+    private String engine(String key) {
+        return canon.object("engine_lines").get(key).getAsString();
+    }
+
+    private void announce(String text) {
+        Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text(text, NamedTextColor.GRAY)));
+        journal.recovery(text);
     }
 
     /** June's lamp lives in the ActDirector (it runs the flasher); set once both exist. */
@@ -157,7 +169,10 @@ public final class Finale implements Listener {
             return;
         }
         switch (check(code)) {
-            case OK -> stop(p, code.charAt(0));
+            case OK -> {
+                lastCode = code;
+                stop(p, code.charAt(0));
+            }
             case EXPIRED -> p.sendMessage(Component.text("[mrrw] key expired. get a new code from the stop console", NamedTextColor.GRAY));
             default -> p.sendMessage(Component.text("[mrrw] key mismatch", NamedTextColor.GRAY));
         }
@@ -205,6 +220,7 @@ public final class Finale implements Listener {
         Check c = check(code);
         if (c == Check.EXPIRED) return "key expired: get a new code from the website's stop console";
         if (c != Check.OK) return "key mismatch (fingerprint " + fingerprint() + "; compare with the website's)";
+        lastCode = code;
         stop("operator", code.charAt(0));
         return "stopping";
     }
@@ -213,25 +229,34 @@ public final class Finale implements Listener {
         stop(by.getName(), choice);
     }
 
+    /** The going-home phase lasts this long before the log prints. */
+    private static final long HOME_TICKS = 20L * 90;
+
     private void stop(String byName, char choice) {
         if (stopping || stopped()) return;
         stopping = true;
         // the south branch is the one thing Morrow leaves unfinished; the log must always say so,
-        // and if a resident ever asked for it, the reason is theirs
+        // and if a resident ever asked for it, the reason is theirs (else finch's own 2011 sign)
         BridgeLogic.Said asked = roster.firstUnfinished();
-        String skip = BridgeLogic.skipLine(asked, ZoneId.systemDefault());
+        String skip = BridgeLogic.skipLine(asked, ZoneId.systemDefault(), canon.raw.has("skip_fallback") ? canon.string("skip_fallback") : null);
         List<String> log = BridgeLogic.stopLog(Canon.strings(canon.array("stop_log")), skip);
         finalLog = List.copyOf(log);
         BridgeLogic.Usb usb = BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), roster.names().size());
-        lightsOut();
+        World w = Bukkit.getWorlds().get(0);
+        // Morrow's last words: the code echoed, then the one fresh sentence it has that matches "stop"
+        announce(engine("stop_requested").replace("{code}", byName.equals("operator") ? "console" : lastCode == null ? "" : lastCode));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> announce(canon.string("kit_line")), 40L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> goingHome(w), 80L);
+        long logStart = 80L + HOME_TICKS;
         for (int i = 0; i < log.size(); i++) {
             String line = log.get(i);
-            Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.broadcast(Component.text(line, NamedTextColor.DARK_GRAY)), 40L * (i + 1));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.broadcast(Component.text(line, NamedTextColor.DARK_GRAY)), logStart + 40L * (i + 1));
         }
         // June's lamp: one last flash, dark as the last line ("exit 0") prints
-        if (director != null) Bukkit.getScheduler().runTaskLater(plugin, director::lastFlash, Math.max(1L, 40L * log.size() - 30L));
+        if (director != null) Bukkit.getScheduler().runTaskLater(plugin, director::lastFlash, logStart + Math.max(1L, 40L * log.size() - 30L));
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             state.markDone("stopped");
+            state.setStamp("stopped_at", System.currentTimeMillis());
             ghosts.clearAll();
             JsonObject d = new JsonObject();
             d.addProperty("by", byName);
@@ -254,16 +279,21 @@ public final class Finale implements Listener {
             } catch (IOException ignored) {
                 // the journal already records the stop
             }
-        }, 40L * (log.size() + 1));
+        }, logStart + 40L * (log.size() + 1));
     }
 
+    private String lastCode;
+
     /**
-     * The lights-out, as the stop begins: figures freeze where they stand (removed 10 s later),
-     * copper golems stop for good. The lamp is timed with the log (see stop).
+     * Finalising, as a scene: every replayed figure stops where it stands, then each resident's figure
+     * appears where its replay last stood and walks home; as each reaches its door the engine prints
+     * "session X: end" (join order) and the door closes; the golems stop for good; the players' own
+     * figures walk to where they first logged in and stand. The lamp waits for the log's "exit 0".
      */
-    private void lightsOut() {
-        World w = Bukkit.getWorlds().get(0);
+    private void goingHome(World w) {
         int figures = ghosts.freezeAll();
+        ghosts.clearAll();
+        ghosts.thaw();
         if (director != null) director.quietLamp();  // dark until its one last flash at "exit 0"
         int golems = 0;
         for (LivingEntity e : w.getLivingEntities()) {
@@ -272,11 +302,58 @@ public final class Finale implements Listener {
                 golems++;
             }
         }
-        Bukkit.getScheduler().runTaskLater(plugin, ghosts::clearAll, 200L);
+        String[][] homes = {{"rookery", "rookery_house"}, {"cairn", "cairn_storehouse_door_2011"}, {"finchline", "finch_hub"},
+                {"juni_lantern", "june_house"}, {"patchcord", "patchcord_relay_hut"}, {"kitbag", "kit_genuine_door"}};
+        List<String> order = Canon.strings(canon.array("residents_join_order"));
+        long delay = 20L;
+        for (String who : order) {
+            String anchor = null;
+            for (String[] h : homes) if (h[0].equals(who)) anchor = h[1];
+            if (anchor == null) continue;
+            final String home = anchor;
+            Location from = lastStood(w, who);
+            int[] a = canon.anchor(home);
+            Location door = new Location(w, a[0] + 0.5, a[1], a[2] - 1.5);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> ghosts.play(w, who, ghosts.profileFor(who), Ghosts.walk(from, door, 4.0), List.of(), 0, 0, false, () -> {
+                announce(engine("session_end").replace("{who}", who));
+                Nights.setDoorNear(w, canon.anchor(home), false);
+            }), delay);
+            delay += 60L;
+        }
+        // the players' figures, to where each first came home
+        recorder.firstJoins().forEach((name, p) -> {
+            Player online = Bukkit.getPlayerExact(name);
+            Location from = online != null ? online.getLocation() : spawn(w);
+            Location to = new Location(w, p[0], p[1], p[2]);
+            org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+            var profile = io.papermc.paper.datacomponent.item.ResolvableProfile.resolvableProfile(op.getPlayerProfile());
+            List<Ghosts.Point> walk = new ArrayList<>(Ghosts.walk(from, to, 4.0));
+            Ghosts.Point end = walk.get(walk.size() - 1);
+            walk.add(new Ghosts.Point(end.t() + 600, end.x(), end.y(), end.z()));  // then it stands
+            Bukkit.getScheduler().runTaskLater(plugin, () -> ghosts.play(w, name, profile, walk, List.of(), 0, 0, false, null), 40L);
+        });
         JsonObject d = new JsonObject();
         d.addProperty("figures_frozen", figures);
         d.addProperty("golems_stopped", golems);
+        d.addProperty("residents_walking_home", order.size());
         journal.write("morrow.lights_out", d);
+    }
+
+    private Location spawn(World w) {
+        int[] s = canon.anchor("spawn");
+        return new Location(w, s[0] + 0.5, s[1] + 1, s[2] + 0.5);
+    }
+
+    /** Where a resident's figure last stood: the end of its incident path (its habit), else spawn. */
+    private Location lastStood(World w, String who) {
+        for (com.google.gson.JsonElement e : canon.array("incident_replay")) {
+            JsonObject f = e.getAsJsonObject();
+            if (!f.get("who").getAsString().equals(who)) continue;
+            com.google.gson.JsonArray path = f.getAsJsonArray("path");
+            com.google.gson.JsonArray p = path.get(path.size() - 1).getAsJsonArray();
+            return new Location(w, p.get(1).getAsDouble(), p.get(2).getAsDouble(), p.get(3).getAsDouble());
+        }
+        return spawn(w);
     }
 
     private static boolean isGolem(Entity e) {

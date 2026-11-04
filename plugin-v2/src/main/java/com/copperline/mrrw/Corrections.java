@@ -62,12 +62,15 @@ public final class Corrections {
         if (act >= 8 && !state.done("act7.flags_tidied")) once("act8.flags_tidied", () -> tidyFlags(w));
     }
 
-    /** Morrow keeps "correcting": anything a player put back on an unwaxed sign is rewritten again. */
+    /**
+     * Morrow keeps "correcting": anything a player put back on an unwaxed sign is rewritten again,
+     * once per act, at night, so a group can keep a waxed sign and watch the unwaxed one flip once.
+     */
     private void nightly() {
         if (state.done("stopped") || state.act() < 6) return;
         World w = Bukkit.getWorlds().get(0);
         long t = w.getTime();
-        if (t >= 18000 && t < 19300) signRewrites(w);
+        if (t >= 18000 && t < 19300) once("act6.rewrites.night." + state.act(), () -> signRewrites(w));
     }
 
     private void once(String flag, Runnable r) {
@@ -94,7 +97,13 @@ public final class Corrections {
     private void signRewrites(World w) {
         for (JsonElement e : canon.array("sign_rewrites")) {
             JsonObject rw = e.getAsJsonObject();
-            Sign s = findSign(w, canon.anchor(rw.get("anchor").getAsString()), 4);
+            Sign s;
+            if (rw.has("offset")) {  // an exact sign (one of several at the anchor: the board, the ledger)
+                JsonArray off = rw.getAsJsonArray("offset");
+                s = near(w, rw.get("anchor").getAsString(), off.get(0).getAsInt(), off.get(1).getAsInt(), off.get(2).getAsInt()).getState() instanceof Sign sign ? sign : null;
+            } else {
+                s = findSign(w, canon.anchor(rw.get("anchor").getAsString()), 4);
+            }
             if (s == null || s.isWaxed()) continue;
             List<String> lines = Canon.strings(rw.getAsJsonArray("lines"));
             for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(lines.get(i)));

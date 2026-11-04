@@ -53,6 +53,7 @@ public final class ActDirector {
             once("act3.rules_edit", () -> rulesEdit(world));
             once("act3.tally_book", () -> tallyBook(world));
             once("act3.golems", () -> golems(world));
+            once("act3.creeper", () -> creeper(world));
             startFlasher(world);
         }
     }
@@ -72,8 +73,12 @@ public final class ActDirector {
         return w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz);
     }
 
+    /** Rook's "dont touch it" sign gets its note when the floor is tidied (RecoveryService, Act 5), not now. */
+    private static final java.util.Set<String> LATER_NOTES = java.util.Set.of("rookery_floor_sign");
+
     private void signBacks(World w) {
         canon.signBackNotes.forEach((anchor, lines) -> {
+            if (LATER_NOTES.contains(anchor)) return;
             int[] a = canon.anchor(anchor);
             for (int dx = -3; dx <= 3; dx++) for (int dy = -1; dy <= 3; dy++) for (int dz = -3; dz <= 3; dz++) {
                 if (w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz).getState() instanceof Sign sign && !sign.isWaxed()) {
@@ -106,6 +111,30 @@ public final class ActDirector {
         meta.addPages(Component.text("weeks: 04-25 05-02 05-09 05-16\n\n" + String.join("\n", canon.tallyBookMorrow)));
         book.setItemMeta(meta);
         lectern.getInventory().setItem(0, book);
+    }
+
+    /** Rook's half-finished creeper by spawn: Morrow lays the bottom rows from the pattern it inferred. */
+    private void creeper(World w) {
+        JsonObject art = canon.object("creeper");
+        com.google.gson.JsonArray rows = art.getAsJsonArray("rows");
+        int missing = art.get("missing_rows").getAsInt(), n = 0;
+        for (int r = 0; r < missing && r < rows.size(); r++) {
+            com.google.gson.JsonArray row = rows.get(r).getAsJsonArray();
+            for (int c = 0; c < row.size(); c++) {
+                Block b = at(w, "spawn_creeper", c, r, 0);
+                Material want = RecoveryService.WOOL[row.get(c).getAsInt()];
+                if (b.getType() != want) {
+                    b.setType(want, false);
+                    n++;
+                }
+            }
+        }
+        String line = canon.object("engine_lines").get("creeper_done").getAsString();
+        Bukkit.broadcast(Component.text("[Recovery] ", net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY).append(Component.text(line, net.kyori.adventure.text.format.NamedTextColor.GRAY)));
+        journal.recovery(line);
+        JsonObject d = new JsonObject();
+        d.addProperty("blocks", n);
+        journal.write("morrow.creeper", d);
     }
 
     private void golems(World w) {
@@ -145,10 +174,12 @@ public final class ActDirector {
         int[] a = canon.anchor("south_rail_end");
         com.google.gson.JsonArray dir = canon.array("south_rail_dir");
         int dx = dir.get(0).getAsInt(), dz = dir.get(1).getAsInt();
+        int stopZ = canon.raw.has("south_rail_stop_z") ? canon.raw.get("south_rail_stop_z").getAsInt() : Integer.MAX_VALUE;
         int laid = 0;
         for (int i = 0; i < 3; i++) {
             int n = (act - 2) * 3 + i + 1;
             int x = a[0] + dx * n, z = a[2] + dz * n;
+            if (dz > 0 && z > stopZ) continue;  // one segment short of lowpath's hill: never through its house
             // the track follows the ground (lowpath's hill rises across its line), one block per block at most
             int y = railY(w, x, z), prev = railY(w, x - dx, z - dz);
             Block rail = w.getBlockAt(x, y, z);

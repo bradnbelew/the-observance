@@ -75,8 +75,130 @@ public final class ModernLayer {
         part("install.nether_hub_sign", done, this::netherHubSign);
         part("install.container_repair", done, () -> repairContainers(w));
         if (canon.raw.has("finch_south_sign")) part("install.south_rail_sign", done, () -> southRailSign(w));
+        if (canon.raw.has("dock")) part("install.dock_removed", done, () -> removeDock(w));
+        if (canon.raw.has("storehouse_jog")) part("install.barn_squared", done, () -> squareBarn(w));
+        if (canon.anchors.containsKey("cairn_shed_hatch")) part("install.shed_hatch", done, () -> shedHatch(w));
+        part("install.gallery_wire", done, () -> galleryWire(w));
+        if (canon.raw.has("theo_drafts")) part("install.theo_drafts", done, () -> theoDrafts(w));
+        if (canon.raw.has("visitor_book")) part("install.visitor_book", done, () -> visitorBook(w));
         reattachMaps();
         return done;
+    }
+
+    // ---- the rework (2026-11): Morrow's "completions" of 2011 things, and Theo's drafts -------------
+
+    /**
+     * June's old wooden dock is gone: Morrow replaced it with a sandstone apron (its "completion" of
+     * her plan) from the shore down to the tower's foot. The 2011 screenshots and the Dynmap tiles
+     * still show the dock; Iona's chest is where it was, 3 down and 4 north.
+     */
+    private void removeDock(World w) {
+        JsonObject dock = canon.object("dock");
+        int[] d = canon.anchor(dock.get("anchor").getAsString());
+        int len = dock.get("length").getAsInt(), wid = dock.get("width").getAsInt();
+        for (int dx = 0; dx <= len; dx++) for (int dz = 0; dz < wid; dz++) {
+            Block top = w.getBlockAt(d[0] + dx, d[1], d[2] + dz);
+            for (int dy = 1; dy <= 2; dy++) {  // the rail post and torch at the end
+                Block b = w.getBlockAt(d[0] + dx, d[1] + dy, d[2] + dz);
+                if (b.getType() == Material.OAK_FENCE || b.getType() == Material.TORCH) b.setType(Material.AIR, false);
+            }
+            if (top.getType() == Material.OAK_PLANKS) top.setType(Material.AIR, false);
+            for (int y = d[1] - 1; y > d[1] - 30; y--) {  // the pilings
+                Block p = w.getBlockAt(d[0] + dx, y, d[2] + dz);
+                if (p.getType() != Material.OAK_FENCE) break;
+                p.setType(Material.WATER, false);
+            }
+        }
+        // the apron: sandstone at the water line from the dock's landward end south to the tower
+        int[] t = canon.anchor("june_tower");
+        for (int z = d[2]; z <= t[2] - 3; z++) for (int dx = 0; dx <= 2; dx++) {
+            Block b = w.getBlockAt(d[0] + dx, d[1], z);
+            Material m = b.getType();
+            if (m == Material.WATER || m == Material.SAND || m == Material.AIR || m == Material.GRASS_BLOCK || m == Material.DIRT) {
+                b.setType(Material.SANDSTONE, false);
+                for (int dy = 1; dy <= 2; dy++) {
+                    Block above = w.getBlockAt(d[0] + dx, d[1] + dy, z);
+                    if (Terrain.cover(above.getType())) above.setType(Material.AIR, false);
+                }
+            }
+        }
+    }
+
+    /** cairn's crooked south-west corner, squared to the grid: exactly the LogBlock rows of 2 Sept 2011. */
+    private void squareBarn(World w) {
+        JsonObject jog = canon.object("storehouse_jog");
+        for (JsonElement e : jog.getAsJsonArray("broke")) {
+            JsonArray c = e.getAsJsonArray();
+            w.getBlockAt(c.get(0).getAsInt(), c.get(1).getAsInt(), c.get(2).getAsInt()).setType(Material.AIR, false);
+        }
+        for (JsonElement e : jog.getAsJsonArray("placed")) {
+            JsonArray c = e.getAsJsonArray();
+            w.getBlockAt(c.get(0).getAsInt(), c.get(1).getAsInt(), c.get(2).getAsInt()).setType(Material.OAK_PLANKS, false);
+        }
+    }
+
+    /** The shed's floor hatch, "reconstructed" with a trapdoor (the 2011 log claims cairn placed it in May: the tell). */
+    private void shedHatch(World w) {
+        int[] h = canon.anchor("cairn_shed_hatch");
+        Block b = w.getBlockAt(h[0], h[1], h[2]);
+        org.bukkit.block.data.type.TrapDoor td = (org.bukkit.block.data.type.TrapDoor) Material.OAK_TRAPDOOR.createBlockData();
+        td.setFacing(BlockFace.NORTH);
+        td.setHalf(Bisected.Half.TOP);
+        td.setOpen(false);
+        b.setBlockData(td, false);
+    }
+
+    /** finch's 2011 torch clock on June's gallery came through the upgrade as dots: give the dust its connections. */
+    private void galleryWire(World w) {
+        int[] t = canon.anchor("june_tower");
+        for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) for (int dy = 20; dy <= 22; dy++) {
+            Block b = w.getBlockAt(t[0] + dx, t[1] + dy, t[2] + dz);
+            if (b.getType() == Material.REDSTONE_WIRE || b.getType() == Material.REPEATER) b.setBlockData(b.getBlockData(), true);
+        }
+    }
+
+    private static ItemStack writtenBook(String title, String author, JsonArray pages) {
+        ItemStack it = new ItemStack(Material.WRITTEN_BOOK);
+        org.bukkit.inventory.meta.BookMeta meta = (org.bukkit.inventory.meta.BookMeta) it.getItemMeta();
+        meta.setTitle(title);
+        meta.setAuthor(author);
+        meta.setGeneration(org.bukkit.inventory.meta.BookMeta.Generation.ORIGINAL);
+        for (JsonElement p : pages) meta.addPages(Component.text(p.getAsString()));
+        it.setItemMeta(meta);
+        return it;
+    }
+
+    /** Theo's unsent letters, in the drafts barrel under the reading room (the genuine 2015 map keeps slot 0). */
+    private void theoDrafts(World w) {
+        Block drafts = at(w, "theo_reading_room", 4, -2, 2);
+        if (drafts.getType() != Material.BARREL) {
+            drafts.setType(Material.BARREL, false);
+            named(drafts, "drafts");
+        }
+        if (!(drafts.getState() instanceof org.bukkit.block.Barrel barrel)) return;
+        int slot = 1;
+        for (JsonElement e : canon.array("theo_drafts")) {
+            JsonObject d = e.getAsJsonObject();
+            barrel.getInventory().setItem(slot++, writtenBook(d.get("title").getAsString(), "T", d.getAsJsonArray("pages")));
+        }
+    }
+
+    /** The reading room's lectern, chair and lamp, with Theo's visitor book: nobody else ever signed it. */
+    private void visitorBook(World w) {
+        Block lec = at(w, "theo_reading_room", 4, 0, 3);
+        lec.setType(Material.LECTERN, false);
+        if (lec.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+            dir.setFacing(BlockFace.NORTH);
+            lec.setBlockData(dir, false);
+        }
+        JsonObject book = canon.object("visitor_book");
+        if (lec.getState() instanceof org.bukkit.block.Lectern lectern) {
+            lectern.getInventory().setItem(0, writtenBook(book.get("title").getAsString(), "T", book.getAsJsonArray("pages")));
+        }
+        at(w, "theo_reading_room", 3, 0, 3).setBlockData(stair(Material.SPRUCE_STAIRS, BlockFace.EAST), false);  // the chair
+        Block post = at(w, "theo_reading_room", 6, 0, 3);
+        post.setType(Material.SPRUCE_FENCE, false);
+        at(w, "theo_reading_room", 6, 1, 3).setBlockData(lantern(false), false);
     }
 
     /**

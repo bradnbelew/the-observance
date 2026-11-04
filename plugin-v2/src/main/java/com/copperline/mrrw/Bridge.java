@@ -50,10 +50,11 @@ public final class Bridge {
     private final Campaign campaign;
     private final ChatListener chat;
     private final Journal journal;
+    private final PathRecorder recorder;
     private HttpServer server;
     private ExecutorService pool;
 
-    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat, Journal journal) {
+    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat, Journal journal, PathRecorder recorder) {
         this.plugin = plugin;
         this.state = state;
         this.canon = canon;
@@ -62,6 +63,7 @@ public final class Bridge {
         this.campaign = campaign;
         this.chat = chat;
         this.journal = journal;
+        this.recorder = recorder;
     }
 
     public void start() {
@@ -165,8 +167,22 @@ public final class Bridge {
         o.addProperty("act", state.act());
         o.addProperty("act_started", Campaign.iso(campaign.actStarted()));
         o.addProperty("players", roster.names().size());
+        JsonArray names = new JsonArray();   // the roster: the site falls back to it when MORROW_PLAYERS is unset
+        roster.names().forEach(names::add);
+        o.add("names", names);
+        JsonObject joins = new JsonObject();  // first-join spots: the Act 9 profiles' "Location" in Iona's region notation
+        recorder.firstJoins().forEach((n, p) -> {
+            JsonArray xyz = new JsonArray();
+            xyz.add((int) Math.floor(p[0]));
+            xyz.add((int) Math.floor(p[1]));
+            xyz.add((int) Math.floor(p[2]));
+            joins.add(n, xyz);
+        });
+        o.add("first_joins", joins);
         o.addProperty("ready", finale.ready());
         o.addProperty("stopped", finale.stopped());
+        long stoppedAt = state.stamp("stopped_at");
+        if (stoppedAt > 0) o.addProperty("stopped_at", Campaign.iso(stoppedAt));
         o.add("usb", usb().json());
         o.addProperty("fingerprint", finale.fingerprint());
         o.add("theo", campaign.theo());

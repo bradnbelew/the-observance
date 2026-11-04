@@ -106,22 +106,35 @@ public final class Fixtures implements Listener {
         return b.getX() == a[0] + 2 && b.getZ() == a[2] && (b.getY() == a[1] || b.getY() == a[1] + 1);
     }
 
+    /** The wall reads left to right facing south: note i sits at x = anchor.x + left.x - i (canon patch_note_left). */
+    private int[] noteOrigin() {
+        int[] p = canon.anchor("patchcord_relay_hut");
+        JsonArray left = canon.raw.has("patch_note_left") ? canon.array("patch_note_left") : null;
+        int lx = left == null ? 0 : left.get(0).getAsInt(), ly = left == null ? 1 : left.get(1).getAsInt(), lz = left == null ? 2 : left.get(2).getAsInt();
+        return new int[] {p[0] + lx, p[1] + ly, p[2] + lz, left == null ? 1 : -1};  // x, y, z of note 0, and the step
+    }
+
+    int noteX(int i) {
+        int[] o = noteOrigin();
+        return o[0] + o[3] * i;
+    }
+
     /** Note block i of patchcord's wall, or -1. */
     private int noteIndex(Block b) {
         List<Integer> t = tune();
         if (t == null) return -1;
-        int[] p = canon.anchor("patchcord_relay_hut");
-        int i = b.getX() - p[0];
-        if (b.getY() != p[1] + 1 || b.getZ() != p[2] + 2 || i < 0 || i >= t.size()) return -1;
+        int[] o = noteOrigin();
+        int i = (b.getX() - o[0]) * o[3];
+        if (b.getY() != o[1] || b.getZ() != o[2] || i < 0 || i >= t.size()) return -1;
         return i;
     }
 
     private boolean inNoteWall(Block b) {
         List<Integer> t = tune();
         if (t == null) return false;
-        int[] p = canon.anchor("patchcord_relay_hut");
-        int i = b.getX() - p[0];
-        return b.getZ() == p[2] + 2 && (b.getY() == p[1] || b.getY() == p[1] + 1) && i >= 0 && i < t.size();
+        int[] o = noteOrigin();
+        int i = (b.getX() - o[0]) * o[3];
+        return b.getZ() == o[2] && (b.getY() == o[1] - 1 || b.getY() == o[1]) && i >= 0 && i < t.size();
     }
 
     boolean isProtected(Block b) {
@@ -151,9 +164,9 @@ public final class Fixtures implements Listener {
         if (!tune.isEmpty()) return tune;
         // first sight: read the wall that inject.py wrote into the Beta world, before players reach it
         World w = Bukkit.getWorlds().get(0);
-        int[] p = canon.anchor("patchcord_relay_hut");
+        int[] o = noteOrigin();
         for (int i = 0; i < 24; i++) {
-            if (!(w.getBlockAt(p[0] + i, p[1] + 1, p[2] + 2).getBlockData() instanceof NoteBlock nb)) break;
+            if (!(w.getBlockAt(o[0] + o[3] * i, o[1], o[2]).getBlockData() instanceof NoteBlock nb)) break;
             tune.add((int) nb.getNote().getId());
         }
         if (tune.isEmpty()) return null;
@@ -284,10 +297,10 @@ public final class Fixtures implements Listener {
     int restoreTune(World w) {
         List<Integer> t = tune();
         if (t == null) return 0;
-        int[] p = canon.anchor("patchcord_relay_hut");
+        int[] o = noteOrigin();
         int fixed = 0;
         for (int i = 0; i < t.size(); i++) {
-            Block b = w.getBlockAt(p[0] + i, p[1] + 1, p[2] + 2);
+            Block b = w.getBlockAt(o[0] + o[3] * i, o[1], o[2]);
             BlockData data = b.getType() == Material.NOTE_BLOCK ? b.getBlockData() : Material.NOTE_BLOCK.createBlockData();
             if (!(data instanceof NoteBlock nb)) continue;
             if (b.getType() == Material.NOTE_BLOCK && nb.getNote().getId() == t.get(i)) continue;

@@ -106,6 +106,26 @@ public final class FinchLock implements Listener {
             for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(lines.get(i)));
             s.update(true, false);
         }
+        // her room behind the door: a bed, a torch, and a chest with the stop in her words (C3's payoff)
+        w.getBlockAt(x0 + 1, y, z0 + 12).setType(Material.TORCH, false);
+        Block chest = w.getBlockAt(x0 + 3, y, z0 + 12);
+        chest.setType(Material.CHEST, false);
+        if (chest.getState() instanceof org.bukkit.block.Chest c) {
+            c.getBlockInventory().setItem(0, new org.bukkit.inventory.ItemStack(Material.POWERED_RAIL, 12));
+            c.getBlockInventory().setItem(1, new org.bukkit.inventory.ItemStack(Material.REDSTONE_TORCH, 7));
+            c.getBlockInventory().setItem(2, new org.bukkit.inventory.ItemStack(Material.MINECART, 1));
+            c.getBlockInventory().setItem(4, new org.bukkit.inventory.ItemStack(Material.RAIL, 40));
+        }
+        Block note = w.getBlockAt(x0 + 3, y + 1, z0 + 12);
+        org.bukkit.block.data.type.WallSign ws = (org.bukkit.block.data.type.WallSign) Material.OAK_WALL_SIGN.createBlockData();
+        ws.setFacing(BlockFace.NORTH);
+        w.getBlockAt(x0 + 3, y + 1, z0 + 13).setType(Material.STONE, false);
+        note.setBlockData(ws, false);
+        if (note.getState() instanceof Sign s && canon.raw.has("lived_in_signs")) {
+            List<String> lines = Canon.strings(canon.object("lived_in_signs").getAsJsonArray("finch_station_stop"));
+            for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(i < lines.size() ? lines.get(i) : ""));
+            s.update(true, false);
+        }
         // let redstone settle from the levers' current (all off) state
         for (int i = 0; i < 8; i++) {
             Block lever = w.getBlockAt(x0 + 2 * i, y + 1, z0);

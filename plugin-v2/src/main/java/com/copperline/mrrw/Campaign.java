@@ -53,12 +53,14 @@ public final class Campaign implements Listener {
     private final Plugin plugin;
     private final State state;
     private final Journal journal;
+    private final Canon canon;
     private final Runnable applyAct;
     private final File file;
     private JsonObject data;
 
-    public Campaign(Plugin plugin, State state, Journal journal, Runnable applyAct) {
+    public Campaign(Plugin plugin, Canon canon, State state, Journal journal, Runnable applyAct) {
         this.plugin = plugin;
+        this.canon = canon;
         this.state = state;
         this.journal = journal;
         this.applyAct = applyAct;
@@ -163,8 +165,47 @@ public final class Campaign implements Listener {
         Bukkit.getScheduler().runTask(plugin, () -> advance(BridgeLogic.joinTarget(state.act()), "first resident joined: " + name));
     }
 
-    /** Every minute: residents' online time, counted from Act 2 (the first real session). */
+    /**
+     * Theo's timed notes (canon theo_timed): a note after N hours into its act, and one a week after
+     * the stop. Each is fed once as "theo.reply" (the bot posts its canon text) and shown on the desk by
+     * the site on the same clock.
+     */
+    private void theoTimed() {
+        if (!canon.raw.has("theo_timed")) return;
+        long now = System.currentTimeMillis();
+        for (JsonElement e : canon.array("theo_timed")) {
+            JsonObject t = e.getAsJsonObject();
+            String voice = t.get("voice").getAsString();
+            String flag = "theo.timed." + voice;
+            if (state.done(flag)) continue;
+            boolean due;
+            if (t.has("after_stop_hours")) {
+                long stoppedAt = state.stamp("stopped_at");
+                due = stoppedAt > 0 && now >= stoppedAt + (long) (t.get("after_stop_hours").getAsDouble() * 3_600_000);
+            } else {
+                due = !state.done("stopped") && state.act() == t.get("act").getAsInt()
+                        && now >= actStarted() + (long) (t.get("after_hours").getAsDouble() * 3_600_000);
+            }
+            if (!due) continue;
+            state.markDone(flag);
+            feedTheo(voice, null, now);
+        }
+    }
+
+    private void feedTheo(String voice, String subject, long at) {
+        JsonObject d = new JsonObject();
+        d.addProperty("id", voice);
+        d.addProperty("ref", "timed");
+        if (subject == null) d.add("subject", JsonNull.INSTANCE);
+        else d.addProperty("subject", subject);
+        d.addProperty("at", iso(at));
+        journal.write("theo.reply", d);
+        journal.feed("theo.reply", d);
+    }
+
+    /** Every minute: residents' online time, counted from Act 2 (the first real session); Theo's timed notes. */
     private void minute() {
+        theoTimed();
         if (state.act() < 2 || state.done("stopped")) return;
         JsonObject mins = data.getAsJsonObject("online_minutes");
         boolean changed = false;
@@ -260,6 +301,11 @@ public final class Campaign implements Listener {
                 journal.feed("theo.reply", d);  // the Discord bot posts it to #general
             }
             tryAdvance(entry.getKey(), e);
+            if (entry.getKey().equals("booking") && canon.raw.has("theo_ask_voice") && !state.done("theo.timed.ask")) {
+                state.markDone("theo.timed.ask");  // the ask follows the booking reply: the skip reason is theirs to give
+                final long at = now + 20_000;
+                Bukkit.getScheduler().runTaskLater(plugin, () -> feedTheo(canon.string("theo_ask_voice"), str(e.get("subject")), at), 20L * 20);
+            }
         }
         if (changed) save();
     }

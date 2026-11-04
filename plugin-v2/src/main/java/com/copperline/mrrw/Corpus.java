@@ -85,18 +85,48 @@ public final class Corpus {
      * Long.MIN_VALUE = no preference (identical to the 3-argument form for the same seed).
      */
     public Reply reply(String heard, int act, long seed, long freshSince) {
-        List<Fragment> all = sentences(act, Long.MIN_VALUE);
+        return reply(heard, act, seed, freshSince, null, 0L);
+    }
+
+    /** Lines a speaker said this recently are never quoted straight back at them. */
+    static final long RECENT_MS = 10L * 60_000;
+
+    /**
+     * As above, but never a parrot: the sentence just heard, and anything {@code speaker} said in
+     * the last ten minutes before {@code now}, are left out of the pool (their words stay in the
+     * corpus for later, said back by other voices).
+     */
+    public Reply reply(String heard, int act, long seed, long freshSince, String speaker, long now) {
+        List<Fragment> all = exclude(sentences(act, Long.MIN_VALUE), heard, speaker, now);
         if (all.isEmpty()) return new Reply("", List.of());
         Random rng = new Random(seed);
         List<Fragment> chosen = new ArrayList<>();
         chosen.add(best(all, heard, rng));
         if (freshSince != Long.MIN_VALUE) {
-            List<Fragment> fresh = sentences(act, freshSince);
+            List<Fragment> fresh = exclude(sentences(act, freshSince), heard, speaker, now);
             if (!fresh.isEmpty() && chosen.stream().noneMatch(fresh::contains) && rng.nextDouble() < FRESH_SHARE) {
                 chosen.add(fresh.get(rng.nextInt(fresh.size())));
             }
         }
         return join(chosen);
+    }
+
+    private List<Fragment> exclude(List<Fragment> pool, String heard, String speaker, long now) {
+        java.util.Set<String> heardSentences = new java.util.HashSet<>();
+        for (String raw : heard.split("[.!?\n]+")) heardSentences.add(normalise(raw));
+        java.util.Set<String> recentSources = new java.util.HashSet<>();
+        if (speaker != null) {
+            for (int k = 0; k < lines.size(); k++) {
+                if (ingestedAt.get(k) > 0 && now - ingestedAt.get(k) <= RECENT_MS && sourceIs(lines.get(k).source(), speaker)) recentSources.add(lines.get(k).text());
+            }
+        }
+        List<Fragment> out = new ArrayList<>();
+        for (Fragment f : pool) {
+            if (heardSentences.contains(f.words())) continue;
+            if (speaker != null && recentSources.stream().anyMatch(t -> (" " + t + " ").contains(" " + f.words() + " "))) continue;
+            out.add(f);
+        }
+        return out.isEmpty() ? pool : out;
     }
 
     /**

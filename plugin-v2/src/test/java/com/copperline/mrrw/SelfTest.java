@@ -193,21 +193,22 @@ public final class SelfTest {
                 new BridgeLogic.Said("cole", "Don’t finish it", d1)));
         BridgeLogic.Said pick = BridgeLogic.earliestUnfinished(said);
         check(pick != null && pick.name().equals("cole"), "earliest unfinished line by time: " + pick);
-        String skip = BridgeLogic.skipLine(pick, utc);
+        String fallback = canon.get("skip_fallback").getAsString();
+        String skip = BridgeLogic.skipLine(pick, utc, fallback);
         System.out.println("skip line: " + skip);
         check(skip.equals("skip mossfield:south_rail (unfinished) reason=\"Don’t finish it\" (cole, 2026-11-02)"), "skip line " + skip);
-        String longSkip = BridgeLogic.skipLine(said.get(1), utc);
+        String longSkip = BridgeLogic.skipLine(said.get(1), utc, fallback);
         System.out.println("skip line (long): " + longSkip);
         check(longSkip.equals("skip mossfield:south_rail (unfinished) reason=\"honestly just LEAVE IT, the south rail looks better unfinish\" (bryn, 2026-11-03)"), "60-char trim " + longSkip);
-        check(BridgeLogic.skipLine(BridgeLogic.earliestUnfinished(List.of(new BridgeLogic.Said("ash", "finish the rail!", d1))), utc)
-                .equals("skip mossfield:south_rail (unfinished) reason=none"), "no such line keeps reason=none");
+        String noAsk = BridgeLogic.skipLine(BridgeLogic.earliestUnfinished(List.of(new BridgeLogic.Said("ash", "finish the rail!", d1))), utc, fallback);
+        check(noAsk.equals(fallback) && noAsk.contains("finchline") && !noAsk.contains("reason=none"), "no such line: finch own sign, never none: " + noAsk);
         for (String yes : new String[] {"it's not done", "Dont Finish", "UNFINISHED", "uneven is fine", "leave it"}) check(BridgeLogic.unfinished(yes), "should match: " + yes);
         for (String no : new String[] {"finish it", "leave", "done", "even"}) check(!BridgeLogic.unfinished(no), "should not match: " + no);
         List<String> canonLog = Canon.strings(canon.getAsJsonArray("stop_log"));
         List<String> played = BridgeLogic.stopLog(canonLog, skip);
         check(played.size() == canonLog.size(), "stop log keeps its length");
         check(played.stream().anyMatch(l -> l.equals("morrow: " + skip)), "skip line printed with the morrow: prefix");
-        check(BridgeLogic.stopLog(canonLog, BridgeLogic.SKIP_NONE).equals(canonLog), "no reason = canon log unchanged");
+        check(BridgeLogic.stopLog(canonLog, fallback).equals(canonLog), "the fallback = canon log unchanged");
         check(played.get(played.size() - 1).contains("exit 0"), "exit 0 still last");
         List<String> noSkip = BridgeLogic.stopLog(List.of("morrow: a", "morrow: exit 0"), skip);
         check(noSkip.size() == 3 && noSkip.get(1).equals("morrow: " + skip) && noSkip.get(2).equals("morrow: exit 0"), "skip line added before exit 0");
@@ -220,9 +221,12 @@ public final class SelfTest {
         check(BridgeLogic.dawnTarget(2, 0, sess) == 0, "no session yet");
         check(BridgeLogic.dawnTarget(3, sess, sess + 1) == 0, "dawn rule only in act 2");
         Object[][] table = {
-                {3, "logblock_morrow", 4}, {3, "morrow", 4}, {3, "found_morrow", 4}, {4, "unmask", 5}, {5, "floor", 6}, {5, "moss_0518", 6},
-                {6, "restart", 7}, {7, "key", 8}, {8, "kit", 9}, {8, "ingest", 9}, {9, "brief", 10}, {9, "BRIEF", 10},
+                {3, "june_folder", 4}, {4, "unmask", 5}, {4, "unmask_lot", 5}, {4, "unmask_date", 5}, {4, "unmask_waived", 5},
+                {6, "restart", 7}, {6, "restart_node", 7}, {7, "console_key", 8}, {8, "kit", 9}, {8, "ingest", 9}, {9, "brief", 10}, {9, "BRIEF", 10},
         };
+        for (String gone : new String[] {"found_morrow", "morrow", "floor", "moss_0518", "key"}) {
+            for (int act = 1; act <= 10; act++) check(BridgeLogic.deskTarget(act, gone) == 0, gone + " no longer moves the act");
+        }
         for (Object[] row : table) {
             int act = (Integer) row[0];
             String ref = (String) row[1];
@@ -232,7 +236,29 @@ public final class SelfTest {
         }
         for (int act = 1; act <= 10; act++) check(BridgeLogic.deskTarget(act, "nonsense") == 0, "unknown ref moves nothing");
         check(BridgeLogic.deskTarget(10, "brief") == 0, "nothing past act 10");
-        check(BridgeLogic.THEO_VOICES.equals(java.util.Set.of("T-04a", "T-06a", "T-08a", "T-09a", "T-09b")), "Theo voices");
+        check(BridgeLogic.THEO_VOICES.equals(java.util.Set.of("T-04a", "T-04c", "T-04d", "T-04e", "T-06a", "T-06d", "T-08a", "T-09a", "T-09b")), "Theo voices");
+        for (String v : BridgeLogic.THEO_VOICES) check(canon.getAsJsonObject("engine_lines") != null, "canon carries engine lines (" + v + ")");
+
+        // ---- no parroting: the line just heard, and the speaker's last ten minutes, are never the reply ----
+        Corpus parrot = baseCorpus();
+        long t0 = 1_800_000_000_000L;
+        parrot.add("the tower has a glass roof now", "ash, in Mossfield", true, t0 - 60_000);
+        parrot.add("who put glass on the tower", "ash, in Mossfield", true, t0);
+        int echoed = 0;
+        for (int i = 0; i < 200; i++) {
+            Corpus.Reply r = parrot.reply("who put glass on the tower", 7, i, Long.MIN_VALUE, "ash", t0 + 1000);
+            check(parrot.obeysLaw(r, 7), "parrot law: " + r.text());
+            if (r.text().equals("who put glass on the tower") || r.text().equals("the tower has a glass roof now")) echoed++;
+        }
+        check(echoed == 0, "Morrow parroted the speaker " + echoed + " times");
+        boolean othersCan = false;
+        for (int i = 0; i < 200 && !othersCan; i++) {
+            Corpus.Reply r = parrot.reply("who put glass on the tower", 7, i, Long.MIN_VALUE, "bryn", t0 + 1000);
+            othersCan = r.text().equals("who put glass on the tower") || r.text().equals("the tower has a glass roof now");
+        }
+        check(othersCan, "another player can still hear ash's words back");
+        Corpus.Reply later = parrot.reply("who put glass on the tower", 7, 3, Long.MIN_VALUE, "ash", t0 + 2 * Corpus.RECENT_MS);
+        check(parrot.obeysLaw(later, 7), "later reply obeys the law");
         System.out.println("auto-advance: " + BridgeLogic.DESK_ADVANCES);
 
         // ---- the bridge's persona-biased corpus reply -----------------------------------------------
