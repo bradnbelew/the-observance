@@ -127,7 +127,7 @@ def trapdoor_row() -> dict:
 # C3 finch's commute: her last ride, 11 June 2011. She set the three junction levers from the hub
 # (jct 1 ON sends the cart up the spur; 2 and 3 OFF keep the sidings closed), rode, and chatted
 # "taking the spur home" at 21:03:10 (serverlog). The lever block is beside each junction rail.
-JUNCTION_LEVERS = {"finch_jct_1": ((1, 0, 0), True), "finch_jct_2": ((-1, 0, 0), False), "finch_jct_3": ((0, 0, -1), False)}
+JUNCTION_LEVERS = {"finch_jct_1": ((-1, 0, 0), True), "finch_jct_2": ((-1, 0, 0), False), "finch_jct_3": ((0, 0, -1), False)}
 JUNCTION_BUILT_AT = datetime(2011, 4, 23, 16, 20, 0)   # the week the powered rails went in
 
 

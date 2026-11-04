@@ -205,6 +205,17 @@ public final class Nights implements Listener {
 
     private static final List<String> ROUTINE = List.of("lot", "hinge_open", "hinge_close", "chalk", "lamp_off");
 
+    /** cairn's close-up fixtures sit inside his barn along the north wall, from the door: the plate just
+     *  inside it, the hinge tin beside, the returns chest and the lamp (on a plank) further along. */
+    private static final Map<String, int[]> FIXTURES = Map.of(
+            "lot", new int[] {0, 0, 1}, "hinge", new int[] {1, 0, 1}, "returns", new int[] {4, 0, 1}, "lamp", new int[] {5, 1, 1});
+
+    static Block fixtureAt(World w, Canon canon, String what) {
+        int[] a = canon.anchor("cairn_storehouse_door_2011");
+        int[] o = FIXTURES.get(what);
+        return w.getBlockAt(a[0] + o[0], a[1] + o[1], a[2] + o[2]);
+    }
+
     private Block fixture(World w, int dx, int dy, int dz) {
         int[] a = canon.anchor("listening_room");
         return w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz);
@@ -242,13 +253,13 @@ public final class Nights implements Listener {
         if (e.getClickedBlock() == null || e.getHand() == EquipmentSlot.OFF_HAND) return;
         Block b = e.getClickedBlock();
         World w = b.getWorld();
-        if (e.getAction() == Action.PHYSICAL && b.getLocation().equals(fixture(w, -4, 0, -2).getLocation())) step(e.getPlayer(), "lot");
-        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getLocation().equals(fixture(w, 0, 0, -2).getLocation())
+        if (e.getAction() == Action.PHYSICAL && b.getLocation().equals(fixtureAt(w, canon, "lot").getLocation())) step(e.getPlayer(), "lot");
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getLocation().equals(fixtureAt(w, canon, "returns").getLocation())
                 && e.getPlayer().getInventory().getItemInMainHand().getType() == Material.WHITE_DYE) {
             e.setCancelled(true);
             step(e.getPlayer(), "chalk");
         }
-        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getLocation().equals(fixture(w, 1, 1, -2).getLocation())
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && b.getLocation().equals(fixtureAt(w, canon, "lamp").getLocation())
                 && b.getBlockData() instanceof Switch sw && sw.isPowered()) {
             step(e.getPlayer(), "lamp_off");
         }
@@ -257,13 +268,13 @@ public final class Nights implements Listener {
     @EventHandler
     public void onOpen(InventoryOpenEvent e) {
         if (e.getPlayer() instanceof Player p && e.getInventory().getLocation() != null
-                && e.getInventory().getLocation().getBlock().getLocation().equals(fixture(p.getWorld(), -2, 0, -2).getLocation())) step(p, "hinge_open");
+                && e.getInventory().getLocation().getBlock().getLocation().equals(fixtureAt(p.getWorld(), canon, "hinge").getLocation())) step(p, "hinge_open");
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         if (e.getPlayer() instanceof Player p && e.getInventory().getLocation() != null
-                && e.getInventory().getLocation().getBlock().getLocation().equals(fixture(p.getWorld(), -2, 0, -2).getLocation())) step(p, "hinge_close");
+                && e.getInventory().getLocation().getBlock().getLocation().equals(fixtureAt(p.getWorld(), canon, "hinge").getLocation())) step(p, "hinge_close");
     }
 
     // ---- D12: the presence register ----------------------------------------------------------

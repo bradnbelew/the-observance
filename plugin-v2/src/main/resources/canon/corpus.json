@@ -680,12 +680,28 @@
   "source": "sign (ledger_6), 2011"
  },
  {
-  "text": "rook cairn finch june",
-  "source": "sign (barn_names), 2011"
+  "text": "rook",
+  "source": "sign (barn_name_rook), 2011"
  },
  {
-  "text": "patch kit",
-  "source": "sign (barn_names_2), 2011"
+  "text": "cairn",
+  "source": "sign (barn_name_cairn), 2011"
+ },
+ {
+  "text": "finch",
+  "source": "sign (barn_name_finch), 2011"
+ },
+ {
+  "text": "june",
+  "source": "sign (barn_name_june), 2011"
+ },
+ {
+  "text": "patch",
+  "source": "sign (barn_name_patch), 2011"
+ },
+ {
+  "text": "kit",
+  "source": "sign (barn_name_kit), 2011"
  },
  {
   "text": "close-up: lot, tin chalk lamp",

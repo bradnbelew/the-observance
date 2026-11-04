@@ -27,18 +27,21 @@ without starting the game (`auto_advance_count_ops: true` to change that).
 | 1 The Mirror | (you start here; send the trailhead, below) | Site: forum, client area, status. Discord: welcome pinned. Server list: fake players online. |
 | 2 Mossfield | The first resident (not op) joins the server | Dynmap. Morrow's notes on sign backs. Broken blocks come back at dawn. South rail creeps. |
 | 3 The Tidy | A resident has been online 45 minutes in total since Act 2, and a dawn has passed since (in-game sunrise or `/mrrw dawn`) | LogBlock and June's folder open. Rules sign says "before". Tally book with lowpath. Golems. June's lamp flashes. Morrow starts answering chat. |
-| 4 The Archivist | The desk files Morrow's name / the LogBlock finding (desk ref `logblock_morrow`, `morrow` or `found_morrow`) | Server logs. Auction PDF drop. Desk answers the unmasking. |
-| 5 Replay | Theo is unmasked (desk ref `unmask`) | Nightly incident replay, then a player's own ghost. patchcord's folder. Checklist drop. FTP opens. |
-| 6 Correction | The floor is decoded (desk ref `floor` or `moss_0518`) | Forum and status rewrites. TCAdmin opens. Sign rewrites, rune signs, pots, the bleached flock. Theo's folder. |
-| 7 Voices | They confront Theo about 06:44 (desk ref `restart`) | IRC log drop. Flags tidied. Per-player signs. Bot sends the Act 7 DMs over about 15 hours. |
-| 8 Continuity | They file Iona's key (desk ref `key`) | lowpath walks every night. Sound replay, cairn's room, dust corridor. MAINT sign reverts unless waxed. Closet photo drop. Theo's box. Kit's line enters Morrow's vocabulary. |
-| 9 Someone Comes Home | They reach Kit's line (desk ref `kit` or `ingest`), when Theo's reply goes out | Backdated forum profiles. Doors open for them. Recovery compass. Meadow redrawn. Fake Theo DM. Case brief. A placed bed now stays. |
-| 10 Back By Tomorrow | Theo accepts the case brief (desk ref `brief`) | Booking, console, the USB group vote, hostile beats. Then the stop. |
+| 4 The Archivist | June's folder is opened with her password (the site posts `june_folder` when `sambro` logs in) | Server logs. Auction PDF drop. Desk answers the unmasking. The creeper art at spawn was completed at the Act 3 dawn. |
+| 5 Replay | Theo is unmasked (desk ref `unmask`, `unmask_lot`, `unmask_date` or `unmask_waived`) | Nightly incident replay (cue line, starts when a resident is near), then a player's own ghost. patchcord's folder. Checklist drop. FTP opens. The first dawn with a resident online tidies three rows of Rook's floor ("54 blocks normalised (rook's)"). |
+| 6 Correction | The players edit the MAINT sign at spawn to `MAINT ON` (Morrow answers within a minute) and Morrow reverts it at the next dawn (journal `morrow.maint_reverted`) | Forum and status rewrites. TCAdmin opens (its console takes a key). Sign rewrites once per act, rune signs, pots, the bleached flock. Theo's folder. T-06c the night after the confession. |
+| 7 Voices | They confront Theo about 06:44 (desk ref `restart` or `restart_node`) | IRC log drop. Flags tidied. Per-player signs. Bot sends the Act 7 DMs over about 15 hours; T-07d after two days. Iona's chest, once opened, is merged at the next dawn. |
+| 8 Continuity | Iona's key is entered in the TCAdmin console (the site posts `console_key`; the desk refuses it) | lowpath walks every night (cue line). Sound replay, cairn's room (fixtures inside the barn), dust corridor. MAINT sign reverts unless waxed. Closet photo drop. Theo's box (with the heartbeat logs). Kit's line enters Morrow's vocabulary. A bed at lowpath's place is queued at once and removed at dawn. |
+| 9 Someone Comes Home | They reach Kit's line (desk ref `kit` or `ingest`), when Theo's reply goes out | Backdated forum profiles (Location in Iona's region notation, post ids above 30112, LogBlock rows). Doors open for them. Recovery compass. Meadow redrawn. Fake Theo DM. Case brief. A placed bed is kept ("bed kept"); that night lowpath walks its last leg in and lies down. T-09c the next morning. |
+| 10 Back By Tomorrow | Theo accepts the case brief (desk ref `brief`) | Booking (then Theo's ask about finch's sign: whatever a resident says in chat is the stop log's reason, else finch's own sign), console, the USB group vote, hostile beats. Then the stop: Morrow echoes the code and Kit's line, the residents' figures walk home one session at a time, the log, lights out. T-10-after a week later. |
 
 A desk ref only moves the act from the act just before it (`unmask` moves 4 to 5, nothing else). If
 one arrives early it is journalled as `act.advance_early` and does nothing; the same ref filed again
-once the act has caught up applies it. Desk tickets with a Theo voice (T-04a, T-06a, T-08a, T-09a,
-T-09b) also queue a `theo.reply` journal line at their reply time, which the bot posts to #general.
+once the act has caught up applies it. Desk tickets with a Theo voice (T-04a/c/d/e, T-06a/d, T-08a,
+T-09a, T-09b) also queue a `theo.reply` journal line at their reply time, which the bot posts to
+#general. Theo's timed notes (T-06b, T-06c, T-07d, T-09c, hours into their act; T-10-ask after the
+booking; T-10-after a week after the stop) are fed the same way by the plugin and shown on the desk.
+Filing `found_morrow`, `floor`, `moss_0518` or the key at the desk gets Theo's reply but moves nothing.
 
 ## The trailhead (Act 0, at a Marked game night)
 

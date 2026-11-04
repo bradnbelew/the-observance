@@ -475,15 +475,13 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
 - **Payoff:** Kit's password, **biscuit**, which is needed for D15. It's also the first time players stand somewhere only Kit ever stood.
 - **Build requirement:** we generate those chunks by actually walking there in Beta 1.5. This only works with the Beta-first build.
 
-### D4. The second spawner (the seed world returns)
+### D4. The second spawner (dropped, 2026-11)
 
-- **Story:** Rookery's 2011 sign reads `meet at the 2nd / zombie spawner / past the ravine`. That's how 2011 players described places.
-- **Layers:**
-  1. Morrow filled the ravine, so it no longer exists in Mossfield.
-  2. Players open their own Beta 1.5 world on seed `bracken` from C1. The ravine and the dungeons are where the seed puts them.
-  3. Find the second zombie spawner past the ravine and note the coordinates.
-  4. Dig to the same coordinates in Mossfield. The dungeon is still there, buried under Morrow's fill.
-- **Payoff:** inside the dungeon chest are the blank signs Rookery stashed for the stop, including the one that becomes the MAINT sign. It's also the second proof that Morrow buried geography.
+- **Dropped.** Beta 1.5 had no ravines, so a seed-world comparison could never show one, and the
+  puzzle's first layer was impossible as written. The seed comparison still pays off twice: June's
+  cove (the shoreline Morrow "completed") and lowpath's hill (C-seed: the seed's own ground under
+  the house is three blocks lower). The dungeon chest's role (blank signs for the stop) moved to
+  Rook's newbie chest at spawn, which holds a sign-worth of planks and is refilled at dawn.
 
 ### D5. Dye is not wool (the trap layer)
 
@@ -533,8 +531,8 @@ Same rules as Part 2: a real author, a real reason, only that author's era of Mi
 
 - **Story:** Theo placed lodestones under each resident's **original** front door, in its 2011 position, and kept a named compass for each in his museum.
 - **Layers:**
-  1. Follow cairn's compass. It points 6 blocks **west** of today's storehouse door. Morrow rebuilt the storehouse squared to the grid (2 September 2011, the night the watchdog brought it back).
-  2. Dig at the true position to find the original 2011 floor and a buried chest.
+  1. Follow cairn's compass. It points at his real door: the storehouse never moved. What Morrow "squared" on 2 September 2011 (the night the watchdog brought it back) is the barn's crooked south-west corner, a one-block jog cairn built in March 2011. The LogBlock rows for that night name every block of it (18, matching the server log's "18 blocks normalised"), and Rook's ledger reads `9/2 barn corner`.
+  2. Dig at the corner: the old jog's footing planks are still under the grass line.
   3. Kit's compass points 800 blocks out, at the fossil island. That's an alternative route to D3.
 - **The eerie one:** a seventh compass labelled **lowpath** spins. It has no lodestone, so it has no home. That foreshadows the bed.
 
@@ -634,7 +632,7 @@ The remaining signs hold the ciphertext, 15 characters per line.
 | Act | Part 2 ciphers | Part 3 ciphers |
 | --- | --- | --- |
 | 1 The Mirror | C14 hover players | (roster notes set up D2, D12 and D15) |
-| 2 Mossfield | C1 seed, C17 sign backs | D4 second spawner |
+| 2 Mossfield | C1 seed, C17 sign backs | (D4 dropped: no ravines in Beta 1.5) |
 | 3 The Tidy | C4 Sambro, cairn's tally | D5 dye inversion (sheep census) |
 | 4 The Archivist | C11 map IDs, Theo desk | D9 lodestone compasses |
 | 5 Replay | C2 tune, C6 floor, C3 commute, C5 hub | D1 torch lock, D2 slipped hands |
@@ -651,7 +649,7 @@ That's about four investigations per act. The realistic total rises to **about 4
 | Level | Ciphers |
 | --- | --- |
 | Medium | D7, D9, D12, D14 |
-| Hard | D1, D2, D4, D5, D6, D8, D10, D13 |
+| Hard | D1, D2, D5, D6, D8, D10, D13 |
 | Very hard | D3, D11 |
 | Hardest in the game | D15 |
 

@@ -89,8 +89,9 @@ GENUINE_SIGNS_2011 = {
     "ledger_4": ["6/6 floor done", "", "", ""],
     "ledger_5": ["9/2 barn corner", "", "", ""],
     "ledger_6": ["9/4 im done", "", "", ""],
-    "barn_names": ["rook", "cairn", "finch", "june"],      # one name per sign over the tally chests (join order)
-    "barn_names_2": ["patch", "kit", "", ""],
+    # one name sign on each tally chest, in join order (cairn's forum post implies them)
+    "barn_name_rook": ["rook", "", "", ""], "barn_name_cairn": ["cairn", "", "", ""], "barn_name_finch": ["finch", "", "", ""],
+    "barn_name_june": ["june", "", "", ""], "barn_name_patch": ["patch", "", "", ""], "barn_name_kit": ["kit", "", "", ""],
     "barn_closeup": ["close-up: lot,", "tin chalk lamp", "", ""],
     "shed_bed": ["bed was here", "5/12. who", "took it -cairn", ""],
     "crater": ["creeper ate", "the first one", "", ""],

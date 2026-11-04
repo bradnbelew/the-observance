@@ -59,7 +59,7 @@ def main() -> None:
         "| 8 | Where Morrow learned 'turn it off' | ask the desk; Kit's email, 2019-03-02 |",
         "| 8 | The watchdog | file two of `@reboot`, `watchdog`, `crontab`, `auto_restart=on`: Theo admits the watchdog and the 2014 auto-restart |",
         "| 8 | Theo's box | user `tvale`, password `%s` |" % later.TVALE_BOX["password"],
-        "| 8 | cairn's room | step on the lot plate, open + close the hinge tin, white dye on the returns chest, flip the lamp lever off (his 2011 post in the storehouse thread: 'walk the lot, check the hinge tin, chalk the returns, lamp off') |",
+        "| 8 | cairn's room | inside the barn, along the north wall from the door (sign `close-up: lot, tin chalk lamp`): step on the plate just inside the door, open + close the hinge tin, white dye on the returns chest, flip the lamp lever off (his 2011 post: 'walk the lot, check the hinge tin, chalk the returns, lamp off'); the sealed sculk room east of the barn opens |",
         "| 8 | Sound replay | `%s` (FTP: /incoming/MIC-5-18-B.WAV) |" % ciphers.SOUND_REPLAY_FILENAME,
         "| 8 | Dust corridor | `%s` |" % ciphers.LIGHT_CORRIDOR_MESSAGE,
         "| 8 | Theo's heartbeat log (N3) | /~tvale/box/heartbeat.log.2019-03: `down` from 22:55 to 23:30 on 2019-03-02, back at 23:35 (`up=0d00:00:50`): Theo switched it off 4 minutes after Kit's 22:47 email and on again at 23:34. heartbeat.log.2011-05 shows the 06:17 kill, the 06:44 restart and the 11:14 stop the same way |",

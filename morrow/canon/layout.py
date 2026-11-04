@@ -24,7 +24,7 @@ ANCHORS = {
     "spawn_bread_chest": (-237, 71, 31),   # cairn's spawn bread chest
     "spawn_board": (-234, 72, 35),         # the bulletin board: 3x2 wall signs facing north, x+0..2, y-0..1
     "spawn_portal": (-226, 71, 28),        # Rook's Nether portal frame (27 May 2011), bottom NW obsidian, runs +z
-    "spawn_creeper": (-227, 71, 16),       # his 8x8 wool creeper face, bottom-west corner, runs +x and +y; unfinished
+    "spawn_creeper": (-227, 72, 16),       # his 8x8 wool creeper face, bottom-west corner, runs +x and +y; unfinished
     "cairn_storehouse_door_2011": (-80, 72, -140),     # door in the north wall; tally chests at x+2
     "cairn_storehouse_jog": (-82, 72, -125),   # the crooked SW corner (a one-block jog); Morrow squared it 2011-09-02
     "cairn_shed_hatch": (-67, 71, -136),       # the hole in the shed floor; Morrow's rebuild put a trapdoor in it

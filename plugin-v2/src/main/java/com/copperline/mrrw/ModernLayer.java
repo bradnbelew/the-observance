@@ -221,7 +221,7 @@ public final class ModernLayer {
             @SuppressWarnings("deprecation") MapView g = Bukkit.getMap(ids.get(0));
             if (g != null) barrel.getInventory().setItem(0, mapItem(g, canon.object("genuine_2015_map").get("label").getAsString()));
         }
-        if (at(w, "listening_room", -2, 0, -2).getState() instanceof Chest c && c.getBlockInventory().isEmpty() && !state.done("act8.listening_room_open")) {
+        if (Nights.fixtureAt(w, canon, "hinge").getState() instanceof Chest c && c.getBlockInventory().isEmpty() && !state.done("act8.listening_room_open")) {
             c.getBlockInventory().setItem(0, new ItemStack(Material.IRON_NUGGET, 3));
         }
         JsonArray shelves = canon.array("braille_shelves");
@@ -684,16 +684,16 @@ public final class ModernLayer {
             for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(lines[i]));
             s.update(true, false);
         }
-        // the routine fixtures, outside the door
-        at(w, "listening_room", -4, 0, -2).setType(Material.STONE_PRESSURE_PLATE, false);  // walk the lot
-        Block hinge = at(w, "listening_room", -2, 0, -2);                                    // the hinge tin
+        // the routine fixtures: inside the barn along its north wall (Nights.fixture uses the same offsets)
+        Nights.fixtureAt(w, canon, "lot").setType(Material.STONE_PRESSURE_PLATE, false);     // walk the lot
+        Block hinge = Nights.fixtureAt(w, canon, "hinge");                                   // the hinge tin
         hinge.setType(Material.CHEST, false);
         named(hinge, "hinge tin");
         if (hinge.getState() instanceof Chest c) c.getBlockInventory().setItem(0, new ItemStack(Material.IRON_NUGGET, 3));
-        Block returns = at(w, "listening_room", 0, 0, -2);                                   // the returns
+        Block returns = Nights.fixtureAt(w, canon, "returns");                               // the returns
         returns.setType(Material.CHEST, false);
         named(returns, "returns");
-        Block lever = at(w, "listening_room", 1, 1, -2);                                     // the desk lamp
+        Block lever = Nights.fixtureAt(w, canon, "lamp");                                    // the desk lamp
         lever.getRelative(BlockFace.DOWN).setType(Material.OAK_PLANKS, false);
         Switch sw = (Switch) Material.LEVER.createBlockData();
         sw.setAttachedFace(org.bukkit.block.data.FaceAttachable.AttachedFace.FLOOR);

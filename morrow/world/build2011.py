@@ -378,13 +378,15 @@ class Builder:
         self.set(x + dx, y, z + dz, BED, meta | 8)
 
     # ---- rail ------------------------------------------------------------------------------
-    def rail_line(self, points, booster_every=24, powered=True):
+    def rail_line(self, points, booster_every=24, powered=True, pins=None):
         """Lay rail along axis-aligned legs through points (x, z), following the ground smoothly.
 
         Each step changes height by at most one block; cuts and fills are made as needed, with a
         cobble bed under fills and the cut banks eased back so the line sits in the land.
         Powered rails every booster_every blocks with a redstone torch beside them (finch's way).
+        pins: {(x, z): y} rail heights that must hold (the junctions the canon's LogBlock rows name).
         """
+        pins = pins or {}
         path = []
         for (ax, az), (bx, bz) in zip(points, points[1:]):
             sx = (bx > ax) - (bx < ax)
@@ -399,10 +401,17 @@ class Builder:
         for i in range(len(path)):
             win = target[max(0, i - 3): i + 4]
             ys.append(round(sum(win) / len(win)))
-        for i in range(1, len(ys)):
-            ys[i] = max(ys[i - 1] - 1, min(ys[i - 1] + 1, ys[i]))
-        for i in range(len(ys) - 2, -1, -1):
-            ys[i] = max(ys[i + 1] - 1, min(ys[i + 1] + 1, ys[i]))
+        for _pass in range(3):
+            for i, p in enumerate(path):
+                if p in pins:
+                    ys[i] = pins[p]
+            for i in range(1, len(ys)):
+                ys[i] = max(ys[i - 1] - 1, min(ys[i - 1] + 1, ys[i]))
+            for i in range(len(ys) - 2, -1, -1):
+                ys[i] = max(ys[i + 1] - 1, min(ys[i + 1] + 1, ys[i]))
+        for i, p in enumerate(path):
+            if p in pins:
+                assert ys[i] == pins[p], ("pinned rail height does not hold", p, ys[i], pins[p])
         for i, ((x, z), y) in enumerate(zip(path, ys)):
             px, pz = path[i - 1] if i else path[i]
             nx, nz = path[i + 1] if i + 1 < len(path) else path[i]
@@ -611,7 +620,15 @@ def finch_rail(b: Builder):
     leg = A["patchcord_relay_hut"]
     pts = [(hx, hz - 4), (hx, leg[2] + 10), (A["finch_corner"][0], leg[2] + 10),
            (A["finch_corner"][0], A["finch_corner"][2]), (farm[0] - 24, A["finch_corner"][2])]
-    path, ys = b.rail_line(pts)
+    pins = {(A[k][0], A[k][2]): A[k][1] for k in ("finch_jct_1", "finch_jct_2", "finch_jct_3")}
+    path, ys = b.rail_line(pts, pins=pins)
+    # the junctions (C3): plain rails whose curve a lever beside them flips. 1: the spur leaves north
+    # (main = south-east curve); 2: a siding runs on north at her corner (main = south-east curve);
+    # 3: a siding runs south off the east leg (main = straight east-west)
+    j1, j2, j3 = A["finch_jct_1"], A["finch_jct_2"], A["finch_jct_3"]
+    b.set(j1[0], j1[1], j1[2], RAIL, 6)
+    b.set(j2[0], j2[1], j2[2], RAIL, 6)
+    b.set(j3[0], j3[1], j3[2], RAIL, 1)
     ex, ez = path[-1]                         # farm stop: a fence bumper and a torch
     b.set(ex - 1, ys[-1], ez, FENCE)
     b.torch(ex - 1, ys[-1] + 1, ez)
@@ -679,7 +696,7 @@ def cairn_farm(b: Builder):
     b.who = "cairn"
     cx, cy, cz = A["cairn_storehouse_door_2011"]  # door in the north wall; tally chests at x+2, z+2..z+12
     x0, x1, z0, z1 = cx - 2, cx + 6, cz, cz + 14  # interior x-1..x+5: room for the plugin's lecterns and golems
-    b.site(x0, z0, x1, z1, cy - 1, footing=COBBLE, skirt=5, fell=9)
+    b.site(x0, z0, x1, z1 + 1, cy - 1, footing=COBBLE, skirt=5, fell=9)
     b.fill(x0 + 1, cy - 1, z0 + 1, x1 - 1, cy - 1, z1 - 1, PLANKS)
     def wall(x, y, z):
         post = (x in (x0, x1) and (z - z0) % 4 == 0) or (z in (z0, z1) and x in (x0, x1)) or (z == z1 and x == cx + 2)
@@ -692,6 +709,18 @@ def cairn_farm(b: Builder):
         return PLANKS, 0
     b.walls(x0, cy, z0, x1, cy + 3, z1, wall)
     b.interior_air(x0 + 1, cy, z0 + 1, x1 - 1, cy + 3, z1 - 1)
+    # the crooked south-west corner (a 2011 kid's mistake): the wall jogs one block south for four
+    # blocks. The cells come from the canon (logblock.jog_cells), which is also what Morrow "squares"
+    # on 2 Sept 2011 (ModernLayer.squareBarn) and what the LogBlock rows describe.
+    from morrow.canon import logblock
+    broke, placed = logblock.jog_cells()
+    jx = A["cairn_storehouse_jog"][0]
+    for (x, y, z) in placed:
+        b.set(x, y, z, AIR, log=False)       # the straight wall's cells are inside the jog
+    for (x, y, z) in broke:
+        b.set(x, y, z, LOG if x == jx else PLANKS)
+    for x in range(x0 + 1, x0 + 3):
+        b.set(x, cy - 1, z1, PLANKS)         # the jog's floor
     b.gable(x0, z0, x1, z1, cy + 3, "z", end=PLANKS, end_window=GLASS)
     for z in (z0, z1):                       # a log beam across each gable end, on the top course
         b.fill(x0, cy + 3, z, x1, cy + 3, z, LOG)
@@ -857,6 +886,7 @@ def iona_rooms(b: Builder):
         b.set(x, y - 1, z, CSTAIRS, STAIR_UP["north"])
         if y + 2 >= g - 1:
             b.set(x, g, z, GRASS, log=False)  # she capped it; you dig the last block
+            b.manhole = (x, g, z)             # livedin.py marks it with cobble and her sign
             break
         y += 1
         z -= 1
@@ -880,6 +910,8 @@ def build(world_path: str, stage: str = "final") -> dict:
     cairn_farm(b)
     june_point(b, stage)
     iona_rooms(b)
+    from morrow.world import livedin
+    extras = livedin.apply(b, world_path)
     b.settle()
     paths(b)
     w.save()
@@ -888,10 +920,11 @@ def build(world_path: str, stage: str = "final") -> dict:
     w.save()
     out = Path(world_path) / "build-manifest.json"
     out.write_text(json.dumps(b.manifest))
+    (Path(world_path) / "build-extras.json").write_text(json.dumps({**extras, "manhole": list(getattr(b, "manhole", ()))}))
     by = {}
     for m in b.manifest:
         by[m["who"]] = by.get(m["who"], 0) + 1
-    return {"blocks": len(b.manifest), "by": by, "relit_chunks": n, "box": b.box}
+    return {"blocks": len(b.manifest), "by": by, "relit_chunks": n, "box": b.box, **extras}
 
 
 if __name__ == "__main__":

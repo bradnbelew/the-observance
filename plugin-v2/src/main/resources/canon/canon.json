@@ -32,7 +32,7 @@
   ],
   "spawn_creeper": [
    -227,
-   71,
+   72,
    16
   ],
   "cairn_storehouse_door_2011": [
@@ -938,15 +938,39 @@
    "",
    ""
   ],
-  "barn_names": [
+  "barn_name_rook": [
    "rook",
-   "cairn",
-   "finch",
-   "june"
+   "",
+   "",
+   ""
   ],
-  "barn_names_2": [
+  "barn_name_cairn": [
+   "cairn",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_finch": [
+   "finch",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_june": [
+   "june",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_patch": [
    "patch",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_kit": [
    "kit",
+   "",
    "",
    ""
   ],
@@ -1182,7 +1206,7 @@
  "junctions": {
   "finch_jct_1": {
    "lever": [
-    1,
+    -1,
     0,
     0
    ],
@@ -2877,15 +2901,39 @@
    "",
    ""
   ],
-  "barn_names": [
+  "barn_name_rook": [
    "rook",
-   "cairn",
-   "finch",
-   "june"
+   "",
+   "",
+   ""
   ],
-  "barn_names_2": [
+  "barn_name_cairn": [
+   "cairn",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_finch": [
+   "finch",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_june": [
+   "june",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_patch": [
    "patch",
+   "",
+   "",
+   ""
+  ],
+  "barn_name_kit": [
    "kit",
+   "",
    "",
    ""
   ],
