@@ -23,6 +23,11 @@ export type BridgeState = {
   act: number;
   actStarted: Date | null;
   players: number;
+  /** The plugin's roster (every player who joined); the site's player list when MORROW_PLAYERS is unset. */
+  names: string[];
+  /** Where each player first logged in (block coordinates): the Act 9 profiles' Location. */
+  firstJoins: Record<string, [number, number, number]>;
+  stoppedAt: Date | null;
   ready: boolean;
   stopped: boolean;
   usb: { votes: Record<UsbChoice, number>; winner: UsbChoice | null; open: boolean };
@@ -103,10 +108,21 @@ export function parseState(raw: unknown): BridgeState | null {
   const votesRaw = (usbRaw.votes && typeof usbRaw.votes === "object" ? usbRaw.votes : {}) as Record<string, unknown>;
   const count = (v: unknown) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.floor(Number(v)) : 0);
   const theo = Array.isArray(o.theo) ? o.theo : [];
+  const names = Array.isArray(o.names) ? o.names.filter((n): n is string => typeof n === "string" && n.length > 0 && n.length <= 16) : [];
+  const firstJoins: Record<string, [number, number, number]> = {};
+  if (o.first_joins && typeof o.first_joins === "object") {
+    for (const [n, v] of Object.entries(o.first_joins as Record<string, unknown>)) {
+      if (Array.isArray(v) && v.length === 3 && v.every((c) => Number.isFinite(Number(c)))) firstJoins[n] = [Number(v[0]), Number(v[1]), Number(v[2])];
+    }
+  }
+  const stoppedRaw = typeof o.stopped_at === "string" ? new Date(o.stopped_at) : null;
   return {
     act,
     actStarted: startedRaw && !Number.isNaN(startedRaw.getTime()) ? startedRaw : null,
     players: count(o.players),
+    names,
+    firstJoins,
+    stoppedAt: stoppedRaw && !Number.isNaN(stoppedRaw.getTime()) ? stoppedRaw : null,
     ready: o.ready === true,
     stopped: o.stopped === true,
     usb: {
@@ -146,6 +162,10 @@ export async function bridgeState(): Promise<BridgeState | null> {
         }
       }
       cached = { at: Date.now(), state };
+      if (state) {
+        lastNames = state.names;
+        lastFirstJoins = state.firstJoins;
+      }
       return state;
     })().finally(() => {
       inflight = null;
@@ -157,6 +177,23 @@ export async function bridgeState(): Promise<BridgeState | null> {
 /** Forget the cached state (after posting an event that may have advanced the act). */
 export function forgetBridgeState() {
   cached = null;
+}
+
+let lastNames: string[] = [];
+let lastFirstJoins: Record<string, [number, number, number]> = {};
+
+/** The roster from the most recent successful /state (kept past the cache TTL, so a blip never empties Act 9). */
+export function lastBridgeNames(): string[] {
+  return lastNames;
+}
+
+export function lastBridgeFirstJoins(): Record<string, [number, number, number]> {
+  return lastFirstJoins;
+}
+
+/** A hand-in that isn't a ticket (June's folder opened, Iona's key in the console): the same signed event, no reply time. */
+export async function postHandIn(ref: string, subject: string | null = null): Promise<boolean> {
+  return postDeskEvent({ ref, reply_at: null, voice: null, subject });
 }
 
 /** Tell the plugin what the desk just filed. Resolves when sent (or failed); never rejects. Idempotent on the plugin side. */

@@ -20,7 +20,7 @@ export type Bundle = {
   act: number;
   members: Record<string, Member>;
   threads: Thread[];
-  archivist_notes: { id: number; at: string; act: number; body: string }[];
+  archivist_notes: { id: number; at: string; act: number; body: string; edited?: string }[];
   client_account: {
     username: string; security_question: string; security_answer: string;
     service: { product: string; label: string; node: string; status: string; players_online: number; address: string };
@@ -56,9 +56,18 @@ export type Bundle = {
   desk: {
     rules: DeskRule[];
     files: Record<string, { act: number; line: string; voice: string | null }>;
-    drops: { act: number; after_hours: number; file: string | null; note: string }[];
+    drops: { act: number; after_hours: number; file: string | null; note: string; voice?: string | null }[];
     hints: string[];
+    none_replies?: Record<string, string>;
+    place_words?: string[];
   };
+  status_archive?: { id: string; title: string; posted: string; body: string; update: string }[];
+  history?: [string, string][];
+  backdated_post_id_base?: number;
+  backdated_row_templates?: { days: number; time: string; block: number; anchor: string; offset: number[] }[];
+  console_key_md5?: string;
+  theo_ask?: { text: string; voice: string };
+  theo_after?: { text: string; voice: string; after_stop_hours: number };
   forum_rewrites?: Record<string, { body: string; note: string }>;
   case_brief?: { id: string; label: string; accept: string[] }[];
   backdated_posts?: [string, string][];

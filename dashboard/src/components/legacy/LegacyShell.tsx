@@ -66,7 +66,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
       </div>
 
       <footer className="legacy-footer">
-        <div><Link href="/">Home</Link> | <Link href="/support/index.php">Terms of Service</Link> | <Link href="/support/index.php">Privacy Policy</Link> | <Link href="/support/index.php">Contact Us</Link></div>
+        <div><Link href="/">Home</Link> | <Link href="/about.php">About Copperline</Link> | <Link href="/support/index.php">Terms of Service</Link> | <Link href="/support/index.php">Privacy Policy</Link> | <Link href="/support/index.php">Contact Us</Link></div>
         <p>Copyright © 2009–2014 Copperline Hosting. Archived pages are provided as-is.</p>
         <small>Powered by WHMCS 5 · TCAdmin 1 · Copperline Hosting is not affiliated with Mojang AB.</small>
       </footer>

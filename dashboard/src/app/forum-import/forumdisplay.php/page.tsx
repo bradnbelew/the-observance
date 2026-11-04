@@ -15,7 +15,7 @@ export default async function ForumDisplay({ searchParams }: { searchParams: Pro
         {b.archivist_notes.map((n) => (
           <table key={n.id} className="vb-post"><tbody>
             <tr className="vb-post-head"><td>{vbDate(n.at)}</td><td className="vb-postno">archivist</td></tr>
-            <tr><td className="vb-message" colSpan={2}><div className="vb-body">{n.body}</div></td></tr>
+            <tr><td className="vb-message" colSpan={2}><div className="vb-body">{n.body}</div>{n.edited ? <div className="vb-edited">{n.edited}</div> : null}</td></tr>
           </tbody></table>
         ))}
       </ForumShell>

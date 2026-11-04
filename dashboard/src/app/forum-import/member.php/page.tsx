@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ForumShell } from "@/components/morrow/Forum";
 import { bundle, postsBy, vbDate, type Member } from "@/lib/morrow/canon";
-import { players } from "@/lib/morrow/campaign";
-import { backdatedJoin } from "@/lib/morrow/desk";
+import { firstJoins, playersNow } from "@/lib/morrow/campaign";
+import { backdatedJoin, regionNotation } from "@/lib/morrow/desk";
 
 export const metadata: Metadata = { title: "View Profile - Copperline Community Forums" };
 export const dynamic = "force-dynamic";
@@ -11,8 +11,10 @@ export const dynamic = "force-dynamic";
 export default async function MemberProfile({ searchParams }: { searchParams: Promise<{ u?: string }> }) {
   const u = (await searchParams).u ?? "";
   const b = await bundle();
-  const absorbed = b.backdated_posts && players().find((p) => p.toLowerCase() === u.toLowerCase());
-  const m: Member | undefined = b.members[u] ?? (absorbed ? { title: "Member", joined: backdatedJoin(absorbed), location: "", local_offset: "same as forum", posts: b.backdated_posts!.length, sig: "" } : undefined);
+  const roster = await playersNow();
+  const absorbed = b.backdated_posts && roster.find((p) => p.toLowerCase() === u.toLowerCase());
+  const fj = absorbed ? (await firstJoins())[absorbed] : undefined;
+  const m: Member | undefined = b.members[u] ?? (absorbed ? { title: "Member", joined: backdatedJoin(absorbed), location: fj ? regionNotation(fj[0], fj[2]) : "", local_offset: "same as forum", posts: b.backdated_posts!.length, sig: "" } : undefined);
   if (!m) {
     return <ForumShell crumbs={null}><div className="vb-notice">This user has not registered and therefore does not have a profile to view.</div></ForumShell>;
   }
@@ -34,9 +36,9 @@ export default async function MemberProfile({ searchParams }: { searchParams: Pr
       {absorbed ? (
         <>
           <h2 className="vb-subhead">Posts kept in this import</h2>
-          {b.backdated_posts!.map(([at, text]) => (
+          {b.backdated_posts!.map(([at, text], i) => (
             <table key={at} className="vb-post"><tbody>
-              <tr className="vb-post-head"><td>{vbDate(at)}</td><td className="vb-postno">{u}</td></tr>
+              <tr className="vb-post-head"><td>{vbDate(at)}</td><td className="vb-postno">{u} · #{(b.backdated_post_id_base ?? 30113) + roster.indexOf(absorbed) * b.backdated_posts!.length + i}</td></tr>
               <tr><td className="vb-message" colSpan={2}><div className="vb-body">{text}</div><div className="vb-edited">Last edited by {u}; {vbDate(at)} CST.</div></td></tr>
             </tbody></table>
           ))}

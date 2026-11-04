@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { bundle, currentAct, type Bundle, type LogRow, type Marker } from "@/lib/morrow/canon";
+import { players } from "@/lib/morrow/campaign";
+import { backdatedJoin } from "@/lib/morrow/desk";
 
 /**
  * Copperline's free customer web space, served at /~name/ (rewritten to /u/name/).
@@ -132,6 +134,24 @@ function LogBlockLocked() {
 
 const PAGE = 100;
 
+/** Act 9: Morrow files the players as 2010 residents, so the viewer gains rows of them placing post-2011 blocks. */
+function backdatedRows(b: Bundle): LogRow[] {
+  const templates = b.backdated_row_templates ?? [];
+  if (!templates.length) return [];
+  const anchors: Record<string, [number, number, number]> = { spawn: [-233, 70, 30], rookery_house: [-262, 71, -2], cairn_farm: [-100, 72, -162] };
+  const out: LogRow[] = [];
+  for (const p of players()) {
+    const joined = new Date(`${backdatedJoin(p)}T00:00:00Z`);
+    for (const t of templates) {
+      const a = anchors[t.anchor];
+      if (!a) continue;
+      const day = new Date(joined.getTime() + t.days * 86_400_000).toISOString().slice(0, 10);
+      out.push({ date: `${day} ${t.time}`, player: p, action: "placed", block: String(t.block), x: a[0] + t.offset[0], y: a[1] + t.offset[1], z: a[2] + t.offset[2], extra: "" });
+    }
+  }
+  return out;
+}
+
 function LogBlockViewer({ b, q }: { b: Bundle; q: Record<string, string | undefined> }) {
   const player = (q.player ?? "").trim().toLowerCase();
   const num = (v?: string) => (v && v.trim() !== "" && Number.isFinite(Number(v)) ? Number(v) : null);
@@ -142,7 +162,7 @@ function LogBlockViewer({ b, q }: { b: Bundle; q: Record<string, string | undefi
   const searched = Boolean(player || x !== null || z !== null || since);
   let rows: LogRow[] = [];
   if (searched) {
-    rows = b.logblock.filter((r) =>
+    rows = [...b.logblock, ...backdatedRows(b)].sort((a, c) => a.date.localeCompare(c.date)).filter((r) =>
       (!player || r.player.toLowerCase() === player) &&
       (x === null || Math.abs(r.x - x) <= radius) &&
       (y === null || Math.abs(r.y - y) <= radius) &&

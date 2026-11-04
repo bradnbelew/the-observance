@@ -146,8 +146,8 @@ def site_bundle(act: int) -> dict:
         bundle["console"] = {"cmd_md5": ciphers.md5(ciphers.HALT_COMMAND), "key_md5": ciphers.md5(ciphers.IONA_TOKEN)}
         bundle["theo_ask"] = later.THEO_ASK
         bundle["theo_after"] = later.THEO_AFTER
-    if act >= 7:
-        # the panel console takes Iona's key (Act 7's hand-in) once the players can log in (Act 6)
+    if act >= 6:
+        # the panel console takes Iona's key (Act 7's hand-in) from the moment the players can log in
         bundle["console_key_md5"] = ciphers.md5(ciphers.IONA_TOKEN)
     return bundle
 

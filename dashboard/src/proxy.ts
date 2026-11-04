@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import folders from "@/lib/canon/folders.json";
-import { bridgeState, effectiveAct } from "@/lib/morrow/bridge";
+import { bridgeState, effectiveAct, postHandIn } from "@/lib/morrow/bridge";
 
 /**
  * Residents' password-protected web folders (Apache .htaccess style, Basic auth).
@@ -74,7 +74,11 @@ export async function proxy(request: NextRequest) {
       if (tally.n >= BLOCK_AFTER) return forbidden();
       try {
         const [u, ...rest] = atob(header.slice(6)).split(":");
-        if (equal(u, user) && equal(rest.join(":"), folder.password)) return NextResponse.next();
+        if (equal(u, user) && equal(rest.join(":"), folder.password)) {
+          // Act 3's hand-in: June's folder opened with her password. The plugin ignores repeats.
+          if (user === "juni_lantern") void postHandIn("june_folder", "june's folder").catch(() => false);
+          return NextResponse.next();
+        }
       } catch {
         /* fall through to the challenge */
       }

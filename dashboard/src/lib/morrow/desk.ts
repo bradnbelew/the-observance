@@ -91,7 +91,18 @@ export function evaluate(b: Bundle, message: string): { kind: Ticket["kind"]; re
     if (mentionsFile(text, file)) return { kind: "file", ref: file };
   }
   if (best && best.rule.partial) return { kind: "partial", ref: best.rule.id };
-  return { kind: "none" };
+  return { kind: "none", ref: noneRef(b, text) };
+}
+
+const RESIDENTS = ["rookery", "cairn", "finchline", "juni_lantern", "patchcord", "kitbag", "rook", "finch", "june", "patch", "kit", "iona", "rowan", "sam", "mina", "eli"];
+
+/** What a ticket that matches nothing is about: a resident ("person:name"), a place, or a file. */
+function noneRef(b: Bundle, text: string): string | undefined {
+  const who = RESIDENTS.find((r) => new RegExp(`(^|[^a-z])${r}($|[^a-z])`).test(text));
+  if (who) return `person:${who}`;
+  if (/\.[a-z0-9]{2,4}\b|\bfile|\bfolder|\bzip\b|\blog\b|\brecording/.test(text)) return "file";
+  if ((b.desk.place_words ?? []).some((p) => text.includes(p))) return "place";
+  return undefined;
 }
 
 export function newTicket(b: Bundle, name: string, subject: string, message: string, now = new Date()): Ticket {
@@ -130,13 +141,20 @@ export function replyFor(b: Bundle, t: Ticket): Reply | null {
       : { text: `${r.missing.text}\n\n(I couldn't match: ${t.brief.missing.map(label).join(", ")})`, voice: r.missing.voice };
   }
   if (t.kind === "booking") {
-    return { text: "Okay.  Saturday then.  I'll be on.  I'll cut the bridge when you've done your bit.", voice: "T-10-booked" };
+    const ask = b.theo_ask ? `\n\n${b.theo_ask.text}` : "";
+    return { text: `Okay.  Saturday then.  I'll be on.  I'll cut the bridge when you've done your bit.${ask}`, voice: "T-10-booked" };
   }
   if (t.kind === "choice" && t.ref && b.usb_choices?.[t.ref]) {
     const c = b.usb_choices[t.ref];
     return { text: `Took the drives out this morning.  Six-forty.  About when I turned it back on, back then.  The stick's got ${lowerFirst(c.line)}  Kit says hi, weirdly.  Thanks for coming.\n\nT`, voice: c.voice };
   }
-  if (t.kind === "none") return { text: "Thanks!  I'm not sure I have anything on that, sorry.  If you've got a filename, that helps." };
+  if (t.kind === "none") {
+    const r = b.desk.none_replies ?? {};
+    const fallback = r.default ?? "Thanks!  I'm not sure I have anything on that, sorry.  If you've got a filename, that helps.";
+    if (t.ref?.startsWith("person:") && r.person) return { text: r.person.replace("{who}", t.ref.slice(7)) };
+    if (t.ref && r[t.ref]) return { text: r[t.ref] };
+    return { text: fallback };
+  }
   return null;
 }
 
@@ -177,13 +195,17 @@ export function deskEvent(b: Bundle, t: Ticket): Omit<DeskEvent, "kind"> | null 
 }
 
 /** Theo's unprompted drops and the escalating hints, released by time since the act started. */
-export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number }): { at: string; text: string; file: string | null; voice?: string }[] {
+export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number; stoppedAt?: Date | null }): { at: string; text: string; file: string | null; voice?: string }[] {
   const h = clock.hours;
   const notes: { at: string; text: string; file: string | null; voice?: string }[] = [
     { at: "2026-08-02", text: "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the desk is open.  I check it in the evenings.  No worries at all.", file: null, voice: "T-01" },
   ];
   for (const d of b.desk.drops) {
-    if (d.act < b.act || h >= d.after_hours) notes.push({ at: `Act ${d.act}`, text: d.note, file: d.file });
+    if (d.act < b.act || h >= d.after_hours) notes.push({ at: `Act ${d.act}`, text: d.note, file: d.file, voice: d.voice ?? undefined });
+  }
+  // a week after the stop, Theo writes once more
+  if (b.theo_after && clock.stoppedAt && Date.now() >= clock.stoppedAt.getTime() + b.theo_after.after_stop_hours * 3_600_000) {
+    notes.push({ at: "after", text: b.theo_after.text, file: null, voice: b.theo_after.voice });
   }
   // hint timers scale with the group (bridge.ts hintFactor): 24/72/120/168 h for five or more, half that for a pair
   const hours = (extras(b).hint_hours ?? [24, 72, 120, 168]).map((x) => x * clock.hintFactor);
@@ -216,6 +238,12 @@ export function scoreBrief(b: Bundle, answers: Record<string, string>): { accept
     (given && accept.includes(given) ? accepted : missing).push(f.id);
   }
   return { accepted, missing };
+}
+
+/** Iona's region notation for a block position (morrow/canon/layout.py region_chunk): r.X.Z.mcr c(cx,cz). */
+export function regionNotation(x: number, z: number): string {
+  const cx = Math.floor(x) >> 4, cz = Math.floor(z) >> 4;
+  return `r.${cx >> 5}.${cz >> 5}.mcr c(${cx & 31},${cz & 31})`;
 }
 
 /** Must match morrow/canon/later.py backdated_join(). */

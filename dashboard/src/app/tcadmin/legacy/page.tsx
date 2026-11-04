@@ -52,6 +52,19 @@ export default async function TcAdmin({ searchParams }: { searchParams: Promise<
         <thead><tr><th>Time</th><th>User</th><th>Service</th><th>Action</th><th>Reason</th></tr></thead>
         <tbody>{(b.tcadmin_log ?? []).map((row, i) => <tr key={i}>{row.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
       </table>
+      {act < 10 ? (
+        <>
+          <h2>Console</h2>
+          {result?.error ? <p className="tc-err">{result.error}</p> : null}
+          {result?.status ? <p className="tc-small">node reports: <code>{result.status}</code></p> : null}
+          <form method="post" action="/tcadmin/legacy/console" className="plain-form">
+            <p>Command<br /><input name="command" autoComplete="off" /></p>
+            <p>Key<br /><input name="key" autoComplete="off" size={48} /></p>
+            <button type="submit">Run</button>
+          </form>
+          <p className="tc-small">Service commands are refused while a recovery job is running. A node key is accepted at any time.</p>
+        </>
+      ) : null}
       {act >= 10 ? (
         <>
           <h2>Maintenance window</h2>

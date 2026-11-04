@@ -21,7 +21,7 @@ const env = {
   MORROW_ACT_STARTED: process.env.MORROW_ACT_STARTED ?? new Date().toISOString(),
   MORROW_DESK_MINUTES: process.env.MORROW_DESK_MINUTES ?? "3",
   MORROW_MC_HOST: process.env.MORROW_MC_HOST ?? "localhost:25599",
-  MORROW_PLAYERS: process.env.MORROW_PLAYERS ?? "",
+  ...(process.env.MORROW_PLAYERS ? { MORROW_PLAYERS: process.env.MORROW_PLAYERS } : {}),  // unset: the plugin's roster over the bridge
   MORROW_STOP_SECRET: stopSecret,
   MORROW_BRIDGE_URL: process.env.MORROW_BRIDGE_URL ?? "http://127.0.0.1:25588",
 };

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { isProduction, sessionSecret } from "./signing";
-import { bridgeState, effectiveAct, hintFactor } from "./bridge";
+import { bridgeState, effectiveAct, hintFactor, lastBridgeFirstJoins, lastBridgeNames } from "./bridge";
 
 /**
  * Campaign settings, all from environment variables (set on Vercel per act):
@@ -73,21 +73,48 @@ export const DEV_CLOCK_COOKIE = "morrow_dev_clock";
  * the bridge answers and its act is the one being served; otherwise MORROW_ACT_STARTED. The hint
  * factor comes from the plugin's resident count, else from MORROW_PLAYERS (bridge.ts hintFactor).
  */
-export async function actClock(now = new Date()): Promise<{ hours: number; hintFactor: number }> {
+export async function actClock(now = new Date()): Promise<{ hours: number; hintFactor: number; stoppedAt: Date | null }> {
   const state = await bridgeState();
   const factor = hintFactor(state ? state.players : players().length);
+  const stoppedAt = state?.stoppedAt ?? null;
   if (DEV || process.env.MORROW_DESK_FAST === "1") {
     const real = DEV && (await cookies()).get(DEV_CLOCK_COOKIE)?.value === "real";
-    if (!real) return { hours: 10_000, hintFactor: factor };
+    if (!real) return { hours: 10_000, hintFactor: factor, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null) };
   }
   const env = envAct();
   const fromBridge = state && state.act >= env && state.actStarted ? state.actStarted : null;
   const s = fromBridge ?? actStarted();
-  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, hintFactor: factor };
+  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, hintFactor: factor, stoppedAt };
 }
 
-export function players(): string[] {
+/** MORROW_PLAYERS as set (may be empty). */
+export function envPlayers(): string[] {
   return (process.env.MORROW_PLAYERS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+/**
+ * The players: MORROW_PLAYERS when set, else the plugin's roster from the last bridge state (so Act 9
+ * cannot break on a missed variable). Synchronous callers get the cached roster; pages should await
+ * bridgeState() first (bundle() does).
+ */
+export function players(): string[] {
+  const env = envPlayers();
+  if (env.length) return env;
+  return lastBridgeNames();
+}
+
+/** Where each player first logged in, from the plugin (empty without a bridge). Asks the bridge itself. */
+export async function firstJoins(): Promise<Record<string, [number, number, number]>> {
+  const state = await bridgeState();
+  return state?.firstJoins ?? lastBridgeFirstJoins();
+}
+
+/** players(), after asking the bridge (so the roster fallback works even where the act came from a cookie). */
+export async function playersNow(): Promise<string[]> {
+  const env = envPlayers();
+  if (env.length) return env;
+  const state = await bridgeState();
+  return state?.names ?? lastBridgeNames();
 }
 
 export const deskFast = () => DEV || process.env.MORROW_DESK_FAST === "1";

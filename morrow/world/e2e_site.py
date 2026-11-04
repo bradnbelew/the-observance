@@ -249,7 +249,8 @@ def bridge_sig(secret: str, method: str, target: str, ts: str, body: bytes) -> s
 
 
 def default_state() -> dict:
-    return {"act": 1, "act_started": None, "players": 0, "ready": False, "stopped": False,
+    return {"act": 1, "act_started": None, "players": 1, "names": ["Tester"], "first_joins": {"Tester": [-230, 71, 28]},
+            "ready": False, "stopped": False,
             "usb": {"votes": {"clean": 0, "recovered": 0, "corpus": 0}, "winner": None, "open": False},
             "fingerprint": hmac.new(STOP_SECRET.encode(), b"mrrw-fingerprint", hashlib.sha256).hexdigest()[:8],
             "theo": []}
@@ -329,11 +330,13 @@ def event(ref: str, wait: float = 6.0) -> dict | None:
     return None
 
 
-def check_event(ref: str, voice: str | None, label: str) -> None:
+def check_event(ref: str, voice: str | None, label: str, reply_at: bool = True) -> None:
+    """A desk ticket's event carries its reply time; a hand-in (June's folder, the console key) has none."""
     e = event(ref)
-    check(e is not None and e.get("kind") == "desk" and e.get("voice") == voice and bool(e.get("reply_at"))
+    timing = bool(e and e.get("reply_at")) if reply_at else bool(e and e.get("reply_at") is None)
+    check(e is not None and e.get("kind") == "desk" and e.get("voice") == voice and timing
           and e.get("subject") is not None,
-          f"{label}: signed POST /event ref={ref} voice={voice} reply_at set" + ("" if e else " (nothing arrived)"))
+          f"{label}: signed POST /event ref={ref} voice={voice} reply_at {'set' if reply_at else 'none'}" + ("" if e else " (nothing arrived)"))
 
 
 def ago(hours: float) -> str:
@@ -479,7 +482,8 @@ def main() -> int:
 
     home = text(get("/~mossfield/")[2])
     check("server.properties" not in home, "Act 1: Rook's page doesn't list server.properties yet")
-    thread = text(get("/forum-import/showthread.php?t=3724")[2])
+    quoted = next(t["id"] for t in json.loads((CANON / "act-01.json").read_text(encoding="utf-8"))["threads"] if t["title"] == "move host?")
+    thread = text(get(f"/forum-import/showthread.php?t={quoted}")[2])
     check("[QUOTE" not in thread and "Originally Posted by" in thread and "vb-quote" in thread,
           "forum [QUOTE=name] renders as a vBulletin quote box, not raw BBCode")
 
@@ -502,6 +506,8 @@ def main() -> int:
     listing = text(get("/~juni_lantern/", headers=basic("juni_lantern", june))[2])
     for name in sorted(set(re.findall(r'href="/media/june/([^"]+)"', listing))):
         fetch(f"/media/june/{name}", f"june's {name}", [f"media/june/{name}"], headers=basic("juni_lantern", june))
+    if linked:
+        check_event("june_folder", None, "Act 3 June's folder opened with sambro (the hand-in)", reply_at=False)
     t = flat(desk("hm", "it'll be back by tomorrow, the glass on the tower is weird"))
     check("That's not anyone" not in t, "'tomorrow' + tower details doesn't count as finding Morrow's name")
     t = flat(desk("logblock", "a player called morrow placed glass on june's tower at 04:11:04"))
@@ -511,11 +517,15 @@ def main() -> int:
 
     act(4)
     t = desk("who runs this", "the auction says lot 14 went to T. Vale and CHI-07 is the mossfield node")
-    check("it's me. Theo" in flat(t), "unmasking with two tokens gets Theo's confession (T-04a)")
+    check("You found the auction paperwork" in flat(t) and "It's me. Theo" in flat(t), "unmasking with Lot 14 gets the lot variant (T-04c)")
     if linked:
-        check_event("unmask", "T-04a", "Act 4 unmask")
+        check_event("unmask_lot", "T-04c", "Act 4 unmask (lot)")
+    t = desk("who runs this", "the invoices were waived and the box was collected 2014-12-14")
+    check("Five days after" in flat(t), "unmasking with the date gets the date variant (T-04d)")
+    t = desk("who runs this", "CHI-07 is the mossfield node and the invoices say waived")
+    check("Keep it billable" in flat(t), "unmasking with waived gets the billable variant (T-04e)")
     t = desk("hm", "who bought lot 14?")
-    check("It's just an archive" in t, "one token gets the deflection")
+    check("I'd want two" in t, "one token gets the nudge (two things)")
     home = desk_home("Act 4 desk")
     check("copperline-asset-sale-2014.pdf" in home, "Act 4 drop: the auction PDF")
     link = re.search(r'href="(/desk-file/[^"]+)"[^>]*>copperline-asset-sale-2014.pdf', home)
@@ -560,15 +570,24 @@ def main() -> int:
     check("Kit was" in t and "asleep" in t, "restart evidence gets the confession (T-06a)")
     if linked:
         check_event("restart", "T-06a", "Act 6 restart")
+    t = desk("the restart", "tvale started CHI-07/mrrw at 06:44:10")
+    check("That's my login" in t, "restart filed with the node name gets the node variant (T-06d)")
+    t = desk("the restart", "the panel says it was mid-session on CHI-07/mrrw")
+    check("Read the reason field" in t, "restart without the time gets the nudge")
+    get("/tcadmin/legacy/console", {"command": "", "key": "nope"})
+    _, _, raw = get("/tcadmin/legacy/console", {"command": "", "key": "nope"})
+    check("key rejected" in text(raw), "Act 6 console: a wrong key is rejected")
     check("Brief storage maintenance" in text(get("/status/incident-6118")[2]), "status page shows Morrow's rewrite")
 
     act(7)
     home = desk_home("Act 7 desk")
     check("copperline-ops.irc.log" in home, "Act 7 drop: Iona's IRC log")
     t = flat(desk("found this", f"it was in the chest: {ciphers.IONA_TOKEN}"))
-    check("That's Iona's key" in t, "filing Iona's key gets Theo's answer (key)")
+    check("That's not for me" in t and "Put it where she'd put it" in t, "filing Iona's key at the desk is refused (key, no advance)")
+    _, _, raw = get("/tcadmin/legacy/console", {"command": "", "key": ciphers.IONA_TOKEN})
+    check("key accepted. stop refused: maint=off sessions=1 (lowpath)" in text(raw), "Iona's key in the panel console is the Act 7 hand-in")
     if linked:
-        check_event("key", None, "Act 7 key")
+        check_event("console_key", None, "Act 7 console_key", reply_at=False)
 
     act(8)
     t = desk("where did it learn that", "it keeps saying you can turn it off, its ok. that isn't in any log")
@@ -604,6 +623,14 @@ def main() -> int:
     profile = text(get("/forum-import/member.php?u=Tester")[2])
     joined = re.search(r"Join Date</th><td>([0-9-]+)", profile)
     check(bool(joined) and joined.group(1).startswith("2010-11"), "the player has a backdated 2010 forum profile")
+    if linked:
+        check("r.-1.0.mcr c(17,1)" in profile, "the absorbed profile's Location is the first-join spot in Iona's region notation (N5)")
+    check("#3011" in profile, "the backdated posts carry ids above the last real 2011 post (the post-id tell)")
+    lb = text(get("/~mossfield/logblock?player=Tester")[2])
+    check("<td>170</td>" in lb and "2010-11" in lb, "LogBlock shows the player's backdated 2010 rows with post-2011 block ids")
+    for name in ("heartbeat.log.2019-03", "heartbeat.log.2011-05"):
+        hb = text(get(f"/media/tvalebox/{name}", headers=basic("tvale", "chi07-2010"))[2])
+        check("down" in hb and "mrrw-01" in hb, f"Theo's box serves {name} (N3)")
     _, _, raw = get("/dobrief.php", {"name": "e2e", "restart": "2011-05-18 06:44:10", "lowpath": "2016-08-03",
                                      "kit": "2019-03-02", "clean": md5, "joined": joined.group(1) if joined else ""})
     check("one USB stick" in text(raw), "a correct case brief convinces Theo (T-09a)")
@@ -638,7 +665,7 @@ def main() -> int:
     check("only be booked on an upcoming Saturday" in text(raw), "a non-Saturday window is refused")
     if saturdays:
         _, _, raw = get("/tcadmin/legacy/book", {"day": saturdays[0], "hour": "20"})
-        check("Saturday then" in text(raw), "a Saturday window is booked (T-10-booked)")
+        check("Saturday then" in text(raw) and "Leave it, or let it finish" in text(raw), "a Saturday window is booked (T-10-booked) and Theo asks about finch's sign")
         fetch_links(text(raw), "booking")
         if linked:
             check_event("booking", "T-10-booked", "Act 10 booking")

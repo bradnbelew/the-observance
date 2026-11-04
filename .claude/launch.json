@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "copperline-v2", "runtimeExecutable": "node", "runtimeArgs": ["scripts/dev-v2.mjs"], "cwd": "dashboard", "port": 3040 },
+    { "name": "copperline-playtest", "runtimeExecutable": "node", "runtimeArgs": ["scripts/playtest.mjs"], "cwd": "dashboard", "port": 3041 }
+  ]
+}

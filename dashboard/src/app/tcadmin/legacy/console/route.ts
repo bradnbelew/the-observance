@@ -5,7 +5,8 @@ import { bundle, currentAct } from "@/lib/morrow/canon";
 import { deskFast, seal, unseal } from "@/lib/morrow/campaign";
 import { remember, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { morrowStatus, ping, stopCode, STOP_CHOICES } from "@/lib/morrow/slp";
-import { bridgeState } from "@/lib/morrow/bridge";
+import { bridgeState, postHandIn } from "@/lib/morrow/bridge";
+import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +24,21 @@ const md5 = (s: string) => createHash("md5").update(s).digest("hex");
 export async function POST(request: Request) {
   const back = (r: object) => NextResponse.redirect(new URL(`/tcadmin/legacy?r=${seal(r)}`, request.url), 303);
   const b = await bundle();
-  if ((await currentAct()) < 10 || !b.console || !unseal((await cookies()).get("tcadmin")?.value)) {
+  const act = await currentAct();
+  if (act < 6 || !unseal((await cookies()).get("tcadmin")?.value)) {
     return NextResponse.redirect(new URL("/tcadmin/legacy", request.url), 303);
   }
   const form = await request.formData();
   const command = String(form.get("command") ?? "").trim().toUpperCase();
   const key = String(form.get("key") ?? "").trim();
+  // Acts 6-9: the console takes Iona's key (Act 7's hand-in) and refuses the stop: a session is still open
+  if (act < 10 || !b.console) {
+    if (!b.console_key_md5) return back({ error: "console: read only (recovery job running)" });
+    if (md5(key) !== b.console_key_md5) return back({ error: key ? "key rejected (watchdog still armed)" : "key required" });
+    console.log(`MORROW_CONSOLE key accepted at act ${act}`);
+    after(() => postHandIn("console_key", "iona's key"));
+    return back({ status: "key accepted. stop refused: maint=off sessions=1 (lowpath)" });
+  }
   let choice = String(form.get("choice") ?? "") as keyof typeof STOP_CHOICES;
   if (md5(command) !== b.console.cmd_md5) return back({ error: `${command || "(blank)"}: unknown command` });
   if (md5(key) !== b.console.key_md5) return back({ error: "key rejected (watchdog still armed)" });
