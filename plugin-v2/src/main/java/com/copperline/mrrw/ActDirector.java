@@ -118,7 +118,7 @@ public final class ActDirector {
         JsonObject art = canon.object("creeper");
         com.google.gson.JsonArray rows = art.getAsJsonArray("rows");
         int missing = art.get("missing_rows").getAsInt(), n = 0;
-        for (int r = 0; r < missing && r < rows.size(); r++) {
+        for (int r = rows.size() - missing; r < rows.size(); r++) {   // the top rows: it gives the thing its eyes
             com.google.gson.JsonArray row = rows.get(r).getAsJsonArray();
             for (int c = 0; c < row.size(); c++) {
                 Block b = at(w, "spawn_creeper", c, r, 0);

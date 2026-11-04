@@ -98,7 +98,8 @@ def spawn_extras(b: Builder):
     b.set(tx, g + 2, tz, LOG)
     b.torch(tx + 1, g + 2, tz, "east")
     b.torch(tx - 1, g + 2, tz, "west")
-    # the pixel-art creeper, north of the square: a cobble footing, the top rows laid, the bottom rows missing
+    # the pixel-art creeper, north of the square: a cobble footing, built from the ground up and
+    # stopped before the eyes (the top rows are Morrow's, at the Act 3 dawn)
     cx, cy, cz = A["spawn_creeper"]
     rows = [[BLACK if ch == "B" else GREEN for ch in row] for row in reversed(CREEPER_FACE)]  # rows[0] = bottom
     for c in range(8):
@@ -106,7 +107,7 @@ def spawn_extras(b: Builder):
         for y in range(g + 1, cy):
             b.set(cx + c, y, cz, COBBLE)
         b.set(cx + c, cy - 1, cz, COBBLE)
-        for r in range(CREEPER_MISSING_ROWS, 8):
+        for r in range(0, 8 - CREEPER_MISSING_ROWS):
             b.set(cx + c, cy + r, cz, WOOL, rows[r][c])
     b.set(cx - 1, cy - 1, cz, COBBLE)      # the wool chest's footing (inject.py)
     b.set(cx + 3, cy - 1, cz + 2, COBBLE)  # the WIP sign's footing
@@ -332,13 +333,15 @@ def june_extras(b: Builder):
     b.set(x0 + 2, hy, z1 - 2, GLASS)
     b.set(x0 + 2, hy + 1, z1 - 2, GLASS)
     b.set(x0 + 4, hy, z0 + 1, 54)                 # the flag locker (inject.py fills it)
-    # the tower gallery: finch's torch clock on the floor round the lantern frame: six repeaters at 4
-    # ticks and one torch make a 50-tick loop, 5 s (C4's 2011 route to "Fl W 5s"). The ring is the
-    # 5x5 round the frame posts; the rim's fence is one block further out.
+    # finch's torch clock, on a sandstone pad in June's yard between the house and the tower door (she
+    # tested it "where June could see it from the house"): six repeaters at 4 ticks and one torch make
+    # a 50-tick loop, 5 s (C4's 2011 route to "Fl W 5s"). The gallery itself carries June's flags.
     tx, ty, tz = A["june_tower"]
     b.who = "finchline"
-    gy = ty + 21
-    bx, bz = tx - 2, tz - 2
+    bx, bz = tx - 2, tz - 9
+    gy = b.ground(tx, tz - 7) + 1
+    b.site(bx, bz, bx + 4, bz + 4, gy - 1, footing=24, skirt=2)
+    b.fill(bx, gy - 1, bz, bx + 4, gy - 1, bz + 4, 24)
     ring = [((bx, bz), STONE, 0), ((bx + 1, bz), RTORCH, 1),
             ((bx + 2, bz), REPEATER, REPEATER_DIR["east"] + 12), ((bx + 3, bz), WIRE, 0), ((bx + 4, bz), WIRE, 0),
             ((bx + 4, bz + 1), REPEATER, REPEATER_DIR["south"] + 12), ((bx + 4, bz + 2), WIRE, 0),
@@ -348,6 +351,7 @@ def june_extras(b: Builder):
             ((bx, bz + 3), REPEATER, REPEATER_DIR["north"] + 12), ((bx, bz + 2), WIRE, 0), ((bx, bz + 1), WIRE, 0)]
     for (x, z), block, meta in ring:
         b.set(x, gy, z, block, meta)
+    b.torch(bx + 5, gy, bz + 2)
     b.who = "juni_lantern"
     b.set(tx - 1, ty - 1, tz - 3, 24)                           # the lamp sign's footing by the door (inject.py)
 
@@ -386,6 +390,9 @@ def annex_ops(b: Builder):
         for dy in range(3):
             b.set(ax, ay + dy, z, IRON_BLOCK)
         b.set(ax + 1, ay + 1, z, RTORCH, 1)
+    for x in (ax + 3, ax + 7, ax + 11):
+        b.torch(x, ay + 2, az, "north")                 # torches over the shelf row, on the back wall
+    b.torch(ax + 2, ay + 1, az - 5, "south")
     # desk and chest on the north wall, a bed, the coffee corner (a furnace and a cake), a bookshelf
     b.set(ax + 4, ay, az - 5, WORKBENCH)
     b.set(ax + 5, ay, az - 5, 54)

@@ -32,6 +32,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Theo-era and Morrow-era layer that already exists when players first arrive. Installed once
@@ -80,6 +81,8 @@ public final class ModernLayer {
         if (canon.anchors.containsKey("cairn_shed_hatch")) part("install.shed_hatch", done, () -> shedHatch(w));
         part("install.gallery_wire", done, () -> galleryWire(w));
         if (canon.raw.has("theo_drafts")) part("install.theo_drafts", done, () -> theoDrafts(w));
+        if (canon.raw.has("iona_chest")) part("install.iona_chest", done, () -> ionaChest(w));
+        if (canon.raw.has("kit_chest")) part("install.kit_chest", done, () -> kitChest(w));
         if (canon.raw.has("visitor_book")) part("install.visitor_book", done, () -> visitorBook(w));
         reattachMaps();
         return done;
@@ -148,10 +151,10 @@ public final class ModernLayer {
         b.setBlockData(td, false);
     }
 
-    /** finch's 2011 torch clock on June's gallery came through the upgrade as dots: give the dust its connections. */
+    /** finch's 2011 torch clock in June's yard came through the upgrade as dots: give the dust its connections. */
     private void galleryWire(World w) {
         int[] t = canon.anchor("june_tower");
-        for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) for (int dy = 20; dy <= 22; dy++) {
+        for (int dx = -4; dx <= 4; dx++) for (int dz = -11; dz <= -3; dz++) for (int dy = -4; dy <= 6; dy++) {
             Block b = w.getBlockAt(t[0] + dx, t[1] + dy, t[2] + dz);
             if (b.getType() == Material.REDSTONE_WIRE || b.getType() == Material.REPEATER) b.setBlockData(b.getBlockData(), true);
         }
@@ -166,6 +169,42 @@ public final class ModernLayer {
         for (JsonElement p : pages) meta.addPages(Component.text(p.getAsString()));
         it.setItemMeta(meta);
         return it;
+    }
+
+    private static Material item(String name) {
+        Material m = Material.matchMaterial(name);
+        if (m == null) m = Material.matchMaterial(Map.of("planks", "oak_planks", "wood", "oak_log", "bed", "red_bed", "workbench", "crafting_table").getOrDefault(name, name));
+        return m == null ? Material.STONE : m;
+    }
+
+    /**
+     * Iona's double chest, in the order the CLIENT lists it (the 2011 world put slots 0-26 in the west
+     * block; the upgrade decides which block is the chest's left half, so the two can come out swapped).
+     * Bukkit's double-chest inventory is the GUI order, so writing the 48 stacks through it is exact.
+     */
+    private void ionaChest(World w) {
+        Block b = at(w, "iona_key_chest", 0, 0, 0);
+        if (!(b.getState() instanceof Chest chest)) return;
+        org.bukkit.inventory.Inventory inv = chest.getInventory();   // the whole double chest, GUI order
+        if (inv.getSize() < 54) return;
+        inv.clear();
+        for (JsonElement e : canon.array("iona_chest")) {
+            JsonObject s = e.getAsJsonObject();
+            inv.setItem(s.get("slot").getAsInt(), new ItemStack(item(s.get("item").getAsString()), s.get("count").getAsInt()));
+        }
+    }
+
+    /** Rook's newbie chest: the kit in the first slots the client shows (RecoveryService refills the same slots at dawn). */
+    private void kitChest(World w) {
+        Block b = at(w, "spawn_kit_chest", 0, 0, 0);
+        if (!(b.getState() instanceof Chest chest)) return;
+        org.bukkit.inventory.Inventory inv = chest.getInventory();
+        inv.clear();
+        JsonArray kit = canon.array("kit_chest");
+        for (int i = 0; i < kit.size(); i++) {
+            JsonObject it = kit.get(i).getAsJsonObject();
+            inv.setItem(i, new ItemStack(item(it.get("item").getAsString()), it.get("count").getAsInt()));
+        }
     }
 
     /** Theo's unsent letters, in the drafts barrel under the reading room (the genuine 2015 map keeps slot 0). */

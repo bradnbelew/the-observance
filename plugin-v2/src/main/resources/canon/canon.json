@@ -1317,7 +1317,12 @@
     13
    ]
   ],
-  "missing_rows": 3
+  "missing_rows": 3,
+  "missing": [
+   5,
+   6,
+   7
+  ]
  },
  "kit_chest": [
   {
@@ -1355,6 +1360,248 @@
   {
    "item": "crafting_table",
    "count": 1
+  }
+ ],
+ "iona_chest": [
+  {
+   "slot": 0,
+   "item": "gravel",
+   "count": 28
+  },
+  {
+   "slot": 1,
+   "item": "cobblestone",
+   "count": 24
+  },
+  {
+   "slot": 2,
+   "item": "torch",
+   "count": 10
+  },
+  {
+   "slot": 3,
+   "item": "sand",
+   "count": 51
+  },
+  {
+   "slot": 4,
+   "item": "wood",
+   "count": 30
+  },
+  {
+   "slot": 5,
+   "item": "planks",
+   "count": 52
+  },
+  {
+   "slot": 6,
+   "item": "dirt",
+   "count": 42
+  },
+  {
+   "slot": 7,
+   "item": "arrow",
+   "count": 41
+  },
+  {
+   "slot": 8,
+   "item": "gravel",
+   "count": 25
+  },
+  {
+   "slot": 9,
+   "item": "cobblestone",
+   "count": 23
+  },
+  {
+   "slot": 10,
+   "item": "torch",
+   "count": 50
+  },
+  {
+   "slot": 11,
+   "item": "sand",
+   "count": 53
+  },
+  {
+   "slot": 12,
+   "item": "wood",
+   "count": 15
+  },
+  {
+   "slot": 13,
+   "item": "planks",
+   "count": 39
+  },
+  {
+   "slot": 14,
+   "item": "dirt",
+   "count": 14
+  },
+  {
+   "slot": 15,
+   "item": "arrow",
+   "count": 34
+  },
+  {
+   "slot": 16,
+   "item": "gravel",
+   "count": 29
+  },
+  {
+   "slot": 17,
+   "item": "cobblestone",
+   "count": 55
+  },
+  {
+   "slot": 18,
+   "item": "torch",
+   "count": 21
+  },
+  {
+   "slot": 19,
+   "item": "sand",
+   "count": 55
+  },
+  {
+   "slot": 20,
+   "item": "wood",
+   "count": 13
+  },
+  {
+   "slot": 21,
+   "item": "planks",
+   "count": 20
+  },
+  {
+   "slot": 22,
+   "item": "dirt",
+   "count": 5
+  },
+  {
+   "slot": 23,
+   "item": "arrow",
+   "count": 57
+  },
+  {
+   "slot": 24,
+   "item": "gravel",
+   "count": 15
+  },
+  {
+   "slot": 25,
+   "item": "cobblestone",
+   "count": 36
+  },
+  {
+   "slot": 26,
+   "item": "torch",
+   "count": 9
+  },
+  {
+   "slot": 27,
+   "item": "sand",
+   "count": 49
+  },
+  {
+   "slot": 28,
+   "item": "wood",
+   "count": 13
+  },
+  {
+   "slot": 29,
+   "item": "planks",
+   "count": 20
+  },
+  {
+   "slot": 30,
+   "item": "dirt",
+   "count": 5
+  },
+  {
+   "slot": 31,
+   "item": "arrow",
+   "count": 46
+  },
+  {
+   "slot": 32,
+   "item": "gravel",
+   "count": 13
+  },
+  {
+   "slot": 33,
+   "item": "cobblestone",
+   "count": 4
+  },
+  {
+   "slot": 34,
+   "item": "torch",
+   "count": 25
+  },
+  {
+   "slot": 35,
+   "item": "sand",
+   "count": 46
+  },
+  {
+   "slot": 36,
+   "item": "wood",
+   "count": 13
+  },
+  {
+   "slot": 37,
+   "item": "planks",
+   "count": 4
+  },
+  {
+   "slot": 38,
+   "item": "dirt",
+   "count": 9
+  },
+  {
+   "slot": 39,
+   "item": "arrow",
+   "count": 59
+  },
+  {
+   "slot": 40,
+   "item": "gravel",
+   "count": 27
+  },
+  {
+   "slot": 41,
+   "item": "cobblestone",
+   "count": 22
+  },
+  {
+   "slot": 42,
+   "item": "torch",
+   "count": 62
+  },
+  {
+   "slot": 43,
+   "item": "sand",
+   "count": 35
+  },
+  {
+   "slot": 44,
+   "item": "wood",
+   "count": 26
+  },
+  {
+   "slot": 45,
+   "item": "planks",
+   "count": 23
+  },
+  {
+   "slot": 46,
+   "item": "dirt",
+   "count": 50
+  },
+  {
+   "slot": 47,
+   "item": "arrow",
+   "count": 45
   }
  ],
  "bread_chests": {

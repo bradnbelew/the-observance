@@ -272,8 +272,9 @@ def lowpath_route() -> list[dict]:
 
 
 # Rook's 2011 pixel-art creeper face, 8x8 wool (green 13, black 15), bottom-west corner at the
-# spawn_creeper anchor; rows run up. He laid the top five rows; Morrow "restores" the bottom three
-# at the Act 3 dawn (24 blocks), which is how players first see it complete something.
+# spawn_creeper anchor; rows run up. He built it from the ground and stopped five rows up, before
+# the eyes; Morrow "restores" the top three rows at the Act 3 dawn (24 blocks: it gives the thing
+# its eyes), which is how players first see it complete something.
 CREEPER_FACE = [  # top row first, as you look at it
     "GGGGGGGG",
     "GBBGGBBG",
@@ -284,12 +285,12 @@ CREEPER_FACE = [  # top row first, as you look at it
     "GGBGGBGG",
     "GGGGGGGG",
 ]
-CREEPER_MISSING_ROWS = 3   # from the bottom
+CREEPER_MISSING_ROWS = 3   # from the top
 
 
 def creeper_art() -> dict:
     rows = [[15 if ch == "B" else 13 for ch in row] for row in reversed(CREEPER_FACE)]  # rows[0] = bottom
-    return {"rows": rows, "missing_rows": CREEPER_MISSING_ROWS}
+    return {"rows": rows, "missing_rows": CREEPER_MISSING_ROWS, "missing": list(range(8 - CREEPER_MISSING_ROWS, 8))}
 
 
 # Rook's newbie chest at spawn (2011 items; the plugin refills it at dawn: "1 chest restored (spawn)")
@@ -333,6 +334,8 @@ def write_plugin_canon() -> None:
         "dock": {"anchor": "june_old_dock", "length": 7, "width": 2},
         "creeper": creeper_art(),
         "kit_chest": KIT_CHEST,
+        # Iona's chest in GUI order (the upgrade may swap which half of a double chest the client lists first)
+        "iona_chest": [{"slot": s["slot"], "item": s["item"], "count": s["count"]} for s in ciphers.build_iona_chest()],
         "bread_chests": {"spawn_bread_chest": 20, "storehouse_bread": 24},
         "south_rail_stop_z": layout.SOUTH_RAIL_STOP_Z,
         "lowpath_last_leg": lowpath_route()[-1]["path"],
