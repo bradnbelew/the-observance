@@ -9,12 +9,12 @@ import java.util.Random;
 /**
  * Morrow's voice: Theo's 2011 word-chain helper. It can only say words somebody already said.
  *
- * A reply is two or three contiguous fragments (3-6 words each) lifted from corpus lines,
- * joined with ". ". Fragments that share a word with what the player said are preferred,
- * which makes it feel like it is listening. Lines ingested recently (Kit's line, fed in with
- * Theo's inbox at Act 8) are preferred too: when the caller passes a "fresh since" time, one
- * piece of the reply comes from a fresh line about half the time, so a single new line is heard
- * among thousands of old ones. Every fragment keeps its source so the
+ * A reply is one whole sentence a resident said, the one sharing the most words with what the
+ * player said, so it sounds like the residents are still answering (an earlier collage of 3-6
+ * word fragments read as word salad in playtest). Lines ingested recently (Kit's line, fed in
+ * with Theo's inbox at Act 8) are preferred too: when the caller passes a "fresh since" time, a
+ * fresh sentence follows about half the time, so a single new line is heard among thousands of
+ * old ones. Every fragment keeps its source so the
  * operator journal can prove the corpus law (and players can, with the forum and logs).
  * Pure logic, no Bukkit types: tested by {@code SelfTest}.
  */
@@ -28,6 +28,7 @@ public final class Corpus {
 
     private final List<Line> lines = new ArrayList<>();
     private final List<Long> ingestedAt = new ArrayList<>();  // parallel to lines; 0 = the base corpus
+    private final List<String> rawText = new ArrayList<>();  // parallel to lines; punctuation kept for sentences
 
     public void add(String text, String source, boolean fromPlayers) {
         add(text, source, fromPlayers, 0L);
@@ -39,6 +40,7 @@ public final class Corpus {
         if (clean.isBlank()) return;
         lines.add(new Line(clean, source, fromPlayers));
         ingestedAt.add(ingestedAtMillis);
+        rawText.add(text);
     }
 
     public int size() {
@@ -52,23 +54,21 @@ public final class Corpus {
                 .trim();
     }
 
-    /** All fragments of 3-6 consecutive words available at this act. */
-    List<Fragment> fragments(int act) {
-        return fragments(act, Long.MIN_VALUE);
-    }
-
-    /** Fragments of lines ingested at or after freshSince (base-corpus lines, time 0, never count). */
-    List<Fragment> fragments(int act, long freshSince) {
+    /**
+     * Whole sentences (3-25 words) available at this act, each a Fragment so the corpus law and the
+     * journal's sources work unchanged. A sentence is split on . ! ? and line breaks before
+     * normalising, so its words are always contiguous in its line.
+     */
+    List<Fragment> sentences(int act, long freshSince) {
         List<Fragment> out = new ArrayList<>();
         for (int k = 0; k < lines.size(); k++) {
             Line line = lines.get(k);
             if (freshSince != Long.MIN_VALUE && (ingestedAt.get(k) <= 0 || ingestedAt.get(k) < freshSince)) continue;
-            if (line.fromPlayers() && act < 7) continue;  // players' own words only from Act 7
-            String[] w = line.text().split(" ");
-            for (int len = 3; len <= 6; len++) {
-                for (int i = 0; i + len <= w.length; i++) {
-                    out.add(new Fragment(String.join(" ", java.util.Arrays.copyOfRange(w, i, i + len)), line.source()));
-                }
+            if (line.fromPlayers() && act < 7) continue;
+            for (String raw : rawText.get(k).split("[.!?\n]+")) {
+                String sentence = normalise(raw);
+                int n = sentence.isEmpty() ? 0 : sentence.split(" ").length;
+                if (n >= 3 && n <= 25) out.add(new Fragment(sentence, line.source()));
             }
         }
         return out;
@@ -79,65 +79,75 @@ public final class Corpus {
     }
 
     /**
-     * As {@link #reply(String, int, long)}, but lines ingested at or after freshSince (epoch ms) are
-     * preferred: with probability FRESH_SHARE one piece of the reply is a fragment of a fresh line.
+     * One whole sentence somebody said, the one sharing the most words with what was heard (random
+     * among the best few; a random sentence when nothing matches). Lines ingested at or after
+     * freshSince (epoch ms) are preferred: with probability FRESH_SHARE a fresh sentence follows it.
      * Long.MIN_VALUE = no preference (identical to the 3-argument form for the same seed).
      */
     public Reply reply(String heard, int act, long seed, long freshSince) {
-        List<Fragment> all = fragments(act);
+        List<Fragment> all = sentences(act, Long.MIN_VALUE);
         if (all.isEmpty()) return new Reply("", List.of());
         Random rng = new Random(seed);
-        String[] heardWords = normalise(heard).split(" ");
-        List<Fragment> scored = new ArrayList<>(all);
-        java.util.Collections.shuffle(scored, rng);  // random tie-break, then a stable sort
-        scored.sort(Comparator.comparingInt((Fragment f) -> -overlap(f.words(), heardWords)));
-        int pieces = 2 + rng.nextInt(2);
         List<Fragment> chosen = new ArrayList<>();
-        chosen.add(scored.get(rng.nextInt(Math.min(6, scored.size()))));
-        while (chosen.size() < pieces) {
-            Fragment f = all.get(rng.nextInt(all.size()));
-            if (!chosen.contains(f)) chosen.add(f);
-        }
+        chosen.add(best(all, heard, rng));
         if (freshSince != Long.MIN_VALUE) {
-            List<Fragment> fresh = fragments(act, freshSince);
+            List<Fragment> fresh = sentences(act, freshSince);
             if (!fresh.isEmpty() && chosen.stream().noneMatch(fresh::contains) && rng.nextDouble() < FRESH_SHARE) {
-                Fragment f = fresh.get(rng.nextInt(fresh.size()));
-                chosen.set(1 + rng.nextInt(chosen.size() - 1), f);  // never the listening (first) piece
+                chosen.add(fresh.get(rng.nextInt(fresh.size())));
             }
         }
-        StringBuilder sb = new StringBuilder();
-        for (Fragment f : chosen) {
-            if (!sb.isEmpty()) sb.append(". ");
-            sb.append(f.words());
-        }
-        return new Reply(sb.toString(), chosen);
+        return join(chosen);
     }
 
     /**
-     * A reply biased toward one voice (the bridge's /corpus, for the Act 7 Turing-test DMs): when the
-     * corpus has fragments whose source is {@code persona} (the handle before the first comma, any
-     * case), the listening piece is one of them and each later piece is too, two times in three.
-     * Otherwise it is exactly {@link #reply(String, int, long, long)}. Still only words someone said.
+     * A reply in one voice (the bridge's /corpus, for the Act 7 Turing-test DMs): the best-matching
+     * sentence whose source is {@code persona} (the handle before the first comma, any case).
+     * Without any such sentence it is exactly {@link #reply(String, int, long, long)}.
      */
     public Reply reply(String heard, int act, long seed, long freshSince, String persona) {
         if (persona == null || persona.isBlank()) return reply(heard, act, seed, freshSince);
-        List<Fragment> all = fragments(act);
         List<Fragment> own = new ArrayList<>();
-        for (Fragment f : all) if (sourceIs(f.source(), persona)) own.add(f);
+        for (Fragment f : sentences(act, Long.MIN_VALUE)) if (sourceIs(f.source(), persona)) own.add(f);
         if (own.isEmpty()) return reply(heard, act, seed, freshSince);
-        Random rng = new Random(seed);
-        String[] heardWords = normalise(heard).split(" ");
-        List<Fragment> scored = new ArrayList<>(own);
-        java.util.Collections.shuffle(scored, rng);
-        scored.sort(Comparator.comparingInt((Fragment f) -> -overlap(f.words(), heardWords)));
-        int pieces = 2 + rng.nextInt(2);
-        List<Fragment> chosen = new ArrayList<>();
-        chosen.add(scored.get(rng.nextInt(Math.min(6, scored.size()))));
-        for (int tries = 0; chosen.size() < pieces && tries < 200; tries++) {
-            List<Fragment> pool = rng.nextInt(3) < 2 ? own : all;
-            Fragment f = pool.get(rng.nextInt(pool.size()));
-            if (!chosen.contains(f)) chosen.add(f);
+        return join(List.of(best(own, heard, new Random(seed))));
+    }
+
+    /** The sentence sharing the rarest words with what was heard (a common word like "what" counts for little). */
+    private static Fragment best(List<Fragment> pool, String heard, Random rng) {
+        java.util.Map<String, Integer> df = new java.util.HashMap<>();
+        for (String w : normalise(heard).split(" ")) {
+            if (w.length() <= 3 || STOP.contains(w) || df.containsKey(w)) continue;
+            int n = 0;
+            for (Fragment f : pool) if (has(f.words(), w)) n++;
+            df.put(w, n);
         }
+        List<Fragment> scored = new ArrayList<>(pool);
+        java.util.Collections.shuffle(scored, rng);  // random tie-break, then a stable sort
+        java.util.Map<Fragment, Double> score = new java.util.HashMap<>();
+        for (Fragment f : scored) {
+            double sc = 0;
+            for (var e : df.entrySet()) if (e.getValue() > 0 && has(f.words(), e.getKey())) sc += 1.0 / e.getValue();
+            score.put(f, sc);
+        }
+        scored.sort(Comparator.comparingDouble((Fragment f) -> -score.get(f)));
+        double top = score.get(scored.get(0));
+        if (top == 0) return scored.get(0);
+        int ties = 0;
+        while (ties < scored.size() && ties < 3 && score.get(scored.get(ties)) == top) ties++;
+        return scored.get(rng.nextInt(ties));
+    }
+
+    /** Question and filler words: matching on these alone made it answer "what" instead of "tower". */
+    private static final java.util.Set<String> STOP = java.util.Set.of(
+            "what", "that", "this", "with", "have", "there", "they", "them", "then", "your", "from", "were",
+            "been", "just", "like", "about", "when", "where", "will", "would", "could", "should", "does",
+            "dont", "into", "some", "here", "know", "want", "okay", "hello", "anyone", "anybody", "youre");
+
+    private static boolean has(String words, String w) {
+        return (" " + words + " ").contains(" " + w + " ");
+    }
+
+    private static Reply join(List<Fragment> chosen) {
         StringBuilder sb = new StringBuilder();
         for (Fragment f : chosen) {
             if (!sb.isEmpty()) sb.append(". ");
@@ -150,14 +160,6 @@ public final class Corpus {
         int comma = source.indexOf(',');
         String who = (comma < 0 ? source : source.substring(0, comma)).trim();
         return who.equalsIgnoreCase(persona.trim());
-    }
-
-    private static int overlap(String fragment, String[] heard) {
-        int n = 0;
-        for (String w : heard) {
-            if (w.length() > 3 && (" " + fragment + " ").contains(" " + w + " ")) n++;
-        }
-        return n;
     }
 
     /** The corpus law: every fragment of a reply occurs verbatim in some corpus line. */

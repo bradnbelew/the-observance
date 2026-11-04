@@ -13,9 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Morrow's chat. Act 1-2: only answers !status with Theo's macro-flavoured progress lines.
- * Act 3 onward: occasionally answers ordinary chat with a word-chain collage of the corpus.
+ * Act 3 onward: answers about half of ordinary chat with a whole sentence from the corpus.
  * From Act 7 the corpus includes the players' own lines.
  */
 public final class ChatListener implements Listener {
@@ -75,8 +77,9 @@ public final class ChatListener implements Listener {
         String reply;
         if (text.trim().equalsIgnoreCase("!status")) {
             reply = canon.statusLines.get(Math.min(canon.statusLines.size() - 1, act / 4));
-        } else if (act >= 3 && System.currentTimeMillis() - lastReply > COOLDOWN_MS && Math.floorMod(text.hashCode(), 3) == 0) {
-            Corpus.Reply r = canon.corpus.reply(text, act, text.hashCode() * 31L + act,
+        } else if (act >= 3 && System.currentTimeMillis() - lastReply > COOLDOWN_MS && ThreadLocalRandom.current().nextInt(2) == 0) {
+            // random, not text-keyed: repeating a question must be able to get an answer
+            Corpus.Reply r = canon.corpus.reply(text, act, ThreadLocalRandom.current().nextLong(),
                     System.currentTimeMillis() - FRESH_WINDOW_MS);
             if (r.text().isBlank()) return;
             reply = r.text();

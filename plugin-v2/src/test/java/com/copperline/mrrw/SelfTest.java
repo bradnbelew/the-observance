@@ -47,6 +47,9 @@ public final class SelfTest {
                 check(act >= 7 || !r.text().contains("pineapple"), "player words before act 7");
             }
         }
+        for (long seed = 0; seed < 20; seed++) {  // it listens: a matching word picks a sentence that has it
+            check(corpus.reply("what happened to the tower", 4, seed).text().contains("tower"), "reply ignores 'tower'");
+        }
         Corpus.Reply sample = corpus.reply("who is at the farm", 4, 42);
         System.out.println("sample act 4 reply: " + sample.text());
         sample.fragments().forEach(f -> System.out.println("   " + f.words() + "  <-  " + f.source()));
