@@ -82,7 +82,8 @@ RECORDING-SCRIPTS.md. If a note is missing, the page still shows the words.
 
 ## 5. Photos
 
-- **The closet photo (Act 8):** an old PC in a cupboard, with a wall calendar open to **December 2014**
+- **The closet photo (Act 8): DONE 2026-11-04** (generated, metadata stripped, saved as
+  `files/closet.jpg`; a flat black 1U server to match Lot 14's PowerEdge R410). Original spec: an old PC in a cupboard, with a wall calendar open to **December 2014**
   and a sticky note on the case reading **`chi07-`**. Save as `dashboard/private-media/files/closet.jpg`.
   **Turn off location tagging first**, or strip the location from the file. The date the phone
   records is fine.
