@@ -454,11 +454,13 @@ client.once("clientReady", async () => {
   // Relay: chat and Morrow's lines into #bridge, Theo's released replies into #general. The cursor is
   // saved in state.json, so a restart carries on where it stopped; a new bot starts at the end.
   every(4000, "feed", async () => {
-    if (stopped()) return;
+    // after the stop Morrow is silent (no chat, no [Recovery] lines), but Theo still writes: T-10-after a week on
+    const afterStop = stopped();
     const page = await bridgeGet(BRIDGE, `/feed?after=${state.feed ?? -1}&max=100`);
     if (!page) return;
     note(page);
     for (const p of feedPosts(page.entries)) {
+      if (afterStop && p.to !== "general") continue;
       if (p.flag && state.done.includes(p.flag)) continue;
       const channel = p.to === "general" ? general : bridgeChannel;
       await send(channel, p.content, p.voice).catch((e) => console.error("relay send failed:", e?.message || e));
