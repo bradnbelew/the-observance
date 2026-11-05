@@ -536,6 +536,10 @@ def main() -> int:
     act(5)
     t = desk("file request", "could you send moss_0518.ogg please")
     check("Here's patchcord's" in flat(t) and "moss_0518.ogg" in t, "file request by exact name (T-05a + attachment)")
+    link = re.search(r'href="(/desk-file/[^"]+)"', t)
+    status, _, body = get(link.group(1)) if link else (0, "", b"")
+    # until the recording exists, the link hands over patch's typed index of it (the floor's "back and forth" is in there)
+    check(status == 200 and (body[:4] == b"OggS" or b"for june" in body), "the attachment serves: the recording, else patch's notes on it")
     if linked:
         check_event("moss_0518", "T-05a", "Act 5 moss_0518 file request")
     home = desk_home("Act 5 desk")

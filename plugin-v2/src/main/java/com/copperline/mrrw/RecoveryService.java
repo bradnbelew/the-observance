@@ -119,6 +119,39 @@ public final class RecoveryService implements Listener {
         if (buildAt(b.getLocation()) != null && broken.putIfAbsent(b.getLocation(), b.getBlockData().clone()) == null) dirty = true;
     }
 
+    /** A sign, banner, chest or lectern in a build keeps its contents: the restore can only bring back a blank one. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBreakTile(BlockBreakEvent event) {
+        if (!active() || state.act() < 2 || event.getPlayer().isOp()) return;
+        Block b = event.getBlock();
+        if (placed.containsKey(b.getLocation()) || buildAt(b.getLocation()) == null) return;
+        if (b.getState() instanceof org.bukkit.block.TileState) event.setCancelled(true);
+    }
+
+    /** Explosions in a build are restored like breaks; fire is not allowed to start on a build. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onExplode(org.bukkit.event.entity.EntityExplodeEvent event) {
+        recordBlast(event.blockList());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockExplode(org.bukkit.event.block.BlockExplodeEvent event) {
+        recordBlast(event.blockList());
+    }
+
+    private void recordBlast(List<Block> blocks) {
+        if (!active() || state.act() < 2) return;
+        for (Block b : blocks) {
+            if (placed.remove(b.getLocation()) != null) { dirty = true; continue; }
+            if (buildAt(b.getLocation()) != null && broken.putIfAbsent(b.getLocation(), b.getBlockData().clone()) == null) dirty = true;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBurn(org.bukkit.event.block.BlockBurnEvent event) {
+        if (active() && buildAt(event.getBlock().getLocation()) != null) event.setCancelled(true);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if (!active()) return;
@@ -217,10 +250,9 @@ public final class RecoveryService implements Listener {
         state.markDone("act5.floor_tidy");
         announce(engine("floor_tidy"));
         int[] s = canon.anchor("rookery_floor_sign");
-        if (world.getBlockAt(s[0], s[1], s[2]).getState() instanceof org.bukkit.block.Sign sign && !sign.isWaxed()) {
-            List<String> note = canon.signBackNotes.get("rookery_floor_sign");
-            for (int i = 0; i < 4 && note != null; i++) sign.getSide(org.bukkit.block.sign.Side.BACK).line(i, Component.text(note.get(i)));
-            sign.update(true, false);
+        List<String> note = canon.signBackNotes.get("rookery_floor_sign");
+        if (note != null && !ActDirector.noteOnBack(world.getBlockAt(s[0], s[1], s[2]), note)) {
+            plugin.getLogger().warning("the floor sign's note could not be made readable");
         }
         JsonObject d = new JsonObject();
         d.addProperty("blocks_changed", n);
@@ -246,15 +278,7 @@ public final class RecoveryService implements Listener {
     /** Runs once per in-game sunrise. */
     public void dawn(World world) {
         if (!active()) return;
-        Map<String, Integer> restored = new LinkedHashMap<>();
-        for (var e : broken.entrySet()) {
-            Block b = e.getKey().getBlock();
-            if (b.getType().isAir()) {
-                b.setBlockData(e.getValue(), false);
-                restored.merge(buildAt(e.getKey()), 1, Integer::sum);
-            }
-        }
-        broken.clear();
+        // players' blocks go first, so a hole they refilled is open again when the original comes back
         Map<String, Integer> normalised = new LinkedHashMap<>();
         for (var e : placed.entrySet()) {
             Block b = e.getKey().getBlock();
@@ -264,6 +288,15 @@ public final class RecoveryService implements Listener {
             }
         }
         placed.clear();
+        Map<String, Integer> restored = new LinkedHashMap<>();
+        for (var it = broken.entrySet().iterator(); it.hasNext(); ) {
+            var e = it.next();
+            Block b = e.getKey().getBlock();
+            if (!b.getType().isAir()) continue;  // something else stands there: the original is kept for a later dawn
+            b.setBlockData(e.getValue(), false);
+            restored.merge(buildAt(e.getKey()), 1, Integer::sum);
+            it.remove();
+        }
         restored.forEach((where, n) -> announce(n + (n == 1 ? " block" : " blocks") + " restored (" + where + ")"));
         normalised.forEach((where, n) -> announce(n + (n == 1 ? " block" : " blocks") + " normalised (" + where + ")"));
         int act = state.act();

@@ -83,20 +83,53 @@ public final class ActDirector {
             int[] a = canon.anchor(anchor);
             if (offsets.has(anchor)) {  // the exact sign the canon names (the lived-in world has many signs near each anchor)
                 com.google.gson.JsonArray o = offsets.getAsJsonArray(anchor);
-                if (w.getBlockAt(a[0] + o.get(0).getAsInt(), a[1] + o.get(1).getAsInt(), a[2] + o.get(2).getAsInt()).getState() instanceof Sign sign && !sign.isWaxed()) {
-                    for (int i = 0; i < 4; i++) sign.getSide(Side.BACK).line(i, Component.text(lines.get(i)));
-                    sign.update(true, false);
+                if (!noteOnBack(w.getBlockAt(a[0] + o.get(0).getAsInt(), a[1] + o.get(1).getAsInt(), a[2] + o.get(2).getAsInt()), lines)) {
+                    plugin.getLogger().warning("sign back note for " + anchor + " could not be made readable");
                 }
                 return;
             }
             for (int dx = -3; dx <= 3; dx++) for (int dy = -1; dy <= 3; dy++) for (int dz = -3; dz <= 3; dz++) {
-                if (w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz).getState() instanceof Sign sign && !sign.isWaxed()) {
-                    for (int i = 0; i < 4; i++) sign.getSide(Side.BACK).line(i, Component.text(lines.get(i)));
-                    sign.update(true, false);
+                if (noteOnBack(w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz), lines)) {
                     return;
                 }
             }
         });
+    }
+
+    /**
+     * Morrow's note goes on a sign's back. A wall sign's back is inside the wall it hangs on, so Morrow
+     * re-hangs it as a post one block out, front text kept, and writes on the back of that. Returns
+     * false when the sign is waxed, not a sign, or the block in front is not free.
+     */
+    static boolean noteOnBack(Block b, List<String> note) {
+        if (!(b.getState() instanceof Sign s) || s.isWaxed()) return false;
+        Sign target = s;
+        if (b.getBlockData() instanceof org.bukkit.block.data.type.WallSign ws) {
+            // one block out from the wall, or beside that spot along the wall when something stands there
+            Block out = null;
+            org.bukkit.block.BlockFace f = ws.getFacing();
+            org.bukkit.block.BlockFace side = f == org.bukkit.block.BlockFace.NORTH || f == org.bukkit.block.BlockFace.SOUTH
+                    ? org.bukkit.block.BlockFace.EAST : org.bukkit.block.BlockFace.NORTH;
+            for (Block c : List.of(b.getRelative(f), b.getRelative(f).getRelative(side), b.getRelative(f).getRelative(side.getOppositeFace()))) {
+                if (c.getType().isAir()) { out = c; break; }
+            }
+            if (out == null) return false;
+            Material post = Material.matchMaterial(b.getType().name().replace("_WALL_SIGN", "_SIGN"));
+            if (post == null) return false;
+            List<Component> front = new java.util.ArrayList<>();
+            for (int i = 0; i < 4; i++) front.add(s.getSide(Side.FRONT).line(i));
+            out.setType(post, false);
+            org.bukkit.block.data.Rotatable rot = (org.bukkit.block.data.Rotatable) out.getBlockData();
+            rot.setRotation(ws.getFacing());
+            out.setBlockData(rot, false);
+            if (!(out.getState() instanceof Sign moved)) return false;
+            for (int i = 0; i < 4; i++) moved.getSide(Side.FRONT).line(i, front.get(i));
+            b.setType(Material.AIR, false);
+            target = moved;
+        }
+        for (int i = 0; i < 4; i++) target.getSide(Side.BACK).line(i, Component.text(note.get(i)));
+        target.update(true, false);
+        return true;
     }
 
     private void rulesEdit(World w) {

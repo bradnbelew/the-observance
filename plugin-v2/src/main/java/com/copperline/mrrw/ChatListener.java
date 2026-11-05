@@ -54,6 +54,8 @@ public final class ChatListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        // the operator looking round is not a resident (same rule as the act triggers): no backdated profile, no vote
+        if (event.getPlayer().isOp() && !plugin.getConfig().getBoolean("auto_advance_count_ops", false)) return;
         roster.join(event.getPlayer().getName());
     }
 

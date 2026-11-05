@@ -137,7 +137,7 @@ public final class Corrections {
     private void runeSigns(World w) {
         JsonArray signs = canon.array("sga_signs");
         for (int i = 0; i < signs.size(); i++) {
-            Block b = near(w, "spawn", -3 - i, 0, 4);
+            Block b = near(w, "spawn", -3 - i, 1, 4);  // spawn's y is the plaza floor: the sign stands on it
             b.setType(Material.OAK_SIGN, false);
             if (b.getState() instanceof Sign s) {
                 List<String> lines = Canon.strings(signs.get(i).getAsJsonArray());

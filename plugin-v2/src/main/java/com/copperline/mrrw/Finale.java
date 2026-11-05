@@ -66,6 +66,13 @@ public final class Finale implements Listener {
         this.ghosts = ghosts;
         this.roster = roster;
         this.recorder = recorder;
+        if (state.done("stop_pending") && !state.done("stopped")) {  // a restart mid-scene: the stop stands, the scene is skipped
+            state.markDone("stopped");
+            state.setStamp("stopped_at", System.currentTimeMillis());
+            JsonObject d = new JsonObject();
+            d.addProperty("by", "resumed after a restart mid-scene");
+            journal.write("morrow.stopped", d);
+        }
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 100L, 100L);
     }
 
@@ -235,6 +242,7 @@ public final class Finale implements Listener {
     private void stop(String byName, char choice) {
         if (stopping || stopped()) return;
         stopping = true;
+        state.markDone("stop_pending");  // on disk at once: a crash in the next three minutes must not un-stop the game
         // the south branch is the one thing Morrow leaves unfinished; the log must always say so,
         // and if a resident ever asked for it, the reason is theirs (else finch's own 2011 sign)
         BridgeLogic.Said asked = roster.firstUnfinished();

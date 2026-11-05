@@ -137,7 +137,7 @@ DESK_RULES = [
     },
     {
         "id": "ingest", "act": 8, "title": "where did it learn that",
-        "tokens": ["turn it off"], "need": 1,
+        "tokens": ["turn it off"], "need": 1, "delay_hours": 36,  # the same silence as 'kit': Act 9 never opens before T-08a
         "reply": "It's not in the old logs, is it.\n\nI fed it everything from my old inbox.  For the voices.  "
                  "I wanted it to sound like people.  That line's from my brother.  Here.\n\nIt picks lines that "
                  "sound like what it's hearing.  You've all been saying \"turn it off\" for a week.",
@@ -231,7 +231,9 @@ HINTS = {
         "Iona thought in files, not places.",
         "Counts in a chest can be letters if you count from the right place.",
         "Iona's key isn't for me.  The panel still takes a key, if you can log in."],
-    8: ["It ends a replay when they log off or sleep.  Iona said that once.",
+    8: ["It said something in chat last night I've only ever seen in one email.  Not a log.  If you've heard it "
+        "too, ask me where it got it.",
+        "It ends a replay when they log off or sleep.  Iona said that once.",
         "cairn always closed up the same way.",
         "lowpath walks every night and never gets home."],
     9: ["Fill in the brief.  I just need it to be real.",

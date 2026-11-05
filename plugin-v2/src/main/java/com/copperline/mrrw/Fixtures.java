@@ -303,8 +303,11 @@ public final class Fixtures implements Listener {
             Block b = w.getBlockAt(o[0] + o[3] * i, o[1], o[2]);
             BlockData data = b.getType() == Material.NOTE_BLOCK ? b.getBlockData() : Material.NOTE_BLOCK.createBlockData();
             if (!(data instanceof NoteBlock nb)) continue;
-            if (b.getType() == Material.NOTE_BLOCK && nb.getNote().getId() == t.get(i)) continue;
+            // the upgrade carries the note but not the instrument; planks under = bass (the word), stone = drum
+            org.bukkit.Instrument want = b.getRelative(0, -1, 0).getType().name().endsWith("PLANKS") ? org.bukkit.Instrument.BASS_GUITAR : org.bukkit.Instrument.BASS_DRUM;
+            if (b.getType() == Material.NOTE_BLOCK && nb.getNote().getId() == t.get(i) && nb.getInstrument() == want) continue;
             nb.setNote(new Note(t.get(i)));
+            nb.setInstrument(want);
             b.setBlockData(nb, false);
             fixed++;
         }

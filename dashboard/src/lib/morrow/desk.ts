@@ -202,8 +202,14 @@ export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number;
   const notes: { at: string; text: string; file: string | null; voice?: string }[] = [
     { at: "2026-08-02", text: "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the desk is open.  I check it in the evenings.  No worries at all.", file: null, voice: "T-01" },
   ];
+  // dated like real desk entries: a drop from this act lands after_hours into it; earlier acts' drops were already
+  // on the desk when this act opened (the site keeps no record of when, so they carry that day)
+  const started = Date.now() - h * 3_600_000;
+  const day = (ms: number) => new Date(ms).toLocaleDateString("en-CA", { timeZone: "America/Chicago" });
   for (const d of b.desk.drops) {
-    if (d.act < b.act || h >= d.after_hours) notes.push({ at: `Act ${d.act}`, text: d.note, file: d.file, voice: d.voice ?? undefined });
+    if (d.act < b.act || h >= d.after_hours) {
+      notes.push({ at: day(d.act < b.act ? started : started + d.after_hours * 3_600_000), text: d.note, file: d.file, voice: d.voice ?? undefined });
+    }
   }
   // a week after the stop, Theo writes once more
   if (b.theo_after && clock.stoppedAt && Date.now() >= clock.stoppedAt.getTime() + b.theo_after.after_stop_hours * 3_600_000) {
