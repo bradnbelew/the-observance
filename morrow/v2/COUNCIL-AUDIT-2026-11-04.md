@@ -127,6 +127,11 @@ the mic stand dropped, the Mumble sign off the desk lever, the shed cellar two b
 torch on stone, the farm-stop fence past the last rail. **Left as is:** junction 3's stored rail
 shape (straight vs the game's settled south-east): it cannot be verified from code and the hub-to-
 farms ride works either way; `layout.py`'s stale comment was fixed.
+Proof: canon build + verify, world selftest, `gradlew selftest build`, `tsc`, `e2e_site`, bot dry,
+and a full first-install run on 2026-11-05 (`build2011` on a fresh copy of the source world ->
+`pipeline` -> Paper `--forceUpgrade` -> `/mrrw install`, 24 parts -> `livecheck world` all green,
+the MAINT sign facing spawn on a clean install; `livecheck acts` green except the pre-existing
+"six figures walking" count of five).
 
 - Hints are a wall-clock drip from act start (24/72/120/168 h × player factor, `desk.ts:210-214`),
   not a stuck detector; weekly groups get all four whether stuck or not, fast groups see none. Clock
