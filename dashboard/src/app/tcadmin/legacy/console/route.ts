@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   }
   const form = await request.formData();
   const command = String(form.get("command") ?? "").trim().toUpperCase();
-  const key = String(form.get("key") ?? "").trim();
+  const key = String(form.get("key") ?? "").trim().toLowerCase().replace(/\s+/g, "");  // the desk is as forgiving
   // Acts 6-9: the console takes Iona's key (Act 7's hand-in) and refuses the stop: a session is still open
   if (act < 10 || !b.console) {
     if (!b.console_key_md5) return back({ error: "console: read only (recovery job running)" });

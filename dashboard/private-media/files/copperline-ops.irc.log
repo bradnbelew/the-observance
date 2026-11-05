@@ -91,18 +91,10 @@
 --- Log closed Tue May 24 23:59:38 2011
 --- Log opened Thu Jun 02 21:26:14 2011
 22:58 < ibell> rook's laying his floor in the cellar. wool, like he said
-23:10 < ibell> put my key in a double chest under june's old dock, 3 down, 4 toward spawn. counts are b64. rook cant read it and neither can morrow lol
+23:10 < ibell> key's in the world now, not the panel. told rook roughly where. it's counts, not words, so mrrw can't read it
 23:11 < tvale> you know I can read this channel
 23:11 < ibell> you can read it. you can't dig
 --- Log closed Thu Jun 02 23:59:24 2011
---- Log opened Fri Jun 10 07:10:10 2011
-08:47 -!- tvale [~theo@office7.copperline.local] has quit [Ping timeout: 240 seconds]
-21:40 < ibell> rook found a copy from the 20th. he'd pulled it over ftp to run overviewer on his laptop and forgot
-21:41 < dkessler> so there IS a backup
-21:42 < ibell> it's clean. md5's in the checklist. it goes in his ftp outside the recovery folder and nobody tells theo
-21:43 < dkessler> why not restore it
-21:44 < ibell> no point restoring it while that thing's running. it'd just "fix" it
---- Log closed Fri Jun 10 23:59:20 2011
 --- Log opened Fri Jul 08 08:44:56 2011
 09:12 -!- tvale [~theo@office7.copperline.local] has joined #copperline-ops
 16:20 < ibell> it reads words off signs and chat. blocks it just puts back, it doesn't read them. logged blocks it leaves alone

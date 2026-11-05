@@ -85,7 +85,7 @@ def inject(world_path: str) -> list[str]:
     sx, sy, sz = a["rules_signs"]
     for i, sign in enumerate(ciphers.RULES_SIGNS_2011):
         post_sign(w, sx + i, sy, sz, sign, ROT["south"])
-    post_sign(w, sx + 4, sy, sz, S["spawn_warning"], ROT["south"])
+    post_sign(w, sx - 1, sy, sz, S["spawn_warning"], ROT["south"])  # left of the rules: the cake table stands in front of x+4
     # finch's genuine sign at the end of the south branch (Morrow keeps building past it)
     ex, ey, ez = a["south_rail_end"]
     ox, oy, oz = ciphers.FINCH_SOUTH_SIGN_OFFSET
@@ -98,10 +98,10 @@ def inject(world_path: str) -> list[str]:
                                                  ("bread", 8), ("bed", 1), ("wood", 16), ("planks", 8), ("workbench", 1)])]
     chest(w, kx, ky, kz, kit)
     chest(w, kx, ky, kz + 1, [])
-    post_sign(w, kx - 1, ky, kz, S["spawn_kit_chest"], ROT["east"])
+    post_sign(w, kx - 1, ky + 1, kz, S["spawn_kit_chest"], ROT["east"])  # a block above the chest, or the chest hides it
     bx, by, bz = a["spawn_bread_chest"]
     chest(w, bx, by, bz, [(0, "bread", 20)])
-    post_sign(w, bx - 1, by, bz, S["spawn_bread"], ROT["east"])
+    post_sign(w, bx - 1, by + 1, bz, S["spawn_bread"], ROT["east"])
     ox2, oy2, oz2 = a["spawn_board"]
     for k in range(6):
         wall_sign(w, ox2 + k % 3, oy2 - k // 3, oz2, S["board_%d" % (k + 1)], "north", support=PLANKS)
@@ -168,7 +168,7 @@ def inject(world_path: str) -> list[str]:
         w.set_tile(x, y, z, "Music", note=nbt.b(pitch))
     first = layout.wall_run("south", (px2 + nlx, py2 + nly, pz2 + nlz), 0)
     post_sign(w, first[0], first[1] + 1, first[2], S["patch_play"], ROT["north"])
-    wall_sign(w, px2 + 4, py2 + 1, pz2, S["patch_mumble"], "south", support=COBBLE)
+    wall_sign(w, px2 + 8, py2 + 1, pz2, S["patch_mumble"], "south", support=COBBLE)  # past the desk (x+2..7 carries its levers)
     chest(w, px2 + len(ciphers.TUNE) - 1, py2, pz2, [(0, "paper", 12), (1, "redstone", 6)])
     done.append("patchcord tune (reading order), studio signs, tapes")
 
@@ -234,8 +234,8 @@ def inject(world_path: str) -> list[str]:
     for dx in range(0, 3):
         for dy in range(0, 3):
             w.set(nx + dx, ny + dy, nz, 0)
-    for i, lines in enumerate(later.IONA_NOTES_SIGNS):
-        wall_sign(w, nx + 1 - i, ny + 1, nz, lines, "north")
+    for i, lines in enumerate(later.IONA_NOTES_SIGNS):  # reader faces south: the first sign on the left (+x)
+        wall_sign(w, nx + 2 - i, ny + 1, nz, lines, "north")
     done.append("iona notes signs")
 
     # The annex manhole: the tunnel's cap, marked (build2011 records where the stair tunnel surfaces).

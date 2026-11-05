@@ -71,10 +71,9 @@ export async function proxy(request: NextRequest) {
     if (header.startsWith("Basic ")) {
       const ip = clientIp(request);
       const tally = failuresFor(ip);
-      if (tally.n >= BLOCK_AFTER) return forbidden();
       try {
         const [u, ...rest] = atob(header.slice(6)).split(":");
-        if (equal(u, user) && equal(rest.join(":"), folder.password)) {
+        if (equal(u, user) && equal(rest.join(":"), folder.password)) {  // the right password always gets in, whatever the tally
           // Act 3's hand-in: June's folder opened with her password. The plugin ignores repeats.
           if (user === "juni_lantern") after(() => postHandIn("june_folder", "june's folder").catch(() => false));
           return NextResponse.next();
@@ -83,6 +82,7 @@ export async function proxy(request: NextRequest) {
         /* fall through to the challenge */
       }
       tally.n += 1;
+      if (tally.n >= BLOCK_AFTER) return forbidden();  // five friends behind one NAT share this counter: only failures count
       if (tally.n >= SLOW_AFTER) await new Promise((r) => setTimeout(r, Math.min(tally.n - SLOW_AFTER + 1, 5) * 1000));
     }
     return new NextResponse(

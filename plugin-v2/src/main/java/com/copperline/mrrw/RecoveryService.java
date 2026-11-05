@@ -282,10 +282,11 @@ public final class RecoveryService implements Listener {
         Map<String, Integer> normalised = new LinkedHashMap<>();
         for (var e : placed.entrySet()) {
             Block b = e.getKey().getBlock();
-            if (!b.getType().isAir()) {
-                removeWhole(b);
-                normalised.merge(e.getValue(), 1, Integer::sum);
-            }
+            if (b.getType().isAir()) continue;
+            if (b.getState() instanceof Container c && !c.getInventory().isEmpty()) continue;  // a player's chest keeps its things
+            if (state.act() >= 9 && b.getType().name().endsWith("_BED") && e.getValue().equals("lowpath's place")) continue;  // Act 9: the bed is kept
+            removeWhole(b);
+            normalised.merge(e.getValue(), 1, Integer::sum);
         }
         placed.clear();
         Map<String, Integer> restored = new LinkedHashMap<>();

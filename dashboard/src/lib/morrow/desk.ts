@@ -20,7 +20,7 @@ export type Ticket = {
   name: string;
   subject: string;
   message: string;     // truncated copy of what the player wrote
-  kind: "rule" | "partial" | "file" | "brief" | "booking" | "choice" | "none";
+  kind: "rule" | "partial" | "held" | "file" | "brief" | "booking" | "choice" | "none";
   ref?: string;        // rule id / filename / choice key
   replyAt: string;     // when Theo's answer becomes visible
   brief?: { accepted: string[]; missing: string[] };  // case-brief field ids (older tickets: labels)
@@ -34,6 +34,7 @@ type DeskExtras = { held?: HeldRule[]; held_files?: Record<string, number>; hint
 const extras = (b: Bundle) => b.desk as Bundle["desk"] & DeskExtras;
 
 const HOLD_TEXT = "Give me a bit.  I'll look into that.";
+const ruleHash = (id: string) => createHash("md5").update(id).digest("hex").slice(0, 12);
 
 const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ");
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -88,11 +89,13 @@ export function evaluate(b: Bundle, message: string): { kind: Ticket["kind"]; re
   for (const rule of extras(b).held ?? []) {
     if (fullMatch(text, rule) !== null && (!held || rule.need > held.need)) held = rule;
   }
-  if (held) return { kind: "rule", ref: held.id };
+  // held and partial tickets carry the rule as a hash: the token in the ticket link is readable, and a
+  // player who decodes it must not learn that an early guess was right, or which rule nearly matched
+  if (held) return { kind: "held", ref: ruleHash(held.id) };
   for (const file of Object.keys(extras(b).held_files ?? {})) {
     if (mentionsFile(text, file)) return { kind: "file", ref: file };
   }
-  if (best && best.rule.partial) return { kind: "partial", ref: best.rule.id };
+  if (best && best.rule.partial) return { kind: "partial", ref: ruleHash(best.rule.id) };
   return { kind: "none", ref: noneRef(b, text) };
 }
 
@@ -128,8 +131,9 @@ export function replyFor(b: Bundle, t: Ticket): Reply | null {
     if (f) return { text: f.line, voice: f.voice, attach: t.ref };
     return t.ref in (extras(b).held_files ?? {}) ? { text: HOLD_TEXT } : null;
   }
+  if (t.kind === "held") return { text: HOLD_TEXT };
   if ((t.kind === "rule" || t.kind === "partial") && t.ref) {
-    const rule = b.desk.rules.find((r) => r.id === t.ref);
+    const rule = b.desk.rules.find((r) => (t.kind === "rule" ? r.id === t.ref : ruleHash(r.id) === t.ref));
     if (!rule) return t.kind === "rule" && (extras(b).held ?? []).some((r) => r.id === t.ref) ? { text: HOLD_TEXT } : null;
     return t.kind === "rule"
       ? { text: rule.reply, voice: rule.voice, attach: rule.attach ?? null }
@@ -178,8 +182,9 @@ export const briefAccepted = (brief: { missing: string[] }) => brief.missing.len
  */
 export function deskEvent(b: Bundle, t: Ticket): Omit<DeskEvent, "kind"> | null {
   const base = { reply_at: t.replyAt, subject: t.subject || null };
-  if (t.kind === "rule" && t.ref) {
-    const rule = b.desk.rules.find((r) => r.id === t.ref);
+  if ((t.kind === "rule" || t.kind === "held") && t.ref) {
+    // a held ticket finds its rule once the act has caught up (viewing the ticket then posts it)
+    const rule = b.desk.rules.find((r) => (t.kind === "rule" ? r.id === t.ref : ruleHash(r.id) === t.ref));
     return rule ? { ...base, ref: rule.id, voice: rule.voice ?? null } : null;
   }
   if (t.kind === "file" && t.ref) {
@@ -197,7 +202,7 @@ export function deskEvent(b: Bundle, t: Ticket): Omit<DeskEvent, "kind"> | null 
 }
 
 /** Theo's unprompted drops and the escalating hints, released by time since the act started. */
-export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number; stoppedAt?: Date | null }): { at: string; text: string; file: string | null; voice?: string }[] {
+export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number; stoppedAt?: Date | null; hintFloor?: number }): { at: string; text: string; file: string | null; voice?: string }[] {
   const h = clock.hours;
   const notes: { at: string; text: string; file: string | null; voice?: string }[] = [
     { at: "2026-08-02", text: "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the desk is open.  I check it in the evenings.  No worries at all.", file: null, voice: "T-01" },
@@ -217,8 +222,9 @@ export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number;
   }
   // hint timers scale with the group (bridge.ts hintFactor): 24/72/120/168 h for five or more, half that for a pair
   const hours = (extras(b).hint_hours ?? [24, 72, 120, 168]).map((x) => x * clock.hintFactor);
+  // ... or released early by the operator (/mrrw hint N) when a group is stuck
   b.desk.hints.forEach((hint, i) => {
-    if (i < hours.length && h >= hours[i]) notes.push({ at: "", text: hint, file: null });
+    if (i < hours.length && (h >= hours[i] || i < (clock.hintFloor ?? 0))) notes.push({ at: "", text: hint, file: null });
   });
   return notes;
 }

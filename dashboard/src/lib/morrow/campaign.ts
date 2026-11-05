@@ -73,18 +73,19 @@ export const DEV_CLOCK_COOKIE = "morrow_dev_clock";
  * the bridge answers and its act is the one being served; otherwise MORROW_ACT_STARTED. The hint
  * factor comes from the plugin's resident count, else from MORROW_PLAYERS (bridge.ts hintFactor).
  */
-export async function actClock(now = new Date()): Promise<{ hours: number; hintFactor: number; stoppedAt: Date | null }> {
+export async function actClock(now = new Date()): Promise<{ hours: number; hintFactor: number; stoppedAt: Date | null; hintFloor: number }> {
   const state = await bridgeState();
   const factor = hintFactor(state ? state.players : players().length);
   const stoppedAt = state?.stoppedAt ?? null;
+  const hintFloor = state?.hintFloor ?? 0;
   if (DEV || process.env.MORROW_DESK_FAST === "1") {
     const real = DEV && (await cookies()).get(DEV_CLOCK_COOKIE)?.value === "real";
-    if (!real) return { hours: 10_000, hintFactor: factor, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null) };
+    if (!real) return { hours: 10_000, hintFactor: factor, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null), hintFloor };
   }
   const env = envAct();
   const fromBridge = state && state.act >= env && state.actStarted ? state.actStarted : null;
   const s = fromBridge ?? actStarted();
-  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, hintFactor: factor, stoppedAt };
+  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, hintFactor: factor, stoppedAt, hintFloor };
 }
 
 /** MORROW_PLAYERS as set (may be empty). */

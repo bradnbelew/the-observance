@@ -67,6 +67,7 @@ def spawn_extras(b: Builder):
     bx, by, bz = A["spawn_bread_chest"]
     for z in (kz, bz):
         b.set(kx - 1, ky - 1, z, COBBLE)
+        b.set(kx - 1, ky, z, COBBLE)  # a post as tall as the chest: the sign sits above it (inject.py)
     # the bulletin board: a plank backing south of the square, the six signs hang on it (inject.py)
     ox, oy, oz = A["spawn_board"]
     for i in range(3):
@@ -215,8 +216,10 @@ def cairn_extras(b: Builder):
     b.ladder(hx, hy - 3, hy - 1, hz, "north")
     b.fill(hx - 2, hy - 5, hz - 2, hx + 1, hy - 4, hz + 1, STONE, log=False)
     b.fill(hx - 1, hy - 4, hz - 1, hx, hy - 4, hz, AIR, log=False)
+    for x, z in ((hx - 1, hz - 1), (hx, hz - 1), (hx - 1, hz)):  # head room (the ladder keeps its column)
+        b.set(x, hy - 3, z, AIR, log=False)
     b.set(hx - 1, hy - 4, hz + 1, STONE, log=False)
-    b.torch(hx - 1, hy - 3, hz, "west")
+    b.torch(hx - 1, hy - 3, hz, "east")  # on the west wall (stone), not the ladder shaft
     b.set(hx - 1, hy, hz - 1, DIRT)
     b.set(hx - 1, hy, hz, DIRT)
     # the fields: a pumpkin patch, a scarecrow, a second gate on the west side
@@ -371,8 +374,6 @@ def patch_studio(b: Builder):
             b.set(x, py + 1, z0 + 1, RTORCH, 5)
     b.set(px + 9, py, z0 + 1, FENCE)                 # the headphones on a hook: black wool on a post
     b.set(px + 9, py + 1, z0 + 1, WOOL, BLACK)
-    b.set(px + 3, py, pz + 1, FENCE)                 # the mic stand, in front of the desk
-    b.set(px + 3, py + 1, pz + 1, STONE_PLATE)
 
 
 def ciphers_tune():

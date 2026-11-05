@@ -187,7 +187,9 @@ def panel_jpg() -> bytes:
 def text_files() -> dict[str, bytes]:
     return {
         "6118-checklist.txt": records.checklist().encode(),
-        "copperline-ops.irc.log": irc.render().encode(),
+        # Theo's Act 7 copy has 10 June cut out (the clean backup); the missing day is Act 9's drop
+        "copperline-ops.irc.log": irc.render(skip=("2011-06-10",)).encode(),
+        "copperline-ops.irc.2011-06-10.log": irc.render(only=("2011-06-10",)).encode(),
         "mrrw-changelog-2016.txt": ("\n".join(records.THEO_CHANGELOG_2016) + "\n").encode(),
         "crontab.txt": ("\n".join(records.CRONTAB) + "\n").encode(),
         "kit-2019-03-02.eml": (

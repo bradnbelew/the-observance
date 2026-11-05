@@ -80,7 +80,9 @@ def site_bundle(act: int) -> dict:
     account = dict(records.CLIENT_ACCOUNT)
     bundle = {
         "act": act,
-        "members": {k: v for k, v in forum.MEMBERS.items() if k != "archivist" or act >= 1},
+        # lowpath's "created 2016 by archive import" note is an Act 6+ tell, not a day-one giveaway
+        "members": {k: (v if act >= 6 else {kk: vv for kk, vv in v.items() if kk != "import_note"})
+                    for k, v in forum.MEMBERS.items() if k != "archivist" or act >= 1},
         "threads": threads,
         "archivist_notes": [n for n in forum.ARCHIVIST_NOTES if n["act"] <= act],
         "client_account": account,
@@ -111,7 +113,7 @@ def site_bundle(act: int) -> dict:
     if act >= 6:
         bundle["tcadmin_log"] = records.TCADMIN_LOG
     if act >= 7:
-        bundle["irc_log"] = irc.render()
+        bundle["irc_log"] = irc.render() if act >= 9 else irc.render(skip=("2011-06-10",))
     bundle["desk"] = {
         "rules": [r for r in later.DESK_RULES if r["act"] <= act],
         "files": {k: {"act": v[0], "line": v[1], "voice": v[2]} for k, v in later.DESK_FILES.items() if v[0] <= act},

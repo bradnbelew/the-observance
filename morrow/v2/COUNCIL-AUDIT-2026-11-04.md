@@ -110,6 +110,24 @@ signs.
 
 ## 4. Medium
 
+**Fixed 2026-11-05, all but one.** `/mrrw hint N` releases an act's first N hints at once (the
+site reads `hint_floor` over the bridge beside its timers). The finale's figures walk to the free
+block outside each home's nearest wooden door. A bed queued in Act 8 survives the first Act 9 dawn
+and the two bed boxes agree. A player's chest with things in it is never deleted at dawn.
+`state.yml` is written to a temp file and moved into place. The bot's Act 7 DMs are keyed by
+member id and slot. `usb_quorum` in config.yml caps the residents the vote counts. Held and
+partial tickets carry the rule as a hash, so a decoded link no longer says an early guess was
+right. The 10 June IRC block is cut from Theo's Act 7 copy and arrives as its own Act 9 drop
+("There's a day missing from the IRC log I sent you"); Iona's chest line no longer gives the
+spot, her third notes sign does. lowpath's import note is gated to Act 6. The console key is
+compared case- and space-insensitively. The password brake only counts failures. The replay cue
+goes out at dusk so a group elsewhere can come. World scripts: chest signs on a two-high post
+above the chests, the warning sign moved left of the rules (the cake table stood in front of it),
+the mic stand dropped, the Mumble sign off the desk lever, the shed cellar two blocks high with its
+torch on stone, the farm-stop fence past the last rail. **Left as is:** junction 3's stored rail
+shape (straight vs the game's settled south-east): it cannot be verified from code and the hub-to-
+farms ride works either way; `layout.py`'s stale comment was fixed.
+
 - Hints are a wall-clock drip from act start (24/72/120/168 h × player factor, `desk.ts:210-214`),
   not a stuck detector; weekly groups get all four whether stuck or not, fast groups see none. Clock
   from the last progress journal line, or expose `/mrrw hint N`.

@@ -629,9 +629,9 @@ def finch_rail(b: Builder):
     b.set(j1[0], j1[1], j1[2], RAIL, 6)
     b.set(j2[0], j2[1], j2[2], RAIL, 6)
     b.set(j3[0], j3[1], j3[2], RAIL, 1)
-    ex, ez = path[-1]                         # farm stop: a fence bumper and a torch
-    b.set(ex - 1, ys[-1], ez, FENCE)
-    b.torch(ex - 1, ys[-1] + 1, ez)
+    ex, ez = path[-1]                         # farm stop: a fence bumper and a torch past the last rail
+    b.set(ex + 1, ys[-1], ez, FENCE)
+    b.torch(ex + 1, ys[-1] + 1, ez)
     # south branch: stops dead in the grass (finch: "just cobble marking for now")
     se = A["south_rail_end"]
     b.rail_line([(hx, hz + 4), (se[0], se[2])], booster_every=0)

@@ -48,6 +48,7 @@ public final class Replays implements Listener {
     private long lastDusk = -1;
     private long pendingSince;
     private boolean pendingIncident;
+    private boolean cued;
     private final List<Ghosts.Run> incident = new ArrayList<>();
     private Ghosts.Run lowpath;
     private boolean lowpathPending;
@@ -93,6 +94,10 @@ public final class Replays implements Listener {
             lastDusk = day;
             pendingIncident = true;
             pendingSince = System.currentTimeMillis();
+            if (!w.getPlayers().isEmpty()) {  // the cue goes out at dusk, so a group elsewhere can come and watch
+                announce(engine("replay_cue"));
+                cued = true;
+            }
         }
         if (pendingIncident) {
             if (!night && time >= 23000) {
@@ -142,7 +147,8 @@ public final class Replays implements Listener {
 
     /** The incident night, in real time, after the cue. Also /mrrw replay. */
     public void incident(World w) {
-        announce(engine("replay_cue"));
+        if (!cued) announce(engine("replay_cue"));
+        cued = false;
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (silent()) return;
             incident.clear();
@@ -251,7 +257,7 @@ public final class Replays implements Listener {
         if (silent() || state.act() < 9 || !e.getBlock().getType().name().endsWith("_BED")) return;
         int[] a = canon.anchor("lowpath_place");
         Block b = e.getBlock();
-        if (Math.abs(b.getX() - a[0]) > 3 || Math.abs(b.getZ() - a[2]) > 3 || Math.abs(b.getY() - a[1]) > 2) return;
+        if (Math.abs(b.getX() - a[0]) > 3 || Math.abs(b.getZ() - a[2]) > 3 || b.getY() - a[1] < -1 || b.getY() - a[1] > 2) return;  // the same box as bedNear
         if (state.done("lowpath.bed_kept") || state.done("lowpath.session_ended")) return;
         state.markDone("lowpath.bed_kept");
         announce(engine("bed_kept"));

@@ -198,15 +198,20 @@ export function feedPosts(entries) {
 
 // ---------------------------------------------------------------- the plan: what happens when
 /** Act 7 messages, spread over the act. Each resident gets a different mix; Theo's real ones are among them. */
-export function act7Plan(residentNames, quotes = []) {
+export function act7Plan(residents, quotes = []) {
   const plan = [];
-  residentNames.forEach((name, i) => {
+  // residents: {id, name} (or bare names in the dry run); ordered by id so a joiner, leaver or nickname change
+  // never re-keys what was already sent (flags are dm:<id>:<slot>, not names and times)
+  const list = residents.map((r) => (typeof r === "string" ? { id: r, name: r } : r)).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  list.forEach(({ id, name }, i) => {
+    let slot = 0;
+    const push = (m) => plan.push({ ...m, to: name, id, flag: `dm:${id}:${slot++}` });
     const morrow = CANON.morrow_dms.filter((_, k) => (k + i) % 2 === 0).slice(0, 2);
-    morrow.forEach((dm, k) => plan.push({ to: name, at: 2 + k * 9 + i, kind: "morrow", as: dm.as, text: `${dm.as}: ${dm.text}` }));
+    morrow.forEach((dm, k) => push({ at: 2 + k * 9 + i, kind: "morrow", as: dm.as, text: `${dm.as}: ${dm.text}` }));
     const other = quotes.find((q) => q.name !== name);
-    if (other) plan.push({ to: name, at: 14 + i, kind: "morrow", text: CANON.quote_template.replace("{other}", other.name).replace("{line}", other.text) });
+    if (other) push({ at: 14 + i, kind: "morrow", text: CANON.quote_template.replace("{other}", other.name).replace("{line}", other.text) });
     const theo = CANON.theo_dms[i % CANON.theo_dms.length];
-    plan.push({ to: name, at: 6 + i * 3, kind: "theo", text: theo.text, voice: theo.voice });
+    push({ at: 6 + i * 3, kind: "theo", text: theo.text, voice: theo.voice });
   });
   return plan.sort((a, b) => a.at - b.at);
 }
@@ -475,13 +480,13 @@ client.once("clientReady", async () => {
     if (live.act >= 7 && !state.act7Start) { state.act7Start = Date.now(); saveState(state); }
     if (live.act < 7 || live.act > 9 || !state.act7Start) return;
     const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
-    const names = members.map((m) => m.displayName);
+    const residents = members.map((m) => ({ id: m.id, name: m.displayName }));
     const quotes = (await bridgeGet(BRIDGE, "/lines"))?.lines ?? [];
     const hours = (Date.now() - state.act7Start) / 3_600_000 * Number(ENV.TIME_SCALE || 1);
-    for (const m of act7Plan(names, quotes)) {
+    for (const m of act7Plan(residents, quotes)) {
       if (hours < m.at) continue;
-      const member = members.find((x) => x.displayName === m.to);
-      if (member) await dmOnce(`dm:${m.to}:${m.at}:${m.kind}`, member, m.text, m.voice, m.as);
+      const member = members.get(m.id);
+      if (member) await dmOnce(m.flag, member, m.text, m.voice, m.as);
     }
   });
 

@@ -239,6 +239,20 @@ public final class Finale implements Listener {
     /** The going-home phase lasts this long before the log prints. */
     private static final long HOME_TICKS = 20L * 90;
 
+    /** The free block outside a home's nearest wooden door (June's is on her east wall), else the anchor's north side. */
+    private static Location doorstep(World w, int[] a) {
+        for (int dx = -4; dx <= 4; dx++) for (int dy = -1; dy <= 2; dy++) for (int dz = -4; dz <= 4; dz++) {
+            org.bukkit.block.Block b = w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz);
+            if (!b.getType().name().endsWith("_DOOR") || b.getType().name().startsWith("IRON")) continue;
+            if (!(b.getBlockData() instanceof org.bukkit.block.data.type.Door d) || d.getHalf() != org.bukkit.block.data.Bisected.Half.BOTTOM) continue;
+            for (org.bukkit.block.BlockFace f : List.of(d.getFacing(), d.getFacing().getOppositeFace())) {
+                org.bukkit.block.Block out = b.getRelative(f);
+                if (out.getType().isAir() && out.getRelative(0, 1, 0).getType().isAir()) return out.getLocation().add(0.5, 0, 0.5);
+            }
+        }
+        return new Location(w, a[0] + 0.5, a[1], a[2] - 1.5);
+    }
+
     private void stop(String byName, char choice) {
         if (stopping || stopped()) return;
         stopping = true;
@@ -249,7 +263,7 @@ public final class Finale implements Listener {
         String skip = BridgeLogic.skipLine(asked, ZoneId.systemDefault(), canon.raw.has("skip_fallback") ? canon.string("skip_fallback") : null);
         List<String> log = BridgeLogic.stopLog(Canon.strings(canon.array("stop_log")), skip);
         finalLog = List.copyOf(log);
-        BridgeLogic.Usb usb = BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), roster.names().size());
+        BridgeLogic.Usb usb = BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), Bridge.quorumPlayers(plugin, roster));
         World w = Bukkit.getWorlds().get(0);
         // Morrow's last words: the code echoed, then the one fresh sentence it has that matches "stop"
         announce(engine("stop_requested").replace("{code}", byName.equals("operator") ? "console" : lastCode == null ? "" : lastCode));
@@ -322,7 +336,7 @@ public final class Finale implements Listener {
             if (anchor == null) continue;
             final String home = anchor;
             int[] a = canon.anchor(home);
-            Location door = new Location(w, a[0] + 0.5, a[1], a[2] - 1.5);
+            Location door = doorstep(w, a);
             Location from = lastStood(w, who);
             double dist = Math.hypot(from.getX() - door.getX(), from.getZ() - door.getZ());
             if (dist > 60) {

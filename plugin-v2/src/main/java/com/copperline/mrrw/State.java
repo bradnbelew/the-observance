@@ -70,7 +70,9 @@ public final class State {
         stamps.forEach((k, v) -> y.set("stamps." + k, v));
         try {
             file.getParentFile().mkdirs();
-            y.save(file);
+            File tmp = new File(file.getPath() + ".tmp");  // a crash mid-write must never leave an empty state (= Act 1, nothing done)
+            y.save(tmp);
+            java.nio.file.Files.move(tmp.toPath(), file.toPath(), java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new IllegalStateException("could not save " + file, e);
         }

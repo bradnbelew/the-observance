@@ -43,7 +43,7 @@ ANCHORS = {
     "patchcord_relay_hut": (-199, 72, -70),  # note wall origin (notes at x+i, y+1, z+2)
     "finch_hub": (-215, 71, 22),
     "finch_jct_1": (-215, 71, -60),        # the junction rail where the spur leaves the main line (lever at x+1)
-    "finch_jct_2": (-170, 72, -120),       # finch's corner: a siding stub runs on east (lever at x-1)
+    "finch_jct_2": (-170, 72, -120),       # finch's corner: a siding stub runs on north (lever at x-1)
     "finch_jct_3": (-140, 74, -120),       # the east leg: a siding stub runs south (lever at z-1)
     "finch_corner": (-170, 71, -120),      # where the main line turns east for the farms
     "finch_spur": (-224, 70, -116),        # her hidden station, in the hill north of town

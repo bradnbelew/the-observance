@@ -33,6 +33,8 @@ export type BridgeState = {
   usb: { votes: Record<UsbChoice, number>; winner: UsbChoice | null; open: boolean };
   fingerprint: string | null;
   theo: { id: string; at: string; subject: string }[];
+  /** /mrrw hint N: how many of this act's hints the operator released early (0 = timers only). */
+  hintFloor: number;
 };
 
 export type DeskEvent = {
@@ -123,6 +125,7 @@ export function parseState(raw: unknown): BridgeState | null {
     names,
     firstJoins,
     stoppedAt: stoppedRaw && !Number.isNaN(stoppedRaw.getTime()) ? stoppedRaw : null,
+    hintFloor: count(o.hint_floor),
     ready: o.ready === true,
     stopped: o.stopped === true,
     usb: {

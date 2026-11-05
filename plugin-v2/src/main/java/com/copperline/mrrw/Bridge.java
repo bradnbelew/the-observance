@@ -187,6 +187,8 @@ public final class Bridge {
         o.addProperty("fingerprint", finale.fingerprint());
         o.add("theo", campaign.theo());
         o.addProperty("auto_advance", campaign.autoAdvance());
+        // /mrrw hint N: the operator releases this act's first N hints early (the site honours it alongside its timers)
+        o.addProperty("hint_floor", state.stamp("hint_floor_act") == state.act() ? state.stamp("hint_floor") : 0);
         List<String> log = finale.finalLog();
         if (log != null) {
             JsonArray a = new JsonArray();
@@ -196,8 +198,14 @@ public final class Bridge {
         return o;
     }
 
+    /** The residents the USB quorum counts: config usb_quorum when set (players who quit never vote), else everyone who joined. */
+    static int quorumPlayers(Plugin plugin, PlayerRoster roster) {
+        int q = plugin.getConfig().getInt("usb_quorum", 0);
+        return q > 0 ? q : roster.names().size();
+    }
+
     BridgeLogic.Usb usb() {
-        return BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), roster.names().size());
+        return BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), quorumPlayers(plugin, roster));
     }
 
     private Resp feed(String rawQuery) {

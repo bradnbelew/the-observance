@@ -152,6 +152,24 @@ public final class MrrwPlugin extends JavaPlugin {
                     + Vibrations.SPACING_TICKS + " ticks apart, decodes to " + Vibrations.decode(played)));
             return true;
         }
+        if (args.length == 2 && args[0].equalsIgnoreCase("hint")) {  // a stuck group: release this act's first N hints now
+            int n;
+            try {
+                n = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(Component.text("mrrw: usage /mrrw hint <0-4>"));
+                return true;
+            }
+            state.setStamp("hint_floor", n);
+            state.setStamp("hint_floor_act", state.act());
+            JsonObject d = new JsonObject();
+            d.addProperty("act", state.act());
+            d.addProperty("hints", n);
+            d.addProperty("by", sender.getName());
+            journal.write("operator.hint", d);
+            sender.sendMessage(Component.text("mrrw: act " + state.act() + " shows its first " + n + " hint(s) on the desk now"));
+            return true;
+        }
         if (args.length == 2 && args[0].equalsIgnoreCase("stop")) {
             sender.sendMessage(Component.text("mrrw: " + finale.operatorStop(args[1])));
             return true;

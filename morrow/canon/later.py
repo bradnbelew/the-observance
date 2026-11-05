@@ -191,6 +191,8 @@ DESK_DROPS = [
     (7, 0, "copperline-ops.irc.log", "Iona's IRC logs.  I was in that channel.  I know what's in there.  Here.", None),
     (7, 48, None, "If one of those wasn't me, I'm sorry.  I can't see what it sends.", "T-07d"),
     (8, 0, "closet.jpg", "Found this on my phone.  That's the box.", None),
+    (9, 0, "copperline-ops.irc.2011-06-10.log", "There's a day missing from the IRC log I sent you.  I cut it out before I "
+                                                 "sent it.  Here.", None),
     (9, 12, None, "Stood in the spare room for a bit this morning.  It's loud, the box.  I'd stopped hearing it.", "T-09c"),
 ]
 
@@ -515,6 +517,7 @@ NETHER_HUB_SIGN = ["hub %d / %d" % (layout.ANCHORS["nether_hub"][0], layout.ANCH
 IONA_NOTES_SIGNS = [
     ["stop = 3 things", "maint sign ON", "no sessions", "key in console"],
     ["cmd name is in", "the annex wall", "as block ids", "-ib"],
+    ["key: june's old", "dock. 3 down,", "4 toward spawn", "counts, b64"],
 ]
 
 # C20: Theo's private folder on the mirror. Password = the sticky note on the case ("chi07-")

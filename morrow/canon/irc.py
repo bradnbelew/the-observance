@@ -112,7 +112,7 @@ LOG = [
     ]),
     ("2011-06-02", [
         ("22:58", "ibell", "rook's laying his floor in the cellar. wool, like he said"),
-        ("23:10", "ibell", "put my key in a double chest under june's old dock, 3 down, 4 toward spawn. counts are b64. rook cant read it and neither can morrow lol"),
+        ("23:10", "ibell", "key's in the world now, not the panel. told rook roughly where. it's counts, not words, so mrrw can't read it"),
         ("23:11", "tvale", "you know I can read this channel"),
         ("23:11", "ibell", "you can read it. you can't dig"),
     ]),
@@ -153,10 +153,14 @@ def _line(t: str, nick: str, text: str) -> str:
     return "%s < %s> %s" % (t, nick, text)
 
 
-def render() -> str:
+def render(only: tuple[str, ...] | None = None, skip: tuple[str, ...] = ()) -> str:
+    """The log as irssi wrote it. `skip` leaves days out (Theo cut 2011-06-10 from the copy he hands
+    over in Act 7: the clean backup's existence is Act 9's); `only` renders just those days."""
     out = ["--- Log opened " + LOG_OPENED]
     prev = None
     for day, lines in LOG:
+        if day in skip or (only is not None and day not in only):
+            continue
         d = date.fromisoformat(day)
         if prev is not None:
             if d - prev == timedelta(days=1):
