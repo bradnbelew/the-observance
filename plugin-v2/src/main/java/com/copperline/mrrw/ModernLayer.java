@@ -796,6 +796,10 @@ public final class ModernLayer {
     private void maintSign(World w) {
         Block b = at(w, "maint_sign", 0, 0, 0);
         b.setType(Material.OAK_SIGN, false);
+        // spawn is north of the sign: the front (the side the plugin reads and reverts) must face it
+        org.bukkit.block.data.Rotatable rot = (org.bukkit.block.data.Rotatable) b.getBlockData();
+        rot.setRotation(BlockFace.NORTH);
+        b.setBlockData(rot, false);
         if (b.getState() instanceof Sign s) {
             s.getSide(Side.FRONT).line(0, Component.text("MAINT OFF"));
             for (int i = 1; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.empty());

@@ -79,7 +79,7 @@ public final class Nights implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent e) {
-        if (silent() || state.act() < 5) return;
+        if (silent() || state.act() < 5 || e.getSide() == Side.BACK) return;  // only the front counts (it faces spawn)
         int[] a = canon.anchor("maint_sign");
         Block b = e.getBlock();
         if (b.getX() != a[0] || b.getY() != a[1] || b.getZ() != a[2]) return;
@@ -317,21 +317,28 @@ public final class Nights implements Listener {
 
     private void revertUnwaxedMaint(World w) {
         int[] a = canon.anchor("maint_sign");
-        if (w.getBlockAt(a[0], a[1], a[2]).getState() instanceof Sign s && !s.isWaxed()) {
-            String now = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(s.getSide(Side.FRONT).line(0));
-            if (!now.equals("MAINT OFF")) {
-                s.getSide(Side.FRONT).line(0, Component.text("MAINT OFF"));
-                for (int i = 1; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.empty());
-                s.update(true, false);
-                announce(engine("maint_revert"));
-                JsonObject d = new JsonObject();
-                d.addProperty("act", state.act());
-                journal.write("morrow.maint_reverted", d);
-                if (state.act() == 5 && state.done("act5.maint_on") && !state.done("act5.maint_reverted")) {
-                    state.markDone("act5.maint_reverted");
-                    if (onMaintReverted != null) onMaintReverted.run();
-                }
-            }
+        if (!(w.getBlockAt(a[0], a[1], a[2]).getState() instanceof Sign s)) return;
+        String now = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(s.getSide(Side.FRONT).line(0));
+        // Act 5's hand-in: a sign reading ON at dawn counts even if it was set before Act 5 opened
+        boolean handIn = state.act() == 5 && !state.done("act5.maint_reverted");
+        if (handIn && now.trim().toUpperCase().equals(canon.string("maint_sign_text"))) state.markDone("act5.maint_on");
+        handIn = handIn && state.done("act5.maint_on");
+        // waxed = theirs to keep (Act 10); except the hand-in, which Morrow undoes whatever they did to it
+        if (s.isWaxed() && !handIn) return;
+        if (!now.equals("MAINT OFF")) {
+            if (s.isWaxed()) s.setWaxed(false);
+            s.getSide(Side.FRONT).line(0, Component.text("MAINT OFF"));
+            for (int i = 1; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.empty());
+            s.update(true, false);
+            announce(engine("maint_revert"));
+            JsonObject d = new JsonObject();
+            d.addProperty("act", state.act());
+            journal.write("morrow.maint_reverted", d);
+        }
+        // the advance fires even when they put the sign back to OFF themselves before dawn
+        if (handIn) {
+            state.markDone("act5.maint_reverted");
+            if (onMaintReverted != null) onMaintReverted.run();
         }
     }
 

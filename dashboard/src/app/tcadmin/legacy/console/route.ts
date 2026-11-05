@@ -34,7 +34,8 @@ export async function POST(request: Request) {
   // Acts 6-9: the console takes Iona's key (Act 7's hand-in) and refuses the stop: a session is still open
   if (act < 10 || !b.console) {
     if (!b.console_key_md5) return back({ error: "console: read only (recovery job running)" });
-    if (md5(key) !== b.console_key_md5) return back({ error: key ? "key rejected (watchdog still armed)" : "key required" });
+    // the plugin applies the hand-in at Act 7 only; an earlier correct key must read as rejected, or it is "accepted" and lost
+    if (act < 7 || md5(key) !== b.console_key_md5) return back({ error: key ? "key rejected (watchdog still armed)" : "key required" });
     console.log(`MORROW_CONSOLE key accepted at act ${act}`);
     after(() => postHandIn("console_key", "iona's key"));
     return back({ status: "key accepted. stop refused: maint=off sessions=1 (lowpath)" });

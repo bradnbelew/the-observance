@@ -128,7 +128,9 @@ npm --prefix discord-v2 run dry
    upgraded `Mossfield` world and the jar from `plugin-v2/build/libs/`. Set `stop-secret` in
    `plugins/mrrw/config.yml` to a long random string (the plugin refuses the finale while it's the
    dev default), restart, then run `/mrrw install` once. In `server.properties` set
-   `online-mode=true` and `white-list=true`, and `/whitelist add` each player. The address is
+   `online-mode=true`, `white-list=true` and **`pause-when-empty-seconds=-1`** (Paper's default
+   pauses the world when nobody is online: no dawns between sessions, no timed notes, and the
+   site's bridge calls time out), and `/whitelist add` each player. The address is
    printed on the site, so without a whitelist strangers and scanners would join, become
    "residents" and feed Morrow's corpus.
 2. **DNS:** the client area tells players the server is `mossfield.copperlinehosting.com`. Add an

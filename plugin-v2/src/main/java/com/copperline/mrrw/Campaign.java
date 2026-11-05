@@ -134,7 +134,17 @@ public final class Campaign implements Listener {
         journal.write("act.advance", d);
         plugin.getLogger().info("act " + from + " -> " + to + " (" + reason + ")");
         applyAct.run();
+        retryEarly();
         return true;
+    }
+
+    /** A ref that arrived before its act (journalled act.advance_early) applies once the act catches up. */
+    private void retryEarly() {
+        for (var entry : desk().entrySet()) {
+            JsonObject e = entry.getValue().getAsJsonObject();
+            if (e.get("released").getAsBoolean() && !e.get("applied").getAsBoolean()) tryAdvance(entry.getKey(), e);
+        }
+        save();
     }
 
     /** /mrrw act N [started]: the operator always wins. */

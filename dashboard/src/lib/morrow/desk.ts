@@ -76,8 +76,10 @@ export function evaluate(b: Bundle, message: string): { kind: Ticket["kind"]; re
   for (const rule of b.desk.rules) {
     const hits = rule.tokens.filter((t) => has(text, t)).length;
     const complete = fullMatch(text, rule);
-    // the strongest complete match wins (Kit's date + phrase beats the phrase alone); ties go to the earlier rule
-    if (complete !== null && (!full || rule.need > full.rule.need || (rule.need === full.rule.need && hits > full.hits))) full = { rule, hits };
+    // the complete match from the latest act wins (Act 6's restart over Act 3's found_morrow in a ticket that piles in
+    // evidence), then the strongest (Kit's date + phrase beats the phrase alone), then the most hits; ties go to the earlier rule
+    if (complete !== null && (!full || rule.act > full.rule.act || (rule.act === full.rule.act
+        && (rule.need > full.rule.need || (rule.need === full.rule.need && hits > full.hits))))) full = { rule, hits };
     if (hits > 0 && (!best || hits > best.hits)) best = { rule, hits };
   }
   if (full) return { kind: "rule", ref: full.rule.id, delayHours: full.rule.delay_hours };

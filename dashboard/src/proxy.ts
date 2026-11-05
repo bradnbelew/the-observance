@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import folders from "@/lib/canon/folders.json";
 import { bridgeState, effectiveAct, postHandIn } from "@/lib/morrow/bridge";
 
@@ -76,7 +76,7 @@ export async function proxy(request: NextRequest) {
         const [u, ...rest] = atob(header.slice(6)).split(":");
         if (equal(u, user) && equal(rest.join(":"), folder.password)) {
           // Act 3's hand-in: June's folder opened with her password. The plugin ignores repeats.
-          if (user === "juni_lantern") void postHandIn("june_folder", "june's folder").catch(() => false);
+          if (user === "juni_lantern") after(() => postHandIn("june_folder", "june's folder").catch(() => false));
           return NextResponse.next();
         }
       } catch {

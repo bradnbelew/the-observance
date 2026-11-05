@@ -147,7 +147,8 @@ export async function bridgeState(): Promise<BridgeState | null> {
   // a missing bridge is remembered for at least 3 s even with a zero TTL (a refused connect can take
   // seconds on Windows, and every page asks several times)
   const ttl = cached?.state ? ttlMs() : Math.max(ttlMs(), 3000);
-  if (cached && Date.now() - cached.at < ttl) return cached.state;
+  // a blip (restart, lag spike) must not drop the site back to the env act: serve the last good state
+  if (cached && Date.now() - cached.at < ttl) return cached.state ?? lastGood;
   if (!inflight) {
     inflight = (async () => {
       const state = parseState(await call("GET", "/state"));
@@ -163,10 +164,11 @@ export async function bridgeState(): Promise<BridgeState | null> {
       }
       cached = { at: Date.now(), state };
       if (state) {
+        lastGood = state;
         lastNames = state.names;
         lastFirstJoins = state.firstJoins;
       }
-      return state;
+      return state ?? lastGood;
     })().finally(() => {
       inflight = null;
     });
@@ -179,6 +181,7 @@ export function forgetBridgeState() {
   cached = null;
 }
 
+let lastGood: BridgeState | null = null;
 let lastNames: string[] = [];
 let lastFirstJoins: Record<string, [number, number, number]> = {};
 
@@ -200,7 +203,12 @@ export async function postHandIn(ref: string, subject: string | null = null): Pr
 export async function postDeskEvent(ev: Omit<DeskEvent, "kind">): Promise<boolean> {
   if (!bridgeUrl()) return false;
   const body = JSON.stringify({ kind: "desk", ref: ev.ref, reply_at: ev.reply_at, voice: ev.voice, subject: ev.subject });
-  const res = await call("POST", "/event", body);
+  // a hand-in is posted once from after(); the plugin dedups per ref, so retry a blip rather than lose the act
+  let res: unknown = null;
+  for (let attempt = 0; attempt < 3 && !res; attempt++) {
+    if (attempt) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    res = await call("POST", "/event", body);
+  }
   forgetBridgeState();
   const ok = !!res && typeof res === "object" && (res as { ok?: unknown }).ok === true;
   console.log(`MORROW_BRIDGE event ref=${ev.ref} ${ok ? `ok act=${(res as { act?: unknown }).act ?? "?"}` : "not delivered"}`);

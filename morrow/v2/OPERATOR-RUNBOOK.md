@@ -7,6 +7,10 @@ and the bot runs Discord. Your jobs are:
 - read the journal;
 - answer an out-of-fiction "help" if a friend asks.
 
+**The server must keep ticking while empty:** `pause-when-empty-seconds=-1` in `server.properties`
+(Paper's default pauses the world with nobody online: no dawns between sessions, no timed notes, and
+the site's bridge calls time out, so it falls back to `MORROW_ACT`).
+
 **Acts advance by themselves.** The plugin moves the act when the game or the Archive Desk logs
 the trigger in the table below (config `auto_advance: true` in `plugins/mrrw/config.yml`). Each move
 is a journal line `act.advance` with its reason, and it records when the act began. The website and

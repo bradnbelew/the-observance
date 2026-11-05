@@ -443,7 +443,8 @@ def bridge_checks() -> None:
     print("bridge: fallback")
     FakeBridge.refuse = True
     time.sleep(0.2)
-    check(get("/~juni_lantern/", via=v)[0] == 404, "a refused signature means no bridge: back to MORROW_ACT=1")
+    # a blip (restart, refused request, lag) keeps the last good state: the site never drops back to MORROW_ACT=1 mid-run
+    check(get("/~juni_lantern/", via=v)[0] != 404, "a refused signature keeps the last good act: June's folder stays open")
     FakeBridge.refuse = False
     bad = [b for b in FakeBridge.bad if b]
     check(len(FakeBridge.events) > 0 and len(bad) == 0, f"every request the site sent verified ({len(FakeBridge.events)} events, {len(bad)} bad)")

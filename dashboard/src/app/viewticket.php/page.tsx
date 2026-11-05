@@ -25,8 +25,9 @@ export default async function ViewTicket({ searchParams }: { searchParams: Promi
   }
   const reply = replyFor(b, t);
   // Evidence filed before its act was held; once the act has caught up, viewing the ticket tells the
-  // plugin again (POST /event is idempotent there: a repeat answers "duplicate").
-  const ev = t.kind === "rule" || t.kind === "file" ? deskEvent(b, t) : null;
+  // plugin again (POST /event is idempotent there: a repeat answers "duplicate"); a brief or booking lost to a
+  // bridge blip is re-posted the same way (deskEvent is null for kinds that move nothing).
+  const ev = deskEvent(b, t);
   if (ev) after(() => postDeskEvent(ev));
   const opened = new Date(t.at).toLocaleString("en-US", { timeZone: "America/Chicago" });
   return (
