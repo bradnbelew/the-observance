@@ -160,13 +160,7 @@ public final class MrrwPlugin extends JavaPlugin {
                 sender.sendMessage(Component.text("mrrw: usage /mrrw hint <0-4>"));
                 return true;
             }
-            state.setStamp("hint_floor", n);
-            state.setStamp("hint_floor_act", state.act());
-            JsonObject d = new JsonObject();
-            d.addProperty("act", state.act());
-            d.addProperty("hints", n);
-            d.addProperty("by", sender.getName());
-            journal.write("operator.hint", d);
+            n = campaign.releaseHints(n, sender.getName());
             sender.sendMessage(Component.text("mrrw: act " + state.act() + " shows its first " + n + " hint(s) on the desk now"));
             return true;
         }

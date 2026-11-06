@@ -165,6 +165,19 @@ public final class Campaign implements Listener {
         return state.stamp("act_started");
     }
 
+    /** The operator shows this act's first n hints on the desk (hints never release by themselves). Resets when the act moves. */
+    public int releaseHints(int n, String by) {
+        n = Math.max(0, Math.min(n, 9));
+        state.setStamp("hint_floor", n);
+        state.setStamp("hint_floor_act", state.act());
+        JsonObject d = new JsonObject();
+        d.addProperty("act", state.act());
+        d.addProperty("hints", n);
+        d.addProperty("by", by);
+        journal.write("operator.hint", d);
+        return n;
+    }
+
     // ---- plugin-side triggers -------------------------------------------------------------------
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -30,7 +30,7 @@ export type Reply = { text: string; voice?: string | null; attach?: string | nul
 
 type HeldRule = { id: string; act: number; tokens: string[]; need: number; require?: string[] };
 /** Generated fields newer than the shared Bundle type (morrow/canon/build.py site_bundle). */
-type DeskExtras = { held?: HeldRule[]; held_files?: Record<string, number>; hint_hours?: number[] };
+type DeskExtras = { held?: HeldRule[]; held_files?: Record<string, number> };
 const extras = (b: Bundle) => b.desk as Bundle["desk"] & DeskExtras;
 
 const HOLD_TEXT = "Give me a bit.  I'll look into that.";
@@ -201,8 +201,8 @@ export function deskEvent(b: Bundle, t: Ticket): Omit<DeskEvent, "kind"> | null 
   return null;
 }
 
-/** Theo's unprompted drops and the escalating hints, released by time since the act started. */
-export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number; stoppedAt?: Date | null; hintFloor?: number }): { at: string; text: string; file: string | null; voice?: string }[] {
+/** Theo's unprompted drops (by time since the act started) and the hints the operator has released. */
+export function deskNotes(b: Bundle, clock: { hours: number; stoppedAt?: Date | null; hintFloor?: number }): { at: string; text: string; file: string | null; voice?: string }[] {
   const h = clock.hours;
   const notes: { at: string; text: string; file: string | null; voice?: string }[] = [
     { at: "2026-08-02", text: "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the desk is open.  I check it in the evenings.  No worries at all.", file: null, voice: "T-01" },
@@ -220,12 +220,8 @@ export function deskNotes(b: Bundle, clock: { hours: number; hintFactor: number;
   if (b.theo_after && clock.stoppedAt && Date.now() >= clock.stoppedAt.getTime() + b.theo_after.after_stop_hours * 3_600_000) {
     notes.push({ at: "after", text: b.theo_after.text, file: null, voice: b.theo_after.voice });
   }
-  // hint timers scale with the group (bridge.ts hintFactor): 24/72/120/168 h for five or more, half that for a pair
-  const hours = (extras(b).hint_hours ?? [24, 72, 120, 168]).map((x) => x * clock.hintFactor);
-  // ... or released early by the operator (/mrrw hint N) when a group is stuck
-  b.desk.hints.forEach((hint, i) => {
-    if (i < hours.length && (h >= hours[i] || i < (clock.hintFloor ?? 0))) notes.push({ at: "", text: hint, file: null });
-  });
+  // hints never release by themselves: the operator shows the first N (/op page or /mrrw hint N)
+  b.desk.hints.slice(0, clock.hintFloor ?? 0).forEach((hint) => notes.push({ at: "", text: hint, file: null }));
   return notes;
 }
 

@@ -181,7 +181,6 @@ def main() -> int:
                  + [o["cost"] for o in later.USB_VOTE["options"].values()])
     for t in theo_text:
         check(". " not in t.replace(".  ", "") and "mate" not in t.lower().split(), "2026 Theo: double spaces, no 'mate': %r" % t[:40])
-    check(all(len(h) <= len(later.HINT_HOURS) for h in later.HINTS.values()), "every hint has a release time")
     check(not any(t in ("its ok", "it's ok") for r in later.DESK_RULES for t in r["tokens"]), "'its ok' is not a desk trigger")
     check("2014-12-14" in forum.MEMBERS["archivist"]["joined"]
           and forum.MEMBERS["archivist"]["posts"] == len(forum.ARCHIVIST_NOTES), "archivist joined at the first heartbeat, posts = notes")

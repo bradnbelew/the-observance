@@ -203,7 +203,6 @@ THEO_ASK = {"text": "One more thing.  finch's sign at the south branch.  Leave i
 THEO_AFTER = {"text": "Kit came over.  We put the stick in his laptop.  He said it looked smaller than he remembered.  "
                       "Thanks for coming.\n\nT", "voice": "T-10-after", "after_stop_hours": 168}
 
-HINT_HOURS = [24, 72, 120, 168]  # when each of an act's hints appears, hours into the act
 
 # Escalating hints by act (never the answer).
 HINTS = {
@@ -445,7 +444,7 @@ VISITOR_BOOK = {"title": "visitors", "pages": [
 ]}
 
 
-__all__ = ["DESK_RULES", "DESK_FILES", "BRIEF_REPLIES", "THEO_MIRROR_VOICES", "THEO_MIRROR_HEADER", "USB_VOTE", "DESK_DROPS", "HINTS", "HINT_HOURS", "FORUM_REWRITES", "SIGN_REWRITES",
+__all__ = ["DESK_RULES", "DESK_FILES", "BRIEF_REPLIES", "THEO_MIRROR_VOICES", "THEO_MIRROR_HEADER", "USB_VOTE", "DESK_DROPS", "HINTS", "FORUM_REWRITES", "SIGN_REWRITES",
            "NONE_REPLIES", "PLACE_WORDS", "THEO_ASK", "THEO_AFTER", "SKIP_FALLBACK", "ENGINE_LINES", "THEO_DRAFTS", "VISITOR_BOOK",
            "TRANSCRIPTION_BOOKS", "OFFLINE_DAYS", "SGA_SIGNS", "MORROW_DMS", "THEO_DMS", "PER_PLAYER_SIGNS",
            "backdated_join", "BACKDATED_POSTS", "CASE_BRIEF_FIELDS", "USB_CHOICES", "STOP_LOG", "READY_STATUS",

@@ -119,7 +119,6 @@ def site_bundle(act: int) -> dict:
         "files": {k: {"act": v[0], "line": v[1], "voice": v[2]} for k, v in later.DESK_FILES.items() if v[0] <= act},
         "drops": [{"act": a, "after_hours": h, "file": f, "note": n, "voice": v} for a, h, f, n, v in later.DESK_DROPS if a <= act],
         "hints": later.HINTS.get(act, []),
-        "hint_hours": later.HINT_HOURS,
         "none_replies": later.NONE_REPLIES,
         "place_words": later.PLACE_WORDS,
         # Correct evidence filed early: matched (tokens only, never the reply) so Theo can say "give me a

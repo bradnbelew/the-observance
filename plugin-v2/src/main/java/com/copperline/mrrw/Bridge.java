@@ -262,7 +262,16 @@ public final class Bridge {
             return new Resp(400, error("bad JSON"));
         }
         String kind = str(in, "kind");
-        if (!"desk".equals(kind)) return new Resp(400, error("kind must be \"desk\""));
+        if ("hint".equals(kind)) {  // the site's operator page (/op) releases this act's first n hints
+            JsonElement n = in.get("n");
+            if (n == null || !n.isJsonPrimitive() || !n.getAsJsonPrimitive().isNumber()) return new Resp(400, error("n must be a number"));
+            JsonObject o = new JsonObject();
+            o.addProperty("ok", true);
+            o.addProperty("act", state.act());
+            o.addProperty("hint_floor", campaign.releaseHints(n.getAsInt(), "op page"));
+            return new Resp(200, o);
+        }
+        if (!"desk".equals(kind)) return new Resp(400, error("kind must be \"desk\" or \"hint\""));
         String ref = str(in, "ref");
         if (ref == null || ref.isBlank()) return new Resp(400, error("ref is required"));
         Long replyAt;

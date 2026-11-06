@@ -33,7 +33,7 @@ export type BridgeState = {
   usb: { votes: Record<UsbChoice, number>; winner: UsbChoice | null; open: boolean };
   fingerprint: string | null;
   theo: { id: string; at: string; subject: string }[];
-  /** /mrrw hint N: how many of this act's hints the operator released early (0 = timers only). */
+  /** How many of this act's hints the operator has released (/op page or /mrrw hint N); 0 = none. Hints never release by themselves. */
   hintFloor: number;
 };
 
@@ -223,11 +223,10 @@ export function effectiveAct(envAct: number, state: BridgeState | null): number 
   return state ? Math.max(envAct, state.act) : envAct;
 }
 
-/** Hint timers scale with the size of the group: a pair gets hints twice as fast as five or more. */
-export function hintFactor(players: number): number {
-  if (players <= 0) return 1;  // unknown group size: the authored timings
-  if (players <= 2) return 0.5;
-  if (players === 3) return 0.65;
-  if (players === 4) return 0.8;
-  return 1;
+/** The operator page: show this act's first n hints on the desk. Resolves to the plugin's new count, or null if not delivered. */
+export async function postHint(n: number): Promise<number | null> {
+  const res = await call("POST", "/event", JSON.stringify({ kind: "hint", n }));
+  forgetBridgeState();
+  const floor = res && typeof res === "object" ? (res as { hint_floor?: unknown }).hint_floor : undefined;
+  return typeof floor === "number" ? floor : null;
 }

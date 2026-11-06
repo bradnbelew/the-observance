@@ -1,6 +1,6 @@
 // Local solo playtest of the Copperline mirror on port 3041, against the local Paper test server.
 // Unlike dev-v2.mjs there is no act switcher and nothing is released early: the act follows the
-// plugin over the bridge, hints keep the real act clock, and Theo answers a few minutes after
+// plugin over the bridge, hints wait for /backstage, and Theo answers a few minutes after
 // each ticket (MORROW_DESK_MINUTES) instead of the next evening.
 import { readFileSync } from "node:fs";
 import { spawn } from "node:child_process";

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { isProduction, sessionSecret } from "./signing";
-import { bridgeState, effectiveAct, hintFactor, lastBridgeFirstJoins, lastBridgeNames } from "./bridge";
+import { bridgeState, effectiveAct, lastBridgeFirstJoins, lastBridgeNames } from "./bridge";
 
 /**
  * Campaign settings, all from environment variables (set on Vercel per act):
@@ -69,23 +69,21 @@ export function actStarted(): Date | null {
 export const DEV_CLOCK_COOKIE = "morrow_dev_clock";
 
 /**
- * How far into the act we are, and how fast hints come. The start is the plugin's act_started when
- * the bridge answers and its act is the one being served; otherwise MORROW_ACT_STARTED. The hint
- * factor comes from the plugin's resident count, else from MORROW_PLAYERS (bridge.ts hintFactor).
+ * How far into the act we are, and how many hints the operator has released. The start is the plugin's
+ * act_started when the bridge answers and its act is the one being served; otherwise MORROW_ACT_STARTED.
  */
-export async function actClock(now = new Date()): Promise<{ hours: number; hintFactor: number; stoppedAt: Date | null; hintFloor: number }> {
+export async function actClock(now = new Date()): Promise<{ hours: number; stoppedAt: Date | null; hintFloor: number }> {
   const state = await bridgeState();
-  const factor = hintFactor(state ? state.players : players().length);
   const stoppedAt = state?.stoppedAt ?? null;
   const hintFloor = state?.hintFloor ?? 0;
   if (DEV || process.env.MORROW_DESK_FAST === "1") {
     const real = DEV && (await cookies()).get(DEV_CLOCK_COOKIE)?.value === "real";
-    if (!real) return { hours: 10_000, hintFactor: factor, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null), hintFloor };
+    if (!real) return { hours: 10_000, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null), hintFloor };
   }
   const env = envAct();
   const fromBridge = state && state.act >= env && state.actStarted ? state.actStarted : null;
   const s = fromBridge ?? actStarted();
-  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, hintFactor: factor, stoppedAt, hintFloor };
+  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, stoppedAt, hintFloor };
 }
 
 /** MORROW_PLAYERS as set (may be empty). */

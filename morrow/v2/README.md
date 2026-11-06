@@ -74,7 +74,7 @@ Answer key: `SOLUTIONS.md` (generated).
   The desk still answers everything; it gates Acts 4, 6, 8 and 9.
 - **The checklist** reaches players as a Theo drop in Act 5. The closet photo opens Theo's `box/`
   folder (`chi07-` + 2010) in Act 8, instead of the changelog being a free drop.
-- **Hints** are text only. The generic H-1 to H-6 voice notes aren't used.
+- **Hints** are text only and never release by themselves: the operator releases them at `/backstage` (or `/mrrw hint N`). The generic H-1 to H-6 voice notes aren't used.
 
 ## Code map
 

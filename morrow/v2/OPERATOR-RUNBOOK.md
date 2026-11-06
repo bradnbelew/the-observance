@@ -68,7 +68,14 @@ Then say, as yourself: *"btw, there's something in Marked I didn't put there. fi
 Everyone's sectors together read: `copperline hosting / case 6118 / mossfield / records kept until /
 31 dec 2026 / copperlinehosting.com`. The lines are in `plugins/mrrw-01/config.yml`.
 
-**Set `MORROW_ACT_STARTED` to the game night's date** (the Archive Desk's hint timers count from it).
+**Set `MORROW_ACT_STARTED` to the game night's date** (Theo's timed desk drops count from it).
+
+**Hints are yours to release.** None appear on the Archive Desk by themselves. Open
+`https://copperlinehosting.com/backstage` (any user name, password = `MORROW_STOP_SECRET`): it shows
+the plugin's act, who's playing, and this act's hints in order with a Release button on each. A
+release shows that hint and every one before it; "Take them all back down" hides them. The count
+goes back to 0 when the act moves. If the bridge is down the page says so: use `/mrrw hint N` in the
+server console instead. The page is unlinked and not in robots.txt; don't share the URL.
 
 If you'd rather skip Marked, the old trailhead still works. Send this as yourself:
 

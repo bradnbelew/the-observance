@@ -9,7 +9,7 @@ browses the FTP, submits the case brief. Act 10's console is checked separately 
 The mrrw bridge is played by a fake plugin started here (127.0.0.1:25591, the URL dev-v2.mjs gives
 the preview by default; MORROW_E2E_BRIDGE_PORT changes it). It checks every request's signature
 (MORROW_STOP_SECRET, or the dev default), serves /state, and records /event, so the run proves: desk
-filings post the right signed events, the act follows the plugin, hint timers scale with the group,
+filings post the right signed events, the act follows the plugin, hints show only what the operator released,
 and the Act 10 console only takes the group's USB winner.
 
 Every desk, drop, folder and FTP attachment the site links is actually downloaded (200, non-empty).
@@ -297,7 +297,11 @@ class BridgeHandler(BaseHTTPRequestHandler):
         if not self._signed(body):
             return self._send(401, {"error": "signature"})
         if self.path == "/event":
-            FakeBridge.events.append(json.loads(body))
+            ev = json.loads(body)
+            FakeBridge.events.append(ev)
+            if ev.get("kind") == "hint":  # the plugin clamps to 0-9 and answers with the new count
+                FakeBridge.state["hint_floor"] = max(0, min(int(ev["n"]), 9))
+                return self._send(200, {"ok": True, "act": FakeBridge.state["act"], "hint_floor": FakeBridge.state["hint_floor"]})
             return self._send(200, {"ok": True, "act": FakeBridge.state["act"]})
         self._send(404, {"error": "not found"})
 
@@ -388,7 +392,7 @@ def check_signature_vector() -> None:
 
 
 def bridge_checks() -> None:
-    """The site following the fake plugin: act, act clock, group-scaled hints, folders, the USB winner."""
+    """The site following the fake plugin: act, act clock, operator-released hints, folders, the USB winner."""
     print("bridge: the site follows the plugin")
     # a visitor with no act switcher cookie (MORROW_ACT=1 in the preview), on the real act clock
     v = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -404,15 +408,28 @@ def bridge_checks() -> None:
     set_bridge(act=4)
     desk_page = page("/support/index.php")
     check("copperline-asset-sale-2014.pdf" in desk_page, "plugin at Act 4: the site serves Act 4 (auction drop) with MORROW_ACT=1")
-    check(hint(4, 0) in desk_page and hint(4, 1) not in desk_page,
-          "2 residents, 20 h into the act: the first hint (24 h x 0.5 = 12 h) is out, the second (36 h) isn't")
-    set_bridge(players=5)
-    check(hint(4, 0) not in page("/support/index.php"), "5 residents, 20 h in: no hint yet (24 h x 1.0)")
-    set_bridge(players=4)
-    check(hint(4, 0) in page("/support/index.php"), "4 residents, 20 h in: the first hint is out (24 h x 0.8 = 19.2 h)")
-    set_bridge(players=3, act_started=ago(50))
+    check(hint(4, 0) not in desk_page, "20 h into the act, nothing released: no hint (hints never release by themselves)")
+    set_bridge(act_started=ago(500))
+    check(hint(4, 0) not in page("/support/index.php"), "500 h into the act, nothing released: still no hint")
+    set_bridge(hint_floor=2)
     desk_page = page("/support/index.php")
-    check(hint(4, 1) in desk_page and hint(4, 2) not in desk_page, "3 residents, 50 h in: two hints (72 h x 0.65 = 46.8 h)")
+    check(hint(4, 1) in desk_page and hint(4, 2) not in desk_page, "operator released 2: exactly the first two hints")
+    set_bridge(hint_floor=0)
+
+    print("bridge: the operator's /backstage hint switch")
+    auth = {"Authorization": "Basic " + base64.b64encode(f"op:{STOP_SECRET}".encode()).decode()}
+    check(get("/backstage", via=v)[0] == 401, "/backstage without a password: 401")
+    check(get("/backstage", headers={"Authorization": "Basic " + base64.b64encode(b"op:wrong").decode()}, via=v)[0] == 401,
+          "/backstage with the wrong password: 401")
+    status, _, raw = get("/backstage", headers=auth, via=v)
+    check(status == 200 and hint(4, 0) in flat(text(raw)) and "0 of" in flat(text(raw)), "/backstage lists Act 4's hints, none released")
+    check(get("/backstage", {"n": "1"}, headers=auth, via=v)[0] == 403, "a POST without Sec-Fetch-Site same-origin is refused (CSRF)")
+    status, url, raw = get("/backstage", {"n": "1"}, headers={**auth, "Sec-Fetch-Site": "same-origin"}, via=v)
+    check(status == 200 and "Done: 1 hint" in flat(text(raw)) and FakeBridge.state.get("hint_floor") == 1,
+          "Release posts kind=hint n=1 to the plugin and comes back to the page")
+    desk_page = page("/support/index.php")
+    check(hint(4, 0) in desk_page and hint(4, 1) not in desk_page, "after the release the desk shows hint 1 only")
+    set_bridge(hint_floor=0)
 
     print("bridge: Act 10 console takes the group's USB winner only")
     set_bridge(act=10, act_started=ago(1), players=3)
