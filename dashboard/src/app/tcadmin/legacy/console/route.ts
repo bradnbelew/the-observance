@@ -7,6 +7,7 @@ import { remember, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { morrowStatus, ping, stopCode, STOP_CHOICES } from "@/lib/morrow/slp";
 import { bridgeState, postHandIn } from "@/lib/morrow/bridge";
 import { after } from "next/server";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,8 @@ const md5 = (s: string) => createHash("md5").update(s).digest("hex");
  * What goes on the USB stick is the group's call: with the bridge on, the console only accepts the
  * winner of the #general vote (the plugin counts it); without a bridge, the panel's own choice.
  */
+export const GET = (request: Request) => seeOther(request, "/tcadmin/legacy");
+
 export async function POST(request: Request) {
   const back = (r: object) => NextResponse.redirect(new URL(`/tcadmin/legacy?r=${seal(r)}`, request.url), 303);
   const b = await bundle();
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
   if (act < 6 || !unseal((await cookies()).get("tcadmin")?.value)) {
     return NextResponse.redirect(new URL("/tcadmin/legacy", request.url), 303);
   }
-  const form = await request.formData();
+  const form = await readForm(request);
   const command = String(form.get("command") ?? "").trim().toUpperCase();
   const key = String(form.get("key") ?? "").trim().toLowerCase().replace(/\s+/g, "");  // the desk is as forgiving
   // Acts 6-9: the console takes Iona's key (Act 7's hand-in) and refuses the stop: a session is still open
@@ -55,8 +58,9 @@ export async function POST(request: Request) {
 
   const reply = await ping();
   const status = morrowStatus(reply);
-  const shown = reply === null ? "unreachable (is MORROW_MC_HOST set?)" : status || "(no heartbeat)";
-  console.log(`MORROW_CONSOLE node=${shown}`);
+  // players see the panel's words only; the operator hint goes to the log
+  const shown = reply === null ? "unreachable" : status || "(no heartbeat)";
+  console.log(`MORROW_CONSOLE node=${reply === null ? `unreachable (is MORROW_MC_HOST set? ${process.env.MORROW_MC_HOST ? "yes" : "no"})` : shown}`);
   if (status !== b.ready_status) {
     return back({ error: reply !== null && !status ? "nothing to stop: the process is silent" : "stop refused: node is not ready", status: shown });
   }

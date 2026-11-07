@@ -20,11 +20,13 @@ unreachable. Desk triggers fire when Theo's reply to that ticket goes out (its `
 once if it has no reply time.
 
 **Stepping in:** `/mrrw act N` in the Minecraft console always works and always wins (the
-journal records it as `act.advance` with reason `operator`). `/mrrw act N 2026-10-17T20:00:00-04:00`
+journal records it as `act.advance` with reason `operator`). Every other fix is in the command table
+below ("Operator commands"). `/mrrw act N 2026-10-17T20:00:00-04:00`
 also sets when the act began (use it at Act 1 to set the game night). `/mrrw status` shows the act,
 when it began, and whether auto-advance is on. Set `auto_advance: false` to drive every act by hand.
-Ops don't count as residents for the join and online-time triggers, so you can look around at Act 1
-without starting the game (`auto_advance_count_ops: true` to change that).
+Ops don't count as residents anywhere (join and online-time triggers, roster, chat corpus, stop
+reason, first-join figures, quorum), so you can look around at Act 1 without starting the game
+(`auto_advance_count_ops: true`, or `/mrrw residents add NAME`, to change that).
 
 | Act | Advances to this act automatically when | What changes (automatic) |
 | --- | --- | --- |
@@ -63,7 +65,7 @@ from the console or as op.
 | Someone missed it or joined late | `/trailhead key NAME` | Resends their sector, or gives a late player a duplicate one. |
 | After the night | `/trailhead stop` | The server list goes back to normal. |
 
-Then say, as yourself: *"btw, there's something in Marked I didn't put there. find the key."*
+Then say, as yourself: *"huh. did anyone else get a weird book just now? that's not one of mine."* Then drop it: don't say "key", "puzzle" or "game"; let them be the ones who decide it's something.
 
 Everyone's sectors together read: `copperline hosting / case 6118 / mossfield / records kept until /
 31 dec 2026 / copperlinehosting.com`. The lines are in `plugins/mrrw-01/config.yml`.
@@ -73,8 +75,9 @@ Everyone's sectors together read: `copperline hosting / case 6118 / mossfield / 
 **Hints are yours to release.** None appear on the Archive Desk by themselves. Open
 `https://copperlinehosting.com/backstage` (any user name, password = `MORROW_STOP_SECRET`): it shows
 the plugin's act, who's playing, and this act's hints in order with a Release button on each. A
-release shows that hint and every one before it; "Take them all back down" hides them. The count
-goes back to 0 when the act moves. If the bridge is down the page says so: use `/mrrw hint N` in the
+release shows that hint and every one before it; "Take them all back down" hides them. Each act keeps its
+own released count and release times (GET /state `hints_released`, `hints_released_at`), so a note
+released in one act is still there after the act moves. If the bridge is down the page says so: use `/mrrw hint N` in the
 server console instead. The page is unlinked and not in robots.txt; don't share the URL.
 
 If you'd rather skip Marked, the old trailhead still works. Send this as yourself:
@@ -82,6 +85,40 @@ If you'd rather skip Marked, the old trailhead still works. Send this as yoursel
 > found this weird old minecraft host site, apparently someone's still running a server on it
 > from 2011?? https://copperlinehosting.com
 > "Retained customer records for case 6118 (Mossfield) will be kept until 31 Dec 2026."
+
+## Control room (`/backstage`)
+
+`https://copperlinehosting.com/backstage`, any user name, password = `MORROW_STOP_SECRET`. To a player it
+looks like any password-protected folder (Apache 401). One page, server-rendered, reload it to refresh:
+
+- **Campaign:** the plugin's act and when it began, auto-advance (with on/off buttons), the finale
+  (ready / stopped and when).
+- **Site act floor:** `MORROW_ACT` against the plugin's act. Green = the site follows the plugin. Red
+  when the bridge isn't answering (the site is on `MORROW_ACT`, or on the last state that instance
+  heard) or when `MORROW_ACT` is ahead of the plugin (lower it on Vercel or move the plugin). A
+  stop-secret fingerprint mismatch shows here too.
+- **Residents and the USB vote:** the roster with first-join spots, add/remove a resident, the vote count
+  and winner.
+- **Commands:** a button or small form for every `/mrrw` command (`status`, `flags`, `desk`, `residents`,
+  `dawn`, `restore`, `replay`, `snapshot`, `figures respawn|clear`, `act`, `flag`, `handin`,
+  `rollback`, `repair`, `hint`, `journal`, `say`), plus a free box that runs anything you'd type after
+  `/mrrw`. They go to the plugin as a signed bridge event and the plugin's answer is shown at the top.
+  `act`, `flag`, `handin`, `rollback` and `residents remove` ask "are you sure" first (the server
+  refuses them unconfirmed).
+- **Desk hand-ins:** the plugin's `desk` table (what the site has posted, released, applied). If one
+  never arrived (bridge down when it was filed), **Re-post hand-in** sends the site's own signed event
+  again, e.g. `june_folder`, `console_key`, `unmask`, `brief`. **Apply hand-in** (`handin <kind>`) makes
+  the plugin apply it directly instead.
+- **Hints:** release this act's hints one by one, or take them back down (as before).
+- **Journal:** the last 50 entries, newest first.
+
+If the bridge is down the page still opens and says so; use the server console. The same commands
+from a terminal: `python plugin-v2/tools/bridge_client.py --url http://HOST:25588 --secret ... op act 5`
+and `... journal 50`.
+
+**Rotating `MORROW_SESSION_SECRET`:** put the old value in `MORROW_SESSION_SECRET_PREVIOUS` at the same
+time, or every ticket link already posted in Discord, every "Your requests" list and every login stops
+working. Testing switches (`MORROW_DEV`, `MORROW_DESK_FAST`) are ignored on the production deployment.
 
 ## The finale (Act 10), what happens
 
@@ -96,6 +133,87 @@ If you'd rather skip Marked, the old trailhead still works. Send this as yoursel
 **Epilogue (a week later):** reopen the server with what they kept. Clean means the April 2011
 backup world; recovered means the current world; corpus means no world, and you post the
 corpus text.
+
+## Operator commands (`/mrrw`, console or op)
+
+Non-ops never see any of this: `/mrrw` is hidden from their tab-complete and answers "Unknown or
+incomplete command"; `/plugins` and `/version` are op-only while the plugin runs. The site's operator
+page runs the same text over the bridge (`POST /event {"kind":"op","cmd":"desk"}` ->
+`{"ok":true|false,"output":"..."}`; `GET /journal?n=50`). Every command that changes something writes
+an `operator.*` journal line; the read-only ones (`status`, `desk`, `flags`, `flag NAME`, `residents`,
+`journal`, `snapshots`, `help`) write nothing.
+
+| Command | What it does |
+| --- | --- |
+| `help` | Lists every command |
+| `status` | Act, when it began, readiness, lowpath, auto-advance, residents and quorum, USB tally, secret fingerprint, and a red WARNING if `pause-when-empty-seconds` isn't -1 |
+| `act N [ISO]` | Sets the act (always wins). The same act again re-applies it and keeps its clock. A desk ref the players already filed for the next act applies at once (the reply says so) |
+| `auto on\|off` | Auto-advance, saved to config.yml. `on` applies any move held while it was off |
+| `desk` | Every desk ref: received, reply time, Theo voice, released or WAITING, applied or NOT APPLIED, which act it moves |
+| `handin KIND` | A hand-in as if the players did it. Desk refs (`june_folder`, `unmask*`, `restart*`, `console_key`, `kit`, `ingest`, `brief`, `booking`): filed with no reply delay, or released now if waiting (Kit's 36 h), or retried. `maint`: Act 5 = MAINT ON set and reverted (moves to 6); Act 10 = the sign set to MAINT ON and waxed. `lowpath`: lowpath's session ended (bed kept). `cairn_room`: cairn's room opens |
+| `hint N` | Shows this act's first N hints on the desk (kept per act: they stay up when the act moves) |
+| `flags` / `flag NAME [on\|off]` | The one-shot flags on disk. Off = that one-shot runs again at the next act change or `act N`. Warns on a name the plugin doesn't know. `flag stopped off` also clears `stop_pending` |
+| `journal [n]` | The last n journal lines (default 10, max 200) |
+| `residents` / `residents add\|remove NAME` / `residents quorum N` | Who counts as a resident (ops don't unless added). Remove = out of the roster and the quorum for good. Quorum 0 = residents seen in the last 14 days (at least 1) |
+| `snapshot [NAME]` / `snapshots` / `rollback NAME` | Copies the state files (state, desk, roster, recovery, paths, votes, stop flag) to `plugins/mrrw/snapshots/NAME`. Every act move snapshots itself first (`before-actN-<time>`). Rollback restarts the plugin's services on the snapshot and re-applies the act; it snapshots `before-rollback-<time>` first so it can be undone; the journal and Discord feed are never rewound |
+| `repair [PART\|all]` | Re-places install parts without touching progress. `all` = the safe set (museum, reading room shelves, map copies, tribute banners, dust corridor, finch's lock, nether sign, containers, south-rail sign, shed hatch, gallery wire, Theo's drafts, kit chest, visitor book). By name only: `theo_archive`, `flags` (un-tidies Act 8's order), `meadow`, `lowpath_place` (a kept bed is lost), `listening_room` (reopened if it was open), `maint_sign` (back to MAINT OFF), `dock_removed`, `barn_squared`, `iona_chest` (the unmerged key again). `map_wall` is refused (new map ids would break C11) |
+| `restore [signs]` | The dawn's build restore now. `signs` also puts every build sign a player edited back to its text from before their first edit |
+| `dawn` | Every dawn job now (restore, tidies, refills, the Act 2 -> 3 check) |
+| `tp PLACE [PLAYER]` | To a canon anchor (`spawn`, `rookery_cellar_floor`, `iona_key_chest`, `maintenance_annex`, ...; `nether_hub` is in the Nether). From the console name a player |
+| `figures clear\|respawn` | Removes every figure / starts the incident replay (Act 5+) and lowpath (Act 8+) now |
+| `say TEXT` | Speaks as Morrow (`[Recovery]` in chat, relayed to Discord). Morrow only ever says 2011 words: quote the corpus |
+| `replay [sound]`, `install`, `reload`, `stop CODE` | As before |
+
+## When something goes wrong
+
+| It happened | Do this |
+| --- | --- |
+| The act moved too early or wrongly | `snapshots`, then `rollback before-actN-...` (the ref that moved it is marked used; `handin REF` redoes it) |
+| The group did the hand-in but nothing moved | `desk`: a ref `NOT APPLIED` with "moves 7 -> 8" while at 6 waits for its act and applies by itself; at the right act, `handin REF` |
+| auto-advance was off for a while | `auto on` applies what was held |
+| A puzzle object got broken, emptied or lost (books, maps, compasses, banners, shelves) | `repair all`, or `repair PART`; a broken build block comes back at dawn, or `restore` now |
+| Someone overwrote a clue sign | `restore signs` |
+| Iona's chest got merged before they read it | `repair iona_chest` |
+| lowpath never lies down (no one online at night, bed trouble) | `handin lowpath` |
+| cairn's room won't open | `handin cairn_room` |
+| A player quit for good and the USB vote can't finish | `residents remove NAME` or `residents quorum N` |
+| The operator's own account got counted | `residents remove YOURNAME` (do it before Act 9) |
+| Figures stuck or doubled | `figures clear` (they come back at the next dusk/night) or `figures respawn` |
+| The server was restarted mid-finale | Nothing: the stop stands, its record and log are written on start-up |
+| `status` shows the pause-when-empty WARNING | Set `pause-when-empty-seconds=-1` in server.properties and restart: until then nothing happens between sessions |
+| bridge-state.json is unreadable | It is kept as `bridge-state.json.corrupt-<time>`; `rollback` the last `before-act...` snapshot |
+
+## When a group is stuck: which hint to release
+
+Hints only appear when you release them (`/backstage`, or `/mrrw hint N`, which shows the act's first N).
+Each is Theo noticing something in his own files; none gives an answer. Release in order; a day of
+no progress on a gate is a fair moment. `/mrrw desk` shows what they've filed (a near-miss ticket means
+they're close: wait).
+
+| Gate | What they have to do | Release |
+| --- | --- | --- |
+| Before 1→2 | find the forum (robots.txt, page source), answer `bracken` | 1.2 (crawlers), then 1.3 (Rowan's first post) |
+| 3→4 | open June's folder (`sambro`) | 3.2 (her light), 3.4 (one word for everything), 3.1 (time zones) |
+| 4→5 | tell Theo they know it's him | 4.1 (say it here), 4.4 (lot numbers) |
+| 5→6 | solve Rook's floor, set MAINT ON | 5.3 (rules read aloud = the key), 5.2 (wool numbers), 5.4 (hashes); 5.1 for patch's folder |
+| 6→7 | ask Theo about the 06:44 restart | 6.1 (ask me about the log). The only Act 6 gate hint: release it early |
+| 7→8 | Iona's key into the panel console | 7.2 (her paths), 7.3 (chest counts), 7.4 (the console box) |
+| 8→9 | ask Theo where "turn it off" came from | 8.1. The plugin also has Morrow say Kit's line at the first two Act 8 dusks |
+| 9→10 | the case brief (needs rook.txt's line) | 9.1 (the form), 9.2, 9.3 (hashed backups) |
+| 10 | the stop: sign waxed ON, lowpath asleep, key + code at the annex | 10.2 (three things), 10.3 (waxed signs), 10.1 (in the room) |
+
+## What Morrow protects, and what comes back
+
+Inside the builds (each canon build anchor within 14 blocks, now also Iona's notes, finch's junction
+levers, cairn's sealed room, Kit's hut, the south rail's end, the top of June's tower and Rook's
+Nether hub): broken blocks and explosions come back at dawn (also over water); pistons can't move build
+blocks; water and lava can't wash them away; fire doesn't burn them; signs, chests and other block
+entities can't be broken by non-ops; lectern books stay on their lecterns; Iona's chest is view-only
+and is merged no sooner than an hour after it was first opened; the Braille shelves can't be changed;
+June's lamp is put back if broken; the genuine 2015 map, the wall-map copies and the kit chest are
+refilled at dawn. Players may still edit and wax signs (Act 6 asks them to). A MAINT ON written before
+Act 5 is reverted at dawn ("1 sign normalised (spawn)") and moves nothing; only one written in Act 5
+is the hand-in. If the players sleep through an Act 8-9 night, lowpath walks in the day instead.
 
 ## Reading what happened
 

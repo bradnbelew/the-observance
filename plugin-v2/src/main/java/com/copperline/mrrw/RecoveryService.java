@@ -61,6 +61,11 @@ public final class RecoveryService implements Listener {
             {"lowpath_place", "lowpath's place"},
             {"theo_museum", "the archive"}, {"theo_reading_room", "the archive"}, {"theo_map_wall", "the archive"},
             {"rookery_ladder_room", "the ladder room"}, {"maintenance_annex", "the annex"},
+            // clue objects that stood outside every radius (2026-11-05 sweep): Iona's notes signs, finch's junction
+            // levers (C3), cairn's sealed room, Kit's hut, finch's south-rail sign, and the tower top (June's lamp, the flags)
+            {"iona_notes", "iona's notes"}, {"finch_jct_1", "the main line"}, {"finch_jct_2", "the main line"}, {"finch_jct_3", "the main line"},
+            {"listening_room", "cairn storehouse"}, {"kit_fossil_base", "kit's"}, {"south_rail_end", "the south rail"},
+            {"june_tower", "the tower", "21"},
     };
 
     private final Plugin plugin;
@@ -71,9 +76,9 @@ public final class RecoveryService implements Listener {
     private final Map<Location, BlockData> broken = new LinkedHashMap<>();
     private final Map<Location, String> placed = new LinkedHashMap<>();
     private final Map<Location, String> playerChests = new LinkedHashMap<>();
+    private final Map<Location, List<String>> signs = new LinkedHashMap<>();  // a build sign's text before a player first edited it
     private final List<Consumer<World>> dawnHooks = new ArrayList<>();
     private boolean dirty;
-    private long lastDawnDay = -1;
 
     public RecoveryService(Plugin plugin, Canon canon, State state, Journal journal) {
         this.plugin = plugin;
@@ -90,11 +95,20 @@ public final class RecoveryService implements Listener {
         dawnHooks.add(hook);
     }
 
-    private String buildAt(Location loc) {
+    String buildAt(Location loc) {
+        World w = loc.getWorld();
+        if (w == null) return null;
+        if (w.getEnvironment() == World.Environment.NETHER) {  // Rook's hub sign (C5); nothing else of Mossfield is down there
+            int[] h = canon.anchor("nether_hub");
+            return Math.abs(loc.getBlockX() - h[0]) <= 4 && Math.abs(loc.getBlockZ() - h[2]) <= 4 && Math.abs(loc.getBlockY() - h[1]) <= 4 ? "the nether hub" : null;
+        }
+        if (!w.equals(Bukkit.getWorlds().get(0))) return null;  // the End, other worlds: never Mossfield
         for (String[] b : BUILDS) {
+            if (!canon.anchors.containsKey(b[0])) continue;
             int[] a = canon.anchor(b[0]);
+            int ay = a[1] + (b.length > 2 ? Integer.parseInt(b[2]) : 0);
             if (Math.abs(loc.getBlockX() - a[0]) <= RADIUS && Math.abs(loc.getBlockZ() - a[2]) <= RADIUS
-                    && Math.abs(loc.getBlockY() - a[1]) <= RADIUS) return b[1];
+                    && Math.abs(loc.getBlockY() - ay) <= RADIUS) return b[1];
         }
         return null;
     }
@@ -152,6 +166,72 @@ public final class RecoveryService implements Listener {
         if (active() && buildAt(event.getBlock().getLocation()) != null) event.setCancelled(true);
     }
 
+    /** Pistons can't shove a build's blocks out of place (Rook's floor, a sign, a lever): the restore can't follow a moved block. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPistonExtend(org.bukkit.event.block.BlockPistonExtendEvent event) {
+        if (!active()) return;
+        for (Block b : event.getBlocks()) if (!placed.containsKey(b.getLocation()) && buildAt(b.getLocation()) != null) { event.setCancelled(true); return; }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPistonRetract(org.bukkit.event.block.BlockPistonRetractEvent event) {
+        if (!active()) return;
+        for (Block b : event.getBlocks()) if (!placed.containsKey(b.getLocation()) && buildAt(b.getLocation()) != null) { event.setCancelled(true); return; }
+    }
+
+    /** Water and lava never wash a build's block away (torches, dust, repeaters, levers, signs); flowing into air is fine. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onFlow(org.bukkit.event.block.BlockFromToEvent event) {
+        Block to = event.getToBlock();
+        if (active() && !to.getType().isAir() && !to.isLiquid() && buildAt(to.getLocation()) != null) event.setCancelled(true);
+    }
+
+    /** A book on a lectern in a build is read there, not carried off (the tally book, the visitor book, the transcription). */
+    @EventHandler(ignoreCancelled = true)
+    public void onTakeBook(org.bukkit.event.player.PlayerTakeLecternBookEvent event) {
+        if (active() && !event.getPlayer().isOp() && buildAt(event.getLectern().getLocation()) != null) event.setCancelled(true);
+    }
+
+    /** Iona's chest is read in place: its stack sizes and their order are the key, so nothing moves in or out (ops excepted). */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onIonaClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+        if (isIonaChest(event.getView().getTopInventory()) && !event.getWhoClicked().isOp()) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onIonaDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (isIonaChest(event.getView().getTopInventory()) && !event.getWhoClicked().isOp()) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onIonaHopper(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
+        if (isIonaChest(event.getSource()) || isIonaChest(event.getDestination())) event.setCancelled(true);
+    }
+
+    private boolean isIonaChest(Inventory inv) {
+        if (!active() || inv == null || inv.getLocation() == null || !canon.anchors.containsKey("iona_key_chest")) return false;
+        int[] k = canon.anchor("iona_key_chest");
+        Location l = inv.getLocation();
+        return l.getBlockY() == k[1] && Math.abs(l.getBlockZ() - k[2]) <= 1 && Math.abs(l.getBlockX() - k[0]) <= 1;
+    }
+
+    /**
+     * Players may edit signs (Act 6 asks them to put Morrow's rewrites back, and to wax them), but a build
+     * sign's text from before its first player edit is kept, so /mrrw restore can always put a clue back.
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSignEdit(org.bukkit.event.block.SignChangeEvent event) {
+        Block b = event.getBlock();
+        if (!active() || placed.containsKey(b.getLocation()) || signs.containsKey(b.getLocation()) || buildAt(b.getLocation()) == null) return;
+        if (!(b.getState() instanceof org.bukkit.block.Sign s)) return;  // the state still holds the text from before this edit
+        List<String> lines = new ArrayList<>();
+        for (org.bukkit.block.sign.Side side : List.of(org.bukkit.block.sign.Side.FRONT, org.bukkit.block.sign.Side.BACK)) {
+            for (int i = 0; i < 4; i++) lines.add(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(s.getSide(side).line(i)));
+        }
+        signs.put(b.getLocation(), lines);
+        dirty = true;
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if (!active()) return;
@@ -182,6 +262,7 @@ public final class RecoveryService implements Listener {
         int[] k = canon.anchor("iona_key_chest");
         Location l = event.getInventory().getLocation();
         if (l.getBlockY() != k[1] || l.getBlockZ() != k[2] || l.getBlockX() < k[0] - 1 || l.getBlockX() > k[0] + 1) return;
+        state.stampOnce("iona_chest_opened_at", System.currentTimeMillis());
         state.markDone("iona_chest.opened");
         JsonObject d = new JsonObject();
         d.addProperty("by", event.getPlayer().getName());
@@ -191,6 +272,8 @@ public final class RecoveryService implements Listener {
 
     private void tidyIonaChest(World world) {
         if (!state.done("iona_chest.opened") || state.done("iona_chest.tidied")) return;
+        // "one session to read it": never the dawn a minute after it was first opened (an in-game day is 20 minutes)
+        if (System.currentTimeMillis() - state.stamp("iona_chest_opened_at") < IONA_READ_MS) return;
         int[] k = canon.anchor("iona_key_chest");
         Block b = world.getBlockAt(k[0], k[1], k[2]);
         if (!(b.getState() instanceof Chest chest)) return;
@@ -269,8 +352,8 @@ public final class RecoveryService implements Listener {
         World world = Bukkit.getWorlds().get(0);
         long time = world.getTime();
         long day = world.getFullTime() / 24000L;
-        if (time < 200 && day != lastDawnDay) {
-            lastDawnDay = day;
+        if (time < 200 && day + 1 != state.stamp("last_dawn_day")) {  // on disk: a restart at sunrise doesn't run the dawn twice
+            state.setStamp("last_dawn_day", day + 1);
             dawn(world);
         }
     }
@@ -278,6 +361,51 @@ public final class RecoveryService implements Listener {
     /** Runs once per in-game sunrise. */
     public void dawn(World world) {
         if (!active()) return;
+        restoreBuilds();
+        int act = state.act();
+        if (act >= 2 && act <= 8) {
+            int sorted = tidyPlayerChests();
+            if (sorted > 0) announce(sorted + (sorted == 1 ? " chest" : " chests") + " normalised");
+        }
+        if (act >= 3) tidyOneTallyChest(world);
+        refillKitChest(world);
+        tidyFloor(world);
+        tidyIonaChest(world);
+        for (Consumer<World> hook : dawnHooks) {
+            try {
+                hook.accept(world);
+            } catch (RuntimeException ex) {
+                plugin.getLogger().warning("dawn hook failed: " + ex);
+            }
+        }
+        save();
+    }
+
+    /**
+     * /mrrw restore: the dawn's build restore now (players' blocks in builds out, broken originals back),
+     * and with signs = true, every build sign a player edited back to its text from before their first edit.
+     * Returns a one-line summary.
+     */
+    public String restoreNow(boolean withSigns) {
+        boolean any = restoreBuilds();
+        int n = 0;
+        if (withSigns) {
+            for (var e : signs.entrySet()) {
+                if (!(e.getKey().getBlock().getState() instanceof org.bukkit.block.Sign s)) continue;
+                List<String> l = e.getValue();
+                List<org.bukkit.block.sign.Side> sides = List.of(org.bukkit.block.sign.Side.FRONT, org.bukkit.block.sign.Side.BACK);
+                for (int k = 0; k < 2; k++) for (int i = 0; i < 4; i++) s.getSide(sides.get(k)).line(i, Component.text(l.get(k * 4 + i)));
+                s.update(true, false);
+                n++;
+            }
+            signs.clear();
+        }
+        save();
+        return (any ? "builds restored" : "nothing to restore in the builds") + (withSigns ? ", " + n + " edited sign(s) put back" : ", " + signs.size() + " edited sign(s) on file (/mrrw restore signs)");
+    }
+
+    /** The build part of a dawn. True if anything changed. */
+    private boolean restoreBuilds() {
         // players' blocks go first, so a hole they refilled is open again when the original comes back
         Map<String, Integer> normalised = new LinkedHashMap<>();
         for (var e : placed.entrySet()) {
@@ -293,37 +421,23 @@ public final class RecoveryService implements Listener {
         for (var it = broken.entrySet().iterator(); it.hasNext(); ) {
             var e = it.next();
             Block b = e.getKey().getBlock();
-            if (!b.getType().isAir()) continue;  // something else stands there: the original is kept for a later dawn
+            if (!b.getType().isAir() && !b.isLiquid()) continue;  // something else stands there: the original is kept for a later dawn
             b.setBlockData(e.getValue(), false);
             restored.merge(buildAt(e.getKey()), 1, Integer::sum);
             it.remove();
         }
         restored.forEach((where, n) -> announce(n + (n == 1 ? " block" : " blocks") + " restored (" + where + ")"));
         normalised.forEach((where, n) -> announce(n + (n == 1 ? " block" : " blocks") + " normalised (" + where + ")"));
-        int act = state.act();
-        if (act >= 2 && act <= 8) {
-            int sorted = tidyPlayerChests();
-            if (sorted > 0) announce(sorted + (sorted == 1 ? " chest" : " chests") + " normalised");
-        }
-        if (act >= 3) tidyOneTallyChest(world);
-        refillKitChest(world);
-        tidyFloor(world);
-        tidyIonaChest(world);
-        if (!restored.isEmpty() || !normalised.isEmpty()) {
-            JsonObject d = new JsonObject();
-            d.addProperty("restored", restored.toString());
-            d.addProperty("normalised", normalised.toString());
-            journal.write("morrow.dawn", d);
-        }
-        for (Consumer<World> hook : dawnHooks) {
-            try {
-                hook.accept(world);
-            } catch (RuntimeException ex) {
-                plugin.getLogger().warning("dawn hook failed: " + ex);
-            }
-        }
-        save();
+        if (restored.isEmpty() && normalised.isEmpty()) return false;
+        JsonObject d = new JsonObject();
+        d.addProperty("restored", restored.toString());
+        d.addProperty("normalised", normalised.toString());
+        journal.write("morrow.dawn", d);
+        return true;
     }
+
+    /** Iona's chest is merged no sooner than this after it was first opened. */
+    static final long IONA_READ_MS = 60L * 60_000;
 
     /** Removes a block, and the other half of a bed or door, so nothing is left half-standing. */
     static void removeWhole(Block b) {
@@ -479,6 +593,10 @@ public final class RecoveryService implements Listener {
             Location l = loc(m);
             if (l != null) playerChests.put(l, String.valueOf(m.get("owner")));
         }
+        for (Map<?, ?> m : y.getMapList("signs")) {
+            Location l = loc(m);
+            if (l != null && m.get("lines") instanceof List<?> lines && lines.size() == 8) signs.put(l, lines.stream().map(String::valueOf).toList());
+        }
         plugin.getLogger().info("recovery: " + broken.size() + " pending restorations, " + placed.size()
                 + " placements, " + playerChests.size() + " player chests carried over");
     }
@@ -501,9 +619,13 @@ public final class RecoveryService implements Listener {
             m.put("owner", e.getValue());
             return m;
         }).toList());
+        y.set("signs", signs.entrySet().stream().map(e -> {
+            Map<String, Object> m = key(e.getKey());
+            m.put("lines", e.getValue());
+            return m;
+        }).toList());
         try {
-            file.getParentFile().mkdirs();
-            y.save(file);
+            State.saveAtomic(y, file);
             dirty = false;
         } catch (IOException ex) {
             plugin.getLogger().warning("could not save " + file + ": " + ex.getMessage());

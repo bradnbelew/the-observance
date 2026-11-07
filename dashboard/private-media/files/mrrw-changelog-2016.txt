@@ -6,4 +6,5 @@
             and the import gave it a profile. didn't do either. leaving it, it's not hurting anything
 2018-02-17  chat helper can answer with clips from the support voicemail box + ticket attachments (for the voices)
 2019-03-09  fed it the old inbox. all of it. for the voices
+2021-04-02  mirror renders the gallery thumbs from mrrw.db now, not the old screenshots
 2023-06-08  skip waxed blocks (so I can keep things)

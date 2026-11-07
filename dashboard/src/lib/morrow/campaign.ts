@@ -1,24 +1,25 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { isProduction, sessionSecret } from "./signing";
+import { DEV, deskFast, isProduction, sessionSecret, sessionSecrets } from "./signing";
 import { bridgeState, effectiveAct, lastBridgeFirstJoins, lastBridgeNames } from "./bridge";
 
 /**
  * Campaign settings, all from environment variables (set on Vercel per act):
  *   MORROW_ACT            1-10, the current act
- *   MORROW_ACT_STARTED    ISO time the act began, WITH an offset (2026-10-17T19:00:00-05:00); drives Theo's drops and hint timers
+ *   MORROW_ACT_STARTED    ISO time the act began, WITH an offset (2026-10-17T19:00:00-05:00); drives Theo's timed drops (fallback: the plugin's act_started wins)
  *   MORROW_PLAYERS        comma-separated Minecraft names of the players (Act 9 backdating)
  *   MORROW_MC_HOST        host:port of the Mossfield server (Act 10 readiness + heartbeat)
  *   MORROW_SESSION_SECRET signs sessions, tickets and file links
+ *   MORROW_SESSION_SECRET_PREVIOUS  the old value after a rotation: tokens it signed still open (signing.ts)
  *   MORROW_STOP_SECRET    shared with the mrrw plugin; signs the final stop code
  *   MORROW_DESK_FAST=1    Theo answers immediately (testing only)
  *   MORROW_DEV=1          local testing: an act switcher cookie overrides MORROW_ACT. Never set in production.
  *   MORROW_BRIDGE_URL     the mrrw plugin's bridge (bridge.ts). When it answers, the act is the later of
  *                         MORROW_ACT and the plugin's act, the plugin's act_started drives the timers, and
- *                         its resident count scales the hints. Unset or down: the env values above, as before.
+ *                         the operator's hint releases come from it. Unset or down: the env values above, as before.
  */
 
-export const DEV = process.env.MORROW_DEV === "1";
+export { DEV, deskFast };
 export const DEV_ACT_COOKIE = "morrow_dev_act";
 
 /** MORROW_ACT alone (1-10). */
@@ -43,8 +44,8 @@ export async function currentAct(): Promise<number> {
  */
 export function actStartedProblem(): string | null {
   const raw = process.env.MORROW_ACT_STARTED?.trim();
-  if (!raw) return "MORROW_ACT_STARTED is not set: Theo's timed drops and the hint timers will never fire this act.";
-  if (Number.isNaN(new Date(raw).getTime())) return `MORROW_ACT_STARTED="${raw}" is not a valid ISO time: timed drops and hints will never fire.`;
+  if (!raw) return "MORROW_ACT_STARTED is not set: Theo's timed drops will never fire this act (unless the bridge gives the plugin's act start).";
+  if (Number.isNaN(new Date(raw).getTime())) return `MORROW_ACT_STARTED="${raw}" is not a valid ISO time: Theo's timed drops will never fire.`;
   if (!/(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw)) {
     return `MORROW_ACT_STARTED="${raw}" has no UTC offset, so it is read as server time (UTC on Vercel). Add one, e.g. ${raw.includes("T") ? raw : `${raw}T00:00:00`}-05:00.`;
   }
@@ -68,22 +69,28 @@ export function actStarted(): Date | null {
 /** Testing only (MORROW_DEV=1): this cookie set to "real" keeps the real act clock instead of releasing everything. */
 export const DEV_CLOCK_COOKIE = "morrow_dev_clock";
 
+export type ActClock = {
+  hours: number; stoppedAt: Date | null; hintFloor: number;
+  /** Released hints per act and their release times (epoch ms), from the plugin; empty without one. */
+  hintsReleased: Record<number, number>; hintTimes: Record<number, number[]>;
+};
+
 /**
  * How far into the act we are, and how many hints the operator has released. The start is the plugin's
  * act_started when the bridge answers and its act is the one being served; otherwise MORROW_ACT_STARTED.
  */
-export async function actClock(now = new Date()): Promise<{ hours: number; stoppedAt: Date | null; hintFloor: number }> {
+export async function actClock(now = new Date()): Promise<ActClock> {
   const state = await bridgeState();
   const stoppedAt = state?.stoppedAt ?? null;
-  const hintFloor = state?.hintFloor ?? 0;
-  if (DEV || process.env.MORROW_DESK_FAST === "1") {
+  const hints = { hintFloor: state?.hintFloor ?? 0, hintsReleased: state?.hintsReleased ?? {}, hintTimes: state?.hintTimes ?? {} };
+  if (deskFast()) {
     const real = DEV && (await cookies()).get(DEV_CLOCK_COOKIE)?.value === "real";
-    if (!real) return { hours: 10_000, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null), hintFloor };
+    if (!real) return { hours: 10_000, stoppedAt: stoppedAt ?? (state?.stopped ? new Date(0) : null), ...hints };
   }
   const env = envAct();
   const fromBridge = state && state.act >= env && state.actStarted ? state.actStarted : null;
   const s = fromBridge ?? actStarted();
-  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, stoppedAt, hintFloor };
+  return { hours: s ? (now.getTime() - s.getTime()) / 3_600_000 : 0, stoppedAt, ...hints };
 }
 
 /** MORROW_PLAYERS as set (may be empty). */
@@ -116,12 +123,10 @@ export async function playersNow(): Promise<string[]> {
   return state?.names ?? lastBridgeNames();
 }
 
-export const deskFast = () => DEV || process.env.MORROW_DESK_FAST === "1";
-
 /**
  * When Theo's answer to something filed now goes out. MORROW_DESK_FAST answers at once.
  * MORROW_DESK_MINUTES=N (local only, ignored in production) answers after N minutes but keeps the
- * real act clock, so hints and timed drops still arrive on schedule: a solo playtest.
+ * real act clock, so timed drops still arrive on schedule: a solo playtest.
  */
 export function deskReplyAt(now: Date, normal: () => Date): Date {
   if (deskFast()) return now;
@@ -141,12 +146,15 @@ export function seal(payload: object): string {
 }
 
 export function unseal<T>(token: string | null | undefined): T | null {
-  if (!token) return null;
+  if (!token || typeof token !== "string") return null;  // ?c=a&c=b arrives as an array
   const [body, mac] = token.split(".");
   if (!body || !mac) return null;
-  const want = createHmac("sha256", secret()).update(body).digest("base64url").slice(0, 22);
-  const a = Buffer.from(mac), b = Buffer.from(want);
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  const a = Buffer.from(mac);
+  const signedBy = (key: string) => {
+    const b = Buffer.from(createHmac("sha256", key).update(body).digest("base64url").slice(0, 22));
+    return a.length === b.length && timingSafeEqual(a, b);
+  };
+  if (!sessionSecrets().some(signedBy)) return null;
   try {
     return JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as T;
   } catch {

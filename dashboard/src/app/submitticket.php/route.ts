@@ -2,11 +2,14 @@ import { after, NextResponse } from "next/server";
 import { bundle } from "@/lib/morrow/canon";
 import { deskEvent, newTicket, remember, ticketLink } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
 
+export const GET = (request: Request) => seeOther(request, "/support/index.php");
+
 export async function POST(request: Request) {
-  const form = await request.formData();
+  const form = await readForm(request);
   const b = await bundle();
   const t = newTicket(b, String(form.get("name") ?? ""), String(form.get("subject") ?? ""), String(form.get("message") ?? ""));
   await remember(t);

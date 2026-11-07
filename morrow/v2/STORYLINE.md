@@ -2,7 +2,10 @@
 
 Date: 2026-10-09. Status: **approved 2026-10-12 and built.** The authority is `morrow/v2/README.md`:
 where this document and `morrow/canon/` disagree on an exact value (a time, a line, a filename), the
-canon wins. Two things changed after approval and are marked below: Theo is **prerecorded** (see
+canon wins.
+> **Built differently from this plan (2026-11-05), check the code, not this text:** no copper golems (Morrow merges Iona's chest at the next dawn instead); Iona's chest holds 48 stacks and has no LogBlock rows; the panel has no auto-restart toggle (Theo turns it and his watchdog off himself at booking); the crontab is in Theo's box (/~tvale/box), not Rookery's FTP; the replay is 8 minutes; hints are released by hand from /backstage, never by timer.
+
+Two things changed after approval and are marked below: Theo is **prerecorded** (see
 `THEO-AND-CIPHER-BANK.md` Part 1), so every *You, live* section is superseded; and the 2011 record was
 tightened (who restarted Morrow and when, the recording's clock, the corpus law).
 
@@ -350,7 +353,7 @@ Each act has the same layout:
 
 - **Site.** `/~mossfield/logs/` holds server.log excerpts with 2011 chat. A "Copperline asset sale" PDF from December 2014 is now linked from the closure banner.
 - **Discord.** Archivist becomes chatty and helpful. He offers to "pull files from the old drives" on request. This is your hint channel, in character.
-- **Media.** Theo's 2011 voicemail to Rookery, about 50 seconds, phone quality. It includes "No worries at all, mate, I'll sort it. I'll keep it billable till someone comes home." The same words sit in Rookery's billing notes: `Waived - T.V. (keep billable till someone comes home)`.
+- **Media.** Theo's 2011 voicemail to Rookery, about 50 seconds, phone quality. It includes "No worries at all, mate, I'll sort it. I'll keep it billable till someone comes home." The same words sit in Rookery's billing notes: `Waived - T.V. (keep billable)`.
 
 **Investigations**
 

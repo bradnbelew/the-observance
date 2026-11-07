@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { bundle } from "@/lib/morrow/canon";
 import { PWRESET_FLASH, normalise, startSession } from "@/lib/morrow/session";
 import { seal } from "@/lib/morrow/campaign";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
 
+export const GET = (request: Request) => seeOther(request, "/pwreset.php");
+
 /** WHMCS 5 password reset: username -> security question -> answer. */
 export async function POST(request: Request) {
-  const form = await request.formData();
+  const form = await readForm(request);
   const user = normalise(form.get("username")?.toString());
   const answer = form.get("answer");
   const b = await bundle();

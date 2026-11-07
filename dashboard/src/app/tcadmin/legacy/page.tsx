@@ -90,7 +90,7 @@ export default async function TcAdmin({ searchParams }: { searchParams: Promise<
           {result?.code ? (
             <div className="tc-ok">
               <p><b>Stop accepted by the panel.</b> mrrw must confirm on the node itself.</p>
-              <p>Enter this in chat at the maintenance annex in Mossfield (where Iona wrote its name): <code>{result.code}</code></p>
+              <p>mrrw confirms on the node: say this code in game chat from inside its maintenance area (<code>maint_area=annex</code>, set by i_bell 2011-07-08): <code>{result.code}</code></p>
               <p className="tc-small">Valid for about thirty minutes.</p>
               {result.ticket ? <p><a href={result.ticket}>The archive desk has a reply for you.</a></p> : null}
             </div>
@@ -100,7 +100,7 @@ export default async function TcAdmin({ searchParams }: { searchParams: Promise<
               <p>Key<br /><input name="key" autoComplete="off" size={48} /></p>
               {usb ? (
                 <div className="tc-vote">
-                  <p>Before stopping, retain one image to removable media (decided by the group in #general):</p>
+                  <p>Before stopping, retain one image to removable media (residents vote):</p>
                   <table className="plain-table"><tbody>
                     {USB_KEYS.map((k) => (
                       <tr key={k} className={usb.winner === k ? "tc-winner" : ""}>
@@ -113,7 +113,7 @@ export default async function TcAdmin({ searchParams }: { searchParams: Promise<
                   {usb.winner ? (
                     <p>Retain: <b>{b.usb_vote?.options[usb.winner]?.label ?? usb.winner}</b><input type="hidden" name="choice" value={usb.winner} /></p>
                   ) : (
-                    <p className="tc-err">{b.usb_vote?.undecided ?? "The group hasn't decided.  Ask in #general."}</p>
+                    <p className="tc-err">{b.usb_vote?.undecided ?? "No majority yet."}</p>
                   )}
                 </div>
               ) : (

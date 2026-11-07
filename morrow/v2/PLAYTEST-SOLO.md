@@ -12,7 +12,7 @@ guess wrong, or nearly quit. That list is the point of the playtest.
 | The Minecraft server | `localhost:25599`, Java 1.21.11. Stands in for `mossfield.copperlinehosting.com`. |
 
 Both run the real campaign: the act moves on by itself from what you do, there's no act switcher,
-and hints arrive on the real clock. The one change from game night is that **Theo answers in about
+and hints appear only when you release them at `/backstage`. The one change from game night is that **Theo answers in about
 3 minutes** instead of the next evening.
 
 **Don't op yourself.** Operators don't count as residents, so the game wouldn't notice you.

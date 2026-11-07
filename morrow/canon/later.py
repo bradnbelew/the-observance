@@ -29,8 +29,10 @@ from . import ciphers, layout, people
 # When two complete matches tie, the earlier rule wins, so catch-alls go last.
 
 UNMASK_TOKENS = ["lot 14", "chi-07", "2014-12-14", "waived"]
-UNMASK_PARTIAL = "That's one thing.  I'd want two before I said anything."
-UNMASK_END = "\n\nIt's just Mossfield.  It's just the residents."
+UNMASK_PARTIAL = "Not sure what you mean, sorry!  It's just an archive."
+
+# "6:44" is a substring of 06:44 and 06:44:10; any second token makes it a question about that restart
+RESTART_TOKENS = ["6:44", "chi-07", "chi07", "mid-session", "mid session", "corrupt", "restart", "tvale"]
 
 DESK_RULES = [
     # Act 4: three answers keyed on the strongest thing they filed (the first complete match wins, so
@@ -40,7 +42,7 @@ DESK_RULES = [
         "tokens": UNMASK_TOKENS, "need": 2, "require": ["lot 14"],
         "reply": "You found the auction paperwork.  I kept it, I don't know why.\n\nYeah.  It's me.  Theo.  Lot 14 was "
                  "the game node and Lot 17 was the web box, and nobody else bid.  I drove them home in a Corolla.  "
-                 "I didn't know how to say it.  I didn't think anyone would actually come." + UNMASK_END,
+                 "I didn't know how to say it.  I didn't think anyone would actually come.",
         "voice": "T-04c", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
     },
     {
@@ -48,7 +50,7 @@ DESK_RULES = [
         "tokens": UNMASK_TOKENS, "need": 2, "require": ["2014-12-14"],
         "reply": "Five days after.  Yes.\n\nIt's me.  Theo.  The auction was the ninth, I collected on the "
                  "fourteenth, and I had it running in the spare room by three in the morning.  I told myself I was "
-                 "checking the drives.  I kept Rowan's password reset working.  In case Rowan came back." + UNMASK_END,
+                 "checking the drives.  I kept Rowan's password reset working.  In case Rowan came back.  Stupid, I know.",
         "voice": "T-04d", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
     },
     {
@@ -56,7 +58,7 @@ DESK_RULES = [
         "tokens": UNMASK_TOKENS, "need": 2, "require": ["waived"],
         "reply": "Keep it billable.  I did keep it billable.\n\nIt's me.  Theo.  Every June I waived the invoice so "
                  "the account would never close and the world would never be deleted.  Then Copperline closed "
-                 "instead, and I bought the box.  I didn't think anyone would actually come." + UNMASK_END,
+                 "instead, and I bought the box.  I should have just said.",
         "voice": "T-04e", "partial": UNMASK_PARTIAL, "partial_voice": "T-04b",
     },
     {
@@ -65,7 +67,7 @@ DESK_RULES = [
         "reply": "yeah.  it's me.  Theo.  sorry.  I didn't know how to say it.  I didn't think anyone would "
                  "actually come.\n\nI kept the old box running after Copperline closed.  It's in my spare room.  "
                  "I bought the web box at the same auction, and the domain when it lapsed.  I kept Rowan's "
-                 "password reset working.  In case Rowan came back.\n\nIt's just Mossfield.  It's just the residents.",
+                 "password reset working.  In case Rowan came back.\n\nIt's not hurting anyone.  I check on it.",
         "voice": "T-04a",
         "partial": UNMASK_PARTIAL,
         "partial_voice": "T-04b",
@@ -90,28 +92,28 @@ DESK_RULES = [
         "voice": None, "partial": "",
     },
     {
-        "id": "restart", "act": 6, "title": "the 06:44 restart",
-        "tokens": ["06:44:10", "chi-07/mrrw", "mid-session"], "need": 2, "require": ["06:44:10", "mid-session"],
-        "reply": "It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was "
-                 "asleep in the spare room and I just.  I didn't want him waking up to it gone.\n\nI know.  "
-                 "I know what it sounds like.\n\nRowan knew.  He heard me say it on Mumble.  That's not the bit "
-                 "I'm ashamed of.",
-        "voice": "T-06a",
-        "partial": "Which line.  There's a lot of lines in that log.  Read the reason field too.",
-    },
-    {
         "id": "restart_node", "act": 6, "title": "the 06:44 restart",
-        "tokens": ["06:44:10", "chi-07/mrrw", "mid-session"], "need": 2, "require": ["06:44:10", "chi-07/mrrw"],
+        "tokens": RESTART_TOKENS, "need": 2, "require": ["6:44", "chi-07"],
         "reply": "CHI-07/mrrw.  START.  06:44:10.  That's my login.\n\nI'd read her stop line and I'd read the "
                  "reason I typed, and I pressed it anyway.  Iona said if you stop it mid-session the region files "
                  "corrupt.  Kit was asleep in the spare room and I didn't want him waking up to it gone.\n\n"
-                 "Rowan knew.  He heard me say it on Mumble.  That's not the bit I'm ashamed of.",
+                 "Rowan heard me say it on Mumble.  We never talked about it.",
         "voice": "T-06d",
-        "partial": "Which line.  There's a lot of lines in that log.  Read the reason field too.",
+        "partial": "Which line, and what does it say?  There's thousands in that log.",
+    },
+    {
+        "id": "restart", "act": 6, "title": "the 06:44 restart",
+        "tokens": RESTART_TOKENS, "need": 2, "require": ["6:44"],
+        "reply": "It was mid-replay.  Iona said if you stop it mid-session the region files corrupt.  Kit was "
+                 "asleep in the spare room and I just.  I didn't want him waking up to it gone.\n\nI know.  "
+                 "I know what it sounds like.\n\nRowan knew.  He was on Mumble when I said it.  He never "
+                 "brought it up after.",
+        "voice": "T-06a",
+        "partial": "Which line, and what does it say?  There's thousands in that log.",
     },
     {
         "id": "sorry_kit", "act": 7, "title": "the reading room",
-        "tokens": ["sorry kit"], "need": 1,
+        "tokens": ["sorry kit", "sorrykit"], "need": 1,
         "reply": "That's from my drafts.  I never sent it.\n\n\"Kit, sorry about the server.  And the rest of it.  T\"\n\n"
                  "That's all it is.",
         "voice": None, "partial": "",
@@ -123,21 +125,22 @@ DESK_RULES = [
         "id": "key", "act": 7, "title": "iona's key",
         "tokens": ["md5:" + ciphers.md5(ciphers.IONA_TOKEN)], "need": 1,
         "reply": "That's not for me.  Iona built it so it wasn't.  Not even me, she said, and she meant it.\n\n"
-                 "Put it where she'd put it.",
+                 "I don't want to know where it goes.",
         "voice": None, "partial": "",
     },
     {
         "id": "watchdog", "act": 8, "title": "the watchdog",
-        "tokens": ["@reboot", "watchdog", "auto_restart=on", "crontab"], "need": 2,
+        "tokens": ["@reboot", "watchdog", "auto_restart=on", "crontab", "auto restart", "auto-restart", "03:13"], "need": 2,
         "reply": "Yes.  The watchdog's mine.  I put it in root's crontab the week Iona turned the panel restart "
                  "off, and when she asked, I said it wasn't me.  It brought it back the night Dale rebooted the "
-                 "node.\n\nAnd when I set the box up in 2014 I switched auto-restart back on.  That's the bit I "
-                 "never told anyone.  Not the morning.  Everything after.",
+                 "node.\n\nAnd when I set the box up in 2014 I switched auto-restart back on.  I never told "
+                 "anyone that.  Everyone knows about the morning.  Nobody knows I did it again on purpose.",
         "voice": None, "partial": "That's just housekeeping.  Every box has a crontab.",
     },
     {
         "id": "ingest", "act": 8, "title": "where did it learn that",
-        "tokens": ["turn it off"], "need": 1, "delay_hours": 36,  # the same silence as 'kit': Act 9 never opens before T-08a
+        "tokens": ["turn it off", "where", "learn", "heard", "said", "know", "chat", "email", "came from"],
+        "need": 2, "require": ["turn it off"], "delay_hours": 36,  # the same silence as 'kit': Act 9 never opens before T-08a
         "reply": "It's not in the old logs, is it.\n\nI fed it everything from my old inbox.  For the voices.  "
                  "I wanted it to sound like people.  That line's from my brother.  Here.\n\nIt picks lines that "
                  "sound like what it's hearing.  You've all been saying \"turn it off\" for a week.",
@@ -158,15 +161,46 @@ DESK_RULES = [
     },
     {
         "id": "trailhead", "act": 1, "title": "the other server",
-        "tokens": ["marked", "our server", "game night"], "need": 1,
+        "tokens": ["marked", "our server", "game night", "sector", "book"], "need": 2,
         "reply": "That wasn't me.  I don't know how it got there.  Please don't put it anywhere else.",
         "voice": None, "partial": "",
     },
+    {"id": "kit_person", "act": 4, "title": "kit", "tokens": ["kit", "kitbag", "your brother"], "need": 1,
+     "reply": "Kit's my brother.  He's twenty-nine.  Flat in Logan Square, a cat, a job he complains about.  He "
+              "doesn't play anything now.  Please don't message him about this.", "voice": None, "partial": ""},
+    {"id": "lowpath_q", "act": 6, "title": "lowpath", "tokens": ["lowpath"], "need": 1,
+     "reply": "That's an import account.  The importer made a few when I re-ran it and that one stuck.  It's not "
+              "anyone.  I stopped noticing it years ago.", "voice": None, "partial": ""},
+    {"id": "dm_check", "act": 7, "title": "was that you",
+     "tokens": ["dm", "dms", "messaged me", "message from you", "was that you", "was it you", "texted"], "need": 1,
+     "reply": "I've sent three.  Each one had a voice note on it, I record them on the train.  Anything without "
+              "one didn't come from me.  I can't see what it sends, sorry.", "voice": None, "partial": ""},
+    {"id": "theo_ok", "act": 7, "title": "are you ok",
+     "tokens": ["are you ok", "are you okay", "you alright", "how are you", "you doing ok", "you good"], "need": 1,
+     "reply": "I'm alright.  Honestly.  It's nice having people on it again.  I've had the map open most nights, "
+              "watching you lot walk about.  Sorry.  That sounds worse written down.", "voice": None, "partial": ""},
+    {"id": "how_stop", "act": 7, "title": "stopping it",
+     "tokens": ["how do we stop", "how do i stop", "how to stop", "shut it down", "switch it off", "how do we turn",
+                "how do i turn"], "need": 1,
+     "reply": "I'd rather you didn't.  Not yet.  It's better with people on it.\n\nIf you're set on it, I was "
+              "never the one who knew how.  Iona and Rowan sorted that between them and left me out of it.",
+     "voice": None, "partial": ""},
+    {"id": "iona_q", "act": 7, "title": "iona", "tokens": ["iona"], "need": 1,  # one token: a filed key (ends ":i_bell") must never outrank the key rule
+     "reply": "We stopped talking after she left.  That was me, not her.  I've sent you what I've got of hers.  "
+              "Most of it.", "voice": None, "partial": ""},
+    {"id": "lowpath_8", "act": 8, "title": "lowpath", "tokens": ["lowpath"], "need": 1,
+     "reply": "That one's on me.  I needed a name for the builds nobody owned and I took it off Rowan's map.  I "
+              "didn't make it walk.  I don't know what did that.", "voice": None, "partial": ""},
+    {"id": "bridge", "act": 8, "title": "the bridge", "tokens": ["bridge", "discordsrv", "relaunch", "discord"],
+     "need": 2,
+     "reply": "The bridge is mine.  It carries chat between Discord and the server, that's all.  If the chat side "
+              "falls over it starts it again.  I'll pull it myself when you're done.  Not before.",
+     "voice": None, "partial": ""},
 ]
 
 DESK_FILES = {  # exact filename -> (act it can be requested from, Theo's line, voice note)
     "moss_0518.ogg": (5, "Here's patchcord's.  Patch put it on Rowan's FTP.  I copied it off before I put the "
-                         "mirror up.  I haven't listened to it in years.  I don't think I'm going to now.", "T-05a"),
+                         "mirror up.  I haven't listened to it since.", "T-05a"),
 }
 
 # A ticket that matches nothing: Theo answers to what it mentions (a resident, a place, a file).
@@ -205,45 +239,75 @@ THEO_AFTER = {"text": "Kit came over.  We put the stick in his laptop.  He said 
 
 
 # Escalating hints by act (never the answer).
-HINTS = {
+HINTS = {  # Theo noticing something in his own files, first person, never an instruction
     1: ["Found another drive.  Not sure it helps.  There's a lot on the old site nobody ever linked to.",
-        "Old sites always said where not to look.  Search engines were told first.",
-        "Rowan's first forum post is the most Rowan thing I've ever read."],
-    2: ["If you're stuck in Mossfield, the residents left a lot of signs.  They wrote everything on signs back then.",
-        "Not everything in there is from 2011.  Some of it couldn't be.",
-        "The minecraft wiki keeps a history of when every block was added."],
-    3: ["Everyone was in a different time zone.  Patch was always ahead of us.  June too.",
-        "June's light still flashes like the one at home.",
-        "The block log doesn't lie.  It's the only thing in there that doesn't.",
-        "June's folder has a password.  She used the same one for everything.  So did everyone."],
-    4: ["If you think you know who's running this, just ask me.  I answer what's filed.",
-        "If it sounds like a person, check who said it first.",
-        "I'm not hard to find.  I'm on most of these pages if you look at how I type.",
-        "The auction paperwork has a lot number on it."],
-    5: ["Patch's password was a song.  The bass line, he always said.",
-        "Rowan wrote his floor in wool.  He used the wool numbers from the forum.",
-        "Rowan read the rules out loud for a reason.",
-        "Iona left hashes for everything.  If your answer hashes right, it's right.  Then it's not me you tell.  "
-        "It's the sign."],
-    6: ["Daylight saving.  Iona always got it right.",
-        "Signs back then fit fifteen letters a line.",
-        "Look at what a picture says about itself, not just what it shows."],
-    7: ["Don't believe anything that sounds like a support macro.",
-        "Iona thought in files, not places.",
-        "Counts in a chest can be letters if you count from the right place.",
-        "Iona's key isn't for me.  The panel still takes a key, if you can log in."],
+        "Had a look at the web box's access log.  Nobody's been on it in years except search crawlers, and every "
+        "one of them asks for the same little text file before anything else.  Every day.  Like it's going to "
+        "have changed.",
+        "Reread Rowan's first forum post last night.  It's the most Rowan thing I've ever read.  Told everyone "
+        "everything about himself in one go, he was like that."],
+    2: ["Walked round spawn for the first time in ages.  I'd forgotten how much of it is signs.  Nobody used the "
+        "forum for anything in-game, they just wrote it on a sign.",
+        "Something in there's been bugging me all day.  I played that version.  Some of what's in there wasn't in "
+        "the game yet, I'm nearly sure.",
+        "Had the Minecraft wiki open half the night.  Every block's page has a history at the bottom, which "
+        "version it turned up in.  I didn't know they kept that."],
+    3: ["Went through the forum timestamps.  Nobody posts at the same hour.  Patch was always hours ahead of the "
+        "rest of us, June a couple.  It never lined up.",
+        "Stood at June's for a bit.  The light on her tower still flashes.  She said once she'd timed it off a "
+        "real one near home.  She was proud of that.",
+        "I trust the block log more than anything else on there.  Iona had it write to disk before anything could "
+        "touch it.  If it says somebody put a block somewhere, they did.",
+        "June's folder on the old site still has a password on it.  I never knew it.  They all used one word for "
+        "everything back then, something that meant something to them."],
+    4: ["I keep starting replies and deleting them.  If you've worked out who keeps this up, say it here.  I "
+        "answer what's filed.",
+        "Half of what's on these pages, somebody said first somewhere else.  I keep finding my own phrases in "
+        "places I never wrote.",
+        "I'm not hard to find, honestly.  I type the way I always have.  Two spaces after a full stop.  Iona used "
+        "to take the mick.",
+        "Read the auction paperwork again.  It's all lot numbers and node names.  I'd forgotten I signed for two."],
+    5: ["Patch's password was a song.  He told me that once like it was clever.  The bass line, he said, not the "
+        "tune.",
+        "Went down to Rowan's cellar.  The floor's all wool, every colour.  He had a whole thread on the forum "
+        "about wool colours being numbers.  He loved that.",
+        "I remember Rowan reading the spawn rules out on Mumble.  The old ones, off the signs.  I always thought "
+        "he was taking the piss.",
+        "Iona left hashes for everything, in the checklist.  If something hashed right it was right, she said.  "
+        "She never trusted anyone to check her work.  Me least."],
+    6: ["I know you've been through the panel log.  If there's a line in there you want to ask me about, ask.  "
+        "I'll answer it.  I've been waiting for someone to.",
+        "Something's off with the times on the edited posts.  It's May.  Iona always got daylight saving right, it "
+        "was a thing with her.",
+        "Signs back then only fit fifteen letters a line.  Rowan used to fight with it.  Some of the signs in "
+        "there now don't.",
+        "That panel screenshot's off the old office PC.  Paint.NET kept a little copy of the whole picture inside "
+        "the file, even after you cropped it.  Found that out the hard way once."],
+    7: ["Something's been messaging people as me.  I can't see what it sends.  If it reads like one of my old "
+        "support macros, word for word, it isn't me.",
+        "Iona never wrote down where she put things.  She wrote the steps to get there, like a path to a file.  "
+        "Drove me mad.",
+        "Iona used to hide config in chests on the test server.  Item counts.  She said a stack holds more than "
+        "people think.  I never asked what she meant.",
+        "Iona's key was never mine.  The panel console used to ask for one, I remember the box.  I never had "
+        "anything to type in it."],
     8: ["It said something in chat last night I've only ever seen in one email.  Not a log.  If you've heard it "
         "too, ask me where it got it.",
-        "It ends a replay when they log off or sleep.  Iona said that once.",
-        "cairn always closed up the same way.",
-        "lowpath walks every night and never gets home."],
-    9: ["Fill in the brief.  I just need it to be real.",
-        "Rowan never trusted me with anything.  If he left something, he wrote it for them, not me.",
-        "Iona hashed everything.  Even the backups."],
-    10: ["The console's in the annex.  Where Iona wrote its name.",
-         "Three things.  The sign, the sessions, the key.",
-         "Wax the sign.",
-         "I'll cut the bridge when you've done your bit."],
+        "Iona said once a replay only ends when the player does.  Logs off, or goes to bed.  Otherwise it waits.  "
+        "Forever, she said.  I thought she was joking.",
+        "cairn closed up the same way every night, in the same order.  He posted it once so Rowan would stop "
+        "asking.  He was annoyed.",
+        "Watched lowpath walk last night.  Same route as every night, and it never gets to the end.  There's "
+        "nothing at the end of it."],
+    9: ["I put a form up on the desk.  I want it written down properly before I do anything.  Dates, what "
+        "happened.  Not something I half remember.",
+        "Rowan never trusted me with anything.  If he left something for anyone, it wasn't for me.",
+        "Iona hashed the backups too.  There's a list somewhere.  If a file doesn't match, it isn't the one it "
+        "says it is."],
+    10: ["Iona never trusted a website to turn anything off.  She said you finish it standing in the room with it.",
+         "Iona's stop was always three things.  She wouldn't budge on it.  I used to argue it was two.",
+         "I keep thinking about the signs I waxed.  It never touched one of them.  Not once, in all those years.",
+         "I'll cut the Discord bridge when you're done in there.  I don't want it talking to anyone after."],
 }
 
 # ---------------------------------------------------------------------------
@@ -296,14 +360,14 @@ MORROW_DMS = [
 ]
 MORROW_QUOTE_TEMPLATE = "{other} said: {line}"
 # Each real Theo DM carries a word nothing in Morrow's corpus has, and that players won't type in
-# game chat either (Morrow ingests their chat from Act 7): Metra, radiator, cardigan.
-THEO_TELL_WORDS = ["metra", "radiator", "cardigan"]
+# game chat either (Morrow ingests their chat from Act 7): Metra, Ogilvie, cereal.
+THEO_TELL_WORDS = ["metra", "ogilvie", "cereal"]
 THEO_DMS = [
     {"text": "it's me.  it's actually me.  I'm on the Metra home.  Stay a bit.", "voice": "T-07a"},
     {"text": "If it's word for word one of my old macros, that's it, not me.  I still say no worries.  I know.  "
-             "Ignore the typos, the radiator is clanking.", "voice": "T-07b"},
+             "Sorry, I'm at Ogilvie and the train's late.", "voice": "T-07b"},
     {"text": "It's better with you there.  It's learning.  I think that's a good thing.  Ignore me, it's late "
-             "and I'm in my cardigan.", "voice": "T-07c"},
+             "and I'm eating cereal out of the box.", "voice": "T-07c"},
 ]
 PER_PLAYER_SIGNS = [  # lowpath's place, Act 7: each player sees a different front; one line is shared
     ["if anyone comes back", "the bed is gone", "", ""],
@@ -323,32 +387,32 @@ def backdated_join(player: str) -> str:
 
 BACKDATED_POSTS = [  # attributed to each player, dated 2011 (shown with CST in May: the tell)
     ("2011-05-17 21:10", "logged in for a minute. weird seeing it again. the storehouse was tidy"),
-    ("2011-05-18 04:12", "someone comes home. no worries at all"),
+    ("2011-05-18 04:12", "everyone's back on. no worries at all"),
 ]
 
-# rook.txt sits in the clean April zip (files.py). He wrote it in September 2011 for whoever read the
+# rook.txt sits beside the clean April zip in /notrecovery/ (files.py). He wrote it in September 2011 for whoever read the
 # ladder room. The case brief accepts its last line in place of the clean copy's MD5.
 ROOK_TXT = ("if you're reading this you read the ladder room, so you're one of us. not theo.\n"
-            "this is mossfield on the 20th of april. before any of it. the holes are ours.\n"
-            "whatever's running it now, dont let it finish anything.\n"
+            "this is mossfield on the 20th of april, before any of it. junes roof isnt on and the rail stops in the grass. thats how we left it.\n"
+            "whatever's running it now, dont let it finish our stuff.\n"
             "-rook\n")
-ROOK_TXT_PHRASE = "dont let it finish anything"
+ROOK_TXT_PHRASE = "dont let it finish our stuff"
 
 CASE_BRIEF_FIELDS = [
     {"id": "restart", "label": "When did you turn it back on?", "accept": ["2011-05-18 06:44:10", "06:44:10", "6:44:10"]},
     {"id": "lowpath", "label": "When was lowpath made?", "accept": ["2016-08-03"]},
     {"id": "kit", "label": "When did Kit write to you?", "accept": ["2019-03-02"]},
-    {"id": "clean", "label": "The clean copy: its MD5, or the line Rowan left in it",
-     "accept": ["@clean_md5", ROOK_TXT_PHRASE]},
+    {"id": "clean", "label": "The clean copy: the line Rowan left with it", "accept": [ROOK_TXT_PHRASE]},
     {"id": "joined", "label": "When does the forum say we joined?", "accept": ["@backdated"]},
 ]
 
 # Theo's answer to the case brief (the site's desk and the Discord mirror both read these).
 BRIEF_REPLIES = {
-    "accepted": ("Okay.  Okay.  I've read all of it.  I knew all of this.  I'd just never seen it in one place.  "
-                 "You're right.  Let's do it properly, the way Rowan wanted.\n\nI'm wiping the drives after.  I've "
-                 "got one USB stick in the drawer.  I'll keep one thing.  Just one, or I'll end up doing this again.  "
-                 "You pick.\n\nThe panel will let you book a maintenance window now.", "T-09a"),
+    "accepted": ("Okay.  I've read all of it.  I knew all of this.  I'd just never seen it in one place.\n\n"
+                 "Rowan didn't want me told.  I know.  It's in Iona's log, the day I cut out before I sent it.  You "
+                 "told me anyway.\n\nSo here's what that costs.  If you'd done it without me there'd be nothing left "
+                 "at all.  Now there's one USB stick in my drawer and I'm keeping one thing on it.  Just one, or I'll "
+                 "end up doing this again.  You pick.\n\nThe panel will let you book a maintenance window now.", "T-09a"),
     "missing": ("I hear you.  I just need it to be real.  Show me.", "T-09b"),
 }
 
@@ -387,7 +451,7 @@ USB_VOTE = {
     "ack": "Got it: {label}.  Press another one to change it.",
     "residents_only": "Only Mossfield residents get a say on this one, sorry.",
     "closed": "It's done.  The stick's in the drawer.",
-    "undecided": "The group hasn't decided.  Ask in #general.",
+    "undecided": "Nobody's agreed yet.",
 }
 
 # The skip line quotes a resident: whoever answered Theo's ask in Mossfield chat, else finch's own

@@ -55,26 +55,32 @@ public final class ChatListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // the operator looking round is not a resident (same rule as the act triggers): no backdated profile, no vote
-        if (event.getPlayer().isOp() && !plugin.getConfig().getBoolean("auto_advance_count_ops", false)) return;
-        roster.join(event.getPlayer().getName());
+        if (roster.resident(plugin, event.getPlayer())) roster.join(event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void onQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        roster.seen(event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
-        String name = event.getPlayer().getName();
+        org.bukkit.entity.Player p = event.getPlayer();
         String text = PlainTextComponentSerializer.plainText().serialize(event.message());
-        Bukkit.getScheduler().runTask(plugin, () -> handle(name, text));
+        Bukkit.getScheduler().runTask(plugin, () -> handle(p.getName(), text, roster.resident(plugin, p)));
     }
 
-    private void handle(String name, String text) {
+    private void handle(String name, String text, boolean resident) {
         if (state.done("stopped")) return;  // silent after shutdown
         JsonObject line = new JsonObject();
         line.addProperty("name", name);
         line.addProperty("text", text);
         journal.feed("chat", line);  // relayed to #bridge by the Discord bot
         loadKit();
-        roster.said(name, text);
-        canon.corpus.add(text, name + ", in Mossfield", true, System.currentTimeMillis());
+        if (resident) {  // an operator's out-of-fiction chat never becomes Morrow's words or the stop log's reason
+            roster.said(name, text);
+            canon.corpus.add(text, name + ", in Mossfield", true, System.currentTimeMillis());
+        }
         int act = state.act();
         String reply;
         if (text.trim().equalsIgnoreCase("!status")) {

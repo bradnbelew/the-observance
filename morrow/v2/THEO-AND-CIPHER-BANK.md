@@ -3,6 +3,8 @@
 Companion to `morrow/v2/STORYLINE.md`. Date: 2026-10-12. Status: **approved and built.** Where this
 document and `morrow/canon/` disagree on an exact value, the canon wins (`morrow/v2/README.md`).
 
+> **2026-11-05:** the timed hint ladder below (24 / 72 / 120 hours) was replaced: hints are released only by the operator from `/backstage` or `/mrrw hint N`. Theo's timed desk drops (`later.DESK_DROPS`) still run on their own.
+
 There are two parts:
 
 1. **Part 1:** Theo becomes a character you prerecord once. He still reacts to what players do, and you never have to be online.

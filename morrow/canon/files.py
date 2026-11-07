@@ -48,11 +48,6 @@ def backup_zip(contaminated: bool, players: list[str] | None = None) -> bytes:
             add("players/%s.dat.txt" % r.handle, r.handle + "\n")
         add("region/README.txt", "region/ not included in this export (over the 50 MB ticket attachment limit).\n"
             "full copy: CHI-07:/srv/backup/mossfield/2011-04-20/region (6 files, r.-2.-1 .. r.0.0)\n")
-        if not contaminated:
-            # Rookery dropped this in his copy in September 2011, for whoever read the ladder room.
-            info = zipfile.ZipInfo("Mossfield/rook.txt", date_time=(2011, 9, 4, 1, 4, 18))
-            info.external_attr = 0o644 << 16
-            z.writestr(info, later.ROOK_TXT)
         if contaminated:
             add("players/lowpath.dat.txt", "lowpath\n")
             for p in players or []:
@@ -250,6 +245,8 @@ def build(players: list[str] | None = None) -> dict[str, str]:
         "panel_ok.jpg": panel_jpg(),
         "notrecovery-mossfield_2011-04-20.zip": clean,
         "recovery-mossfield_2011-04-20.zip": backup_zip(True, players),
+        # Rook left it BESIDE the zip in September 2011: inside, it would break the MD5 Iona logged in June
+        "rook.txt": later.ROOK_TXT.encode(),
     }
     files.update(text_files())
     hashes = {}

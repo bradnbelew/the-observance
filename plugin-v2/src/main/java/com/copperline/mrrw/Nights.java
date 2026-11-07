@@ -52,6 +52,7 @@ public final class Nights implements Listener {
     private final Journal journal;
     private final PathRecorder recorder;
     private final ModernLayer modern;
+    private final PlayerRoster roster;
     private final Map<UUID, List<String>> routine = new HashMap<>();
     private final List<Location> playerDoors = new ArrayList<>();
     private long lastSoundReplay;
@@ -79,25 +80,27 @@ public final class Nights implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent e) {
-        if (silent() || state.act() < 5 || e.getSide() == Side.BACK) return;  // only the front counts (it faces spawn)
+        if (silent() || state.act() < 2 || e.getSide() == Side.BACK) return;  // only the front counts (it faces spawn)
         int[] a = canon.anchor("maint_sign");
         Block b = e.getBlock();
         if (b.getX() != a[0] || b.getY() != a[1] || b.getZ() != a[2]) return;
         String line0 = e.line(0) == null ? "" : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(e.line(0)).trim().toUpperCase();
         if (!line0.equals(canon.string("maint_sign_text"))) return;
         boolean first = !state.done("act5.maint_on");
-        state.markDone("act5.maint_on");
+        // only an ON written in Act 5 is the hand-in: one typed for fun in Act 2-4 is just reverted at dawn
+        if (state.act() == 5) state.markDone("act5.maint_on");
         JsonObject d = new JsonObject();
         d.addProperty("by", e.getPlayer().getName());
         d.addProperty("act", state.act());
         d.addProperty("first", first);
         journal.write("morrow.maint_on", d);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        if (state.act() >= 5) Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!silent()) announce(engine("maint_on"));
         }, 20L * (20 + (b.hashCode() & 31)));
     }
 
-    public Nights(Plugin plugin, Canon canon, State state, Journal journal, PathRecorder recorder, ModernLayer modern) {
+    public Nights(Plugin plugin, Canon canon, State state, Journal journal, PathRecorder recorder, ModernLayer modern, PlayerRoster roster) {
+        this.roster = roster;
         this.plugin = plugin;
         this.canon = canon;
         this.state = state;
@@ -122,7 +125,8 @@ public final class Nights implements Listener {
             lastRegisterDay = day;
             presenceRegister(w);
         }
-        if (act >= 5 && time < 200) revertUnwaxedMaint(w);
+        if (act >= 2 && time < 200) revertUnwaxedMaint(w);
+        if (act == 8 && time >= 12500 && time < 13500) kitLineAtDusk(w, day);
         if (act >= 9) once("act9.meadow_redraw", () -> modern.meadow(w, new ArrayList<>(recorder.firstJoins().values())));
         if (act >= 9) once("act9.pots", () -> recorder.firstJoins().values().forEach(p ->
                 Corrections.placePot(w.getBlockAt((int) p[0] + 2, (int) p[1], (int) p[2] + 2), Canon.strings(canon.array("pot_for_players")), null)));
@@ -231,21 +235,50 @@ public final class Nights implements Listener {
         }
         done.add(what);
         if (done.size() == ROUTINE.size()) {
-            Block door = fixture(p.getWorld(), 2, 0, 0);
-            if (door.getBlockData() instanceof Openable o) {
-                o.setOpen(true);
-                door.setBlockData(o, false);
-                if (door.getRelative(0, 1, 0).getBlockData() instanceof Openable top) {
-                    top.setOpen(true);
-                    door.getRelative(0, 1, 0).setBlockData(top, false);
-                }
-            }
+            openListeningRoom(p.getWorld(), p.getName());
             p.sendMessage(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text("session cairn: resumed", NamedTextColor.GRAY)));
-            state.markDone("act8.listening_room_open");
-            JsonObject d = new JsonObject();
-            d.addProperty("by", p.getName());
-            journal.write("morrow.listening_room_open", d);
         }
+    }
+
+    /** cairn's room opens (his routine, or /mrrw handin cairn_room; also after /mrrw repair listening_room once it was open). */
+    public void openListeningRoom(World w, String by) {
+        Block door = fixture(w, 2, 0, 0);
+        if (door.getBlockData() instanceof Openable o) {
+            o.setOpen(true);
+            door.setBlockData(o, false);
+            if (door.getRelative(0, 1, 0).getBlockData() instanceof Openable top) {
+                top.setOpen(true);
+                door.getRelative(0, 1, 0).setBlockData(top, false);
+            }
+        }
+        state.markDone("act8.listening_room_open");
+        JsonObject d = new JsonObject();
+        d.addProperty("by", by);
+        journal.write("morrow.listening_room_open", d);
+    }
+
+    /**
+     * /mrrw handin maint: Act 5, as if the players set MAINT ON and Morrow reverted it at dawn (the act
+     * moves to 6); Act 10, the sign reads MAINT ON and is waxed (the stop's first condition).
+     */
+    public String operatorMaint(World w) {
+        int act = state.act();
+        int[] a = canon.anchor("maint_sign");
+        if (act == 5) {
+            state.markDone("act5.maint_on");
+            state.markDone("act5.maint_reverted");
+            if (onMaintReverted != null) onMaintReverted.run();
+            return "act 5 MAINT hand-in applied (act now " + state.act() + ")";
+        }
+        if (act >= 10) {
+            if (!(w.getBlockAt(a[0], a[1], a[2]).getState() instanceof Sign s)) return "no sign at the MAINT spot: /mrrw repair maint_sign first";
+            s.getSide(Side.FRONT).line(0, Component.text(canon.string("maint_sign_text")));
+            for (int i = 1; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.empty());
+            s.setWaxed(true);
+            s.update(true, false);
+            return "MAINT sign set to " + canon.string("maint_sign_text") + " and waxed";
+        }
+        return "the MAINT hand-in is Act 5 (and Act 10's ready); this is act " + act;
     }
 
     @EventHandler
@@ -319,12 +352,10 @@ public final class Nights implements Listener {
         int[] a = canon.anchor("maint_sign");
         if (!(w.getBlockAt(a[0], a[1], a[2]).getState() instanceof Sign s)) return;
         String now = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(s.getSide(Side.FRONT).line(0));
-        // Act 5's hand-in: a sign reading ON at dawn counts even if it was set before Act 5 opened
-        boolean handIn = state.act() == 5 && !state.done("act5.maint_reverted");
-        if (handIn && now.trim().toUpperCase().equals(canon.string("maint_sign_text"))) state.markDone("act5.maint_on");
-        handIn = handIn && state.done("act5.maint_on");
-        // waxed = theirs to keep (Act 10); except the hand-in, which Morrow undoes whatever they did to it
-        if (s.isWaxed() && !handIn) return;
+        // Act 5's hand-in: an ON written during Act 5 (act5.maint_on), whatever they did to it since (waxed, set back to OFF)
+        boolean handIn = state.act() == 5 && !state.done("act5.maint_reverted") && state.done("act5.maint_on");
+        // waxed = theirs to keep from Act 6 (Act 10 needs it); before that, and for the hand-in, Morrow undoes it anyway
+        if (s.isWaxed() && !handIn && state.act() >= 6) return;
         if (!now.equals("MAINT OFF")) {
             if (s.isWaxed()) s.setWaxed(false);
             s.getSide(Side.FRONT).line(0, Component.text("MAINT OFF"));
@@ -340,6 +371,32 @@ public final class Nights implements Listener {
             state.markDone("act5.maint_reverted");
             if (onMaintReverted != null) onMaintReverted.run();
         }
+    }
+
+    // ---- Act 8: Kit's line, said once at each of the act's first two dusks -----------------------
+
+    /**
+     * Theo fed Morrow his inbox; a quiet group must still hear Kit's line (hint 8.1 and the 8 -> 9 gate
+     * depend on it). At Act 8's first two dusks with a resident online, Morrow says it, its usual way.
+     * Persisted (flags + the day), so a restart never repeats one or says both at one dusk.
+     */
+    private void kitLineAtDusk(World w, long day) {
+        if (state.done("act8.kit_line.2") || day + 1 == state.stamp("kit_line_day")) return;
+        if (w.getPlayers().stream().noneMatch(p -> roster.resident(plugin, p))) return;  // next dusk with someone on
+        String flag = state.done("act8.kit_line.1") ? "act8.kit_line.2" : "act8.kit_line.1";
+        state.setStamp("kit_line_day", day + 1);
+        state.markDone(flag);
+        String line = canon.string("kit_line");
+        JsonObject d = new JsonObject();
+        d.addProperty("heard", "(dusk)");
+        d.addProperty("said", line);
+        d.addProperty("obeys_corpus_law", true);
+        JsonArray src = new JsonArray();
+        src.add(Corpus.normalise(line) + "  <-  theo's inbox, 2019-03-02");
+        d.add("sources", src);
+        d.addProperty("dusk", flag);
+        journal.write("morrow.chat", d);
+        announce(line);
     }
 
     // ---- Act 9: the recovery compass points to where you first came home ----------------------

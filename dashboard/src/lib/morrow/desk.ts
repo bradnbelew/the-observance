@@ -36,7 +36,8 @@ const extras = (b: Bundle) => b.desk as Bundle["desk"] & DeskExtras;
 const HOLD_TEXT = "Give me a bit.  I'll look into that.";
 const ruleHash = (id: string) => createHash("md5").update(id).digest("hex").slice(0, 12);
 
-const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ");
+// phones type curly quotes: "don’t tell theo" must match a "don't" token
+const norm = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ");
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** A filename is asked for by its full name or its stem (moss_0518 or moss_0518.ogg). */
@@ -105,7 +106,7 @@ const RESIDENTS = ["rookery", "cairn", "finchline", "juni_lantern", "patchcord",
 function noneRef(b: Bundle, text: string): string | undefined {
   const who = RESIDENTS.find((r) => new RegExp(`(^|[^a-z])${r}($|[^a-z])`).test(text));
   if (who) return `person:${who}`;
-  if (/\.[a-z0-9]{2,4}\b|\bfile|\bfolder|\bzip\b|\blog\b|\brecording/.test(text)) return "file";
+  if (/\.[a-z0-9]{2,4}\b|\bfile|\bfolder|\bzip\b|(?<!block )\blog\b|\brecording/.test(text)) return "file";
   if ((b.desk.place_words ?? []).some((p) => text.includes(p))) return "place";
   return undefined;
 }
@@ -148,7 +149,7 @@ export function replyFor(b: Bundle, t: Ticket): Reply | null {
   }
   if (t.kind === "booking") {
     const ask = b.theo_ask ? `\n\n${b.theo_ask.text}` : "";
-    return { text: `Okay.  Saturday then.  I'll be on.  I'll cut the bridge when you've done your bit.${ask}`, voice: "T-10-booked" };
+    return { text: `Okay.  Saturday then.  I'll be on.  I'll take my watchdog out of cron and switch the panel restart off before you start.  I'll cut the bridge when you've done your bit.${ask}`, voice: "T-10-booked" };
   }
   if (t.kind === "choice" && t.ref && b.usb_choices?.[t.ref]) {
     const c = b.usb_choices[t.ref];
@@ -202,7 +203,11 @@ export function deskEvent(b: Bundle, t: Ticket): Omit<DeskEvent, "kind"> | null 
 }
 
 /** Theo's unprompted drops (by time since the act started) and the hints the operator has released. */
-export function deskNotes(b: Bundle, clock: { hours: number; stoppedAt?: Date | null; hintFloor?: number }): { at: string; text: string; file: string | null; voice?: string }[] {
+export function deskNotes(
+  b: Bundle,
+  clock: { hours: number; stoppedAt?: Date | null; hintFloor?: number; hintsReleased?: Record<number, number>; hintTimes?: Record<number, number[]> },
+  earlierHints: Record<number, string[]> = {},
+): { at: string; text: string; file: string | null; voice?: string }[] {
   const h = clock.hours;
   const notes: { at: string; text: string; file: string | null; voice?: string }[] = [
     { at: "2026-08-02", text: "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the desk is open.  I check it in the evenings.  No worries at all.", file: null, voice: "T-01" },
@@ -220,8 +225,18 @@ export function deskNotes(b: Bundle, clock: { hours: number; stoppedAt?: Date | 
   if (b.theo_after && clock.stoppedAt && Date.now() >= clock.stoppedAt.getTime() + b.theo_after.after_stop_hours * 3_600_000) {
     notes.push({ at: "after", text: b.theo_after.text, file: null, voice: b.theo_after.voice });
   }
-  // hints never release by themselves: the operator shows the first N (/op page or /mrrw hint N)
-  b.desk.hints.slice(0, clock.hintFloor ?? 0).forEach((hint) => notes.push({ at: "", text: hint, file: null }));
+  // hints never release by themselves: the operator shows the first N (/backstage or /mrrw hint N). Released
+  // hints stay on the desk after the act moves on, each dated the evening it went out (when the plugin says)
+  const released = clock.hintsReleased ?? {};
+  const dated = (act: number, i: number) => {
+    const times = clock.hintTimes?.[act] ?? [];
+    const t = times[i] ?? times[times.length - 1];
+    return t ? day(t) : "";
+  };
+  for (const [act, hints] of Object.entries(earlierHints).map(([a, h]) => [Number(a), h] as const).sort((x, y) => x[0] - y[0])) {
+    if (act < b.act) hints.slice(0, released[act] ?? 0).forEach((hint, i) => notes.push({ at: dated(act, i), text: hint, file: null }));
+  }
+  b.desk.hints.slice(0, released[b.act] ?? clock.hintFloor ?? 0).forEach((hint, i) => notes.push({ at: dated(b.act, i), text: hint, file: null }));
   return notes;
 }
 

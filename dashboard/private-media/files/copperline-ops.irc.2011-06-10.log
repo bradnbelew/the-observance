@@ -2,7 +2,7 @@
 08:47 -!- tvale [~theo@office7.copperline.local] has quit [Ping timeout: 240 seconds]
 21:40 < ibell> rook found a copy from the 20th. he'd pulled it over ftp to run overviewer on his laptop and forgot
 21:41 < dkessler> so there IS a backup
-21:42 < ibell> it's clean. md5's in the checklist. it goes in his ftp outside the recovery folder and nobody tells theo
+21:42 < ibell> it's clean. he sent me the md5, it's in the checklist. it's somewhere in his ftp and nobody tells theo
 21:43 < dkessler> why not restore it
 21:44 < ibell> no point restoring it while that thing's running. it'd just "fix" it
 --- Log closed Fri Aug 12 17:26:40 2011

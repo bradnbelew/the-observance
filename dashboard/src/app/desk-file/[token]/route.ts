@@ -1,3 +1,4 @@
+import { notFoundPage } from "@/lib/morrow/http";
 import { unseal } from "@/lib/morrow/campaign";
 import { resolveFile, serveFile, typeOf } from "@/lib/morrow/serve";
 
@@ -7,7 +8,7 @@ export const runtime = "nodejs";
 /** Files Theo hands over. Only reachable through a link the desk signed. Streamed (recordings can be large). */
 export async function GET(request: Request, { params }: { params: Promise<{ token: string }> }) {
   const p = unseal<{ f: string }>((await params).token);
-  if (!p || !/^[\w.-]+$/.test(p.f)) return new Response("Not Found", { status: 404 });
+  if (!p || !/^[\w.-]+$/.test(p.f)) return notFoundPage(request);
   let name = p.f;
   let file = await resolveFile(["files"], name);
   if (!file && /\.(ogg|wav|mp3)$/i.test(name)) {  // a recording not made yet: patch's typed notes on it stand in
@@ -22,5 +23,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ toke
     "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${name}"`,
     "Cache-Control": "private, max-age=3600",
   });
-  return res || new Response("Not Found", { status: 404 });
+  return res || notFoundPage(request);
 }

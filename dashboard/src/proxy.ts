@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import folders from "@/lib/canon/folders.json";
 import { bridgeState, effectiveAct, postHandIn } from "@/lib/morrow/bridge";
+import { DEV } from "@/lib/morrow/signing";
+import { apachePage, authRequired } from "@/lib/morrow/http";
 
 /**
  * Residents' password-protected web folders (Apache .htaccess style, Basic auth).
  * Username is the resident's handle; the password is the one they reused everywhere.
  * A folder that isn't open yet in the campaign answers 404, as if it never existed.
  */
-type Folder = { password: string; act: number; paths: string[] };
+/** realm: the folder's AuthName, shown in the browser's password box (optional; else the handle). */
+type Folder = { password: string; act: number; paths: string[]; realm?: string };
 
 /** Same rule as campaign.ts currentAct(): the dev cookie (testing), else max(MORROW_ACT, the plugin's act). */
 async function act(request: NextRequest): Promise<number> {
-  if (process.env.MORROW_DEV === "1") {
+  if (DEV) {
     const dev = Number(request.cookies.get("morrow_dev_act")?.value);
     if (dev >= 1 && dev <= 10) return dev;
   }
@@ -53,20 +56,23 @@ function failuresFor(ip: string, now = Date.now()): { n: number; since: number }
   return fresh;
 }
 
-function forbidden(): NextResponse {
-  return new NextResponse(
-    "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"><html><head><title>403 Forbidden</title></head>" +
-      "<body><h1>Forbidden</h1><p>You don't have permission to access this folder on this server. Too many failed logins; try again later.</p>" +
-      "<hr><address>Apache/2.2.16 (Debian) Server at copperlinehosting.com Port 80</address></body></html>",
-    { status: 403, headers: { "Content-Type": "text/html; charset=iso-8859-1", "Cache-Control": "no-store" } },
-  );
-}
+const forbidden = () =>
+  apachePage(403, "Forbidden", "You don't have permission to access this folder on this server. Too many failed logins; try again later.", { "Cache-Control": "no-store" });
 
 export async function proxy(request: NextRequest) {
-  const path = decodeURIComponent(request.nextUrl.pathname);
+  let path = request.nextUrl.pathname;
+  try {
+    path = decodeURIComponent(path);
+  } catch {
+    /* a malformed escape (/%E0%A4%A) used to throw here: a raw 500 for the whole site. Match it as typed. */
+  }
+  // the testing switcher doesn't exist on the real site: the ordinary 404 page, like any other unknown URL
+  if (!DEV && path === "/dev-act") return NextResponse.rewrite(new URL("/dev-act-not-here", request.url));
   for (const [user, folder] of Object.entries(folders as Record<string, Folder>)) {
     if (!folder.paths.some((p) => path === p || path.startsWith(`${p}/`))) continue;
-    if ((await act(request)) < folder.act) return new NextResponse("Not Found", { status: 404 });
+    if ((await act(request)) < folder.act) {
+      return apachePage(404, "Not Found", `The requested URL ${path.replace(/[&<>"']/g, "")} was not found on this server.`);
+    }
     const header = request.headers.get("authorization") ?? "";
     if (header.startsWith("Basic ")) {
       const ip = clientIp(request);
@@ -85,12 +91,7 @@ export async function proxy(request: NextRequest) {
       if (tally.n >= BLOCK_AFTER) return forbidden();  // five friends behind one NAT share this counter: only failures count
       if (tally.n >= SLOW_AFTER) await new Promise((r) => setTimeout(r, Math.min(tally.n - SLOW_AFTER + 1, 5) * 1000));
     }
-    return new NextResponse(
-      "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"><html><head><title>401 Authorization Required</title></head>" +
-        "<body><h1>Authorization Required</h1><p>This server could not verify that you are authorized to access the document requested.</p>" +
-        "<hr><address>Apache/2.2.16 (Debian) Server at copperlinehosting.com Port 80</address></body></html>",
-      { status: 401, headers: { "WWW-Authenticate": `Basic realm="${user}"`, "Content-Type": "text/html; charset=iso-8859-1", "Cache-Control": "no-store" } },
-    );
+    return authRequired(folder.realm ?? user);
   }
   return NextResponse.next();
 }

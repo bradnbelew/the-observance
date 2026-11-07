@@ -25,11 +25,15 @@ public final class PathRecorder implements Listener {
     private static final int CAP = 240;
     private final File file;
     private final State state;
+    private final Plugin plugin;
+    private final PlayerRoster roster;
     private final Map<String, List<double[]>> paths = new LinkedHashMap<>();
     private final Map<String, double[]> firstJoin = new LinkedHashMap<>();
 
-    public PathRecorder(Plugin plugin, State state) {
+    public PathRecorder(Plugin plugin, State state, PlayerRoster roster) {
         this.state = state;
+        this.plugin = plugin;
+        this.roster = roster;
         this.file = new File(plugin.getDataFolder(), "paths.yml");
         if (file.exists()) {
             YamlConfiguration y = YamlConfiguration.loadConfiguration(file);
@@ -53,6 +57,7 @@ public final class PathRecorder implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        if (!roster.resident(plugin, e.getPlayer())) return;  // the operator's spot is not a home: no figure, pot or profile for it
         Location l = e.getPlayer().getLocation();
         if (firstJoin.putIfAbsent(e.getPlayer().getName(), new double[] {l.getX(), l.getY(), l.getZ()}) == null) save();
     }
@@ -62,6 +67,7 @@ public final class PathRecorder implements Listener {
         if (act < 2 || act > 4) return;
         boolean changed = false;
         for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!roster.resident(plugin, p)) continue;
             List<double[]> pts = paths.computeIfAbsent(p.getName(), k -> new ArrayList<>());
             if (pts.size() >= CAP) continue;
             Location l = p.getLocation();
@@ -84,7 +90,7 @@ public final class PathRecorder implements Listener {
         paths.forEach((k, v) -> y.set("paths." + k, v.stream().map(a -> List.of(a[0], a[1], a[2])).toList()));
         firstJoin.forEach((k, v) -> y.set("first_join." + k, List.of(v[0], v[1], v[2])));
         try {
-            y.save(file);
+            State.saveAtomic(y, file);
         } catch (IOException ex) {
             throw new IllegalStateException(ex);
         }

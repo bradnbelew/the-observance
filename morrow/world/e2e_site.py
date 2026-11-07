@@ -262,6 +262,7 @@ class FakeBridge:
     bad: list[str] = []      # requests whose signature didn't verify
     gets = 0
     refuse = False           # answer 401 to everything (a wrong secret)
+    journal: list[dict] = [{"at": "2026-11-04T23:41:00Z", "kind": "act.advance", "detail": {"act": 4, "reason": "e2e-journal-marker"}}]
 
 
 class BridgeHandler(BaseHTTPRequestHandler):
@@ -290,6 +291,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
         if self.path == "/state":
             FakeBridge.gets += 1
             return self._send(200, FakeBridge.state)
+        if self.path.startswith("/journal?n="):
+            n = int(self.path.split("=", 1)[1])
+            return self._send(200, {"entries": FakeBridge.journal[-n:]})
         self._send(404, {"error": "not found"})
 
     def do_POST(self) -> None:  # noqa: N802
@@ -299,6 +303,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
         if self.path == "/event":
             ev = json.loads(body)
             FakeBridge.events.append(ev)
+            if ev.get("kind") == "op":  # the operator's control room: any /mrrw command, answered with its output
+                FakeBridge.journal.append({"at": "2026-11-05T01:00:00Z", "kind": "op", "detail": {"cmd": ev.get("cmd")}})
+                return self._send(200, {"ok": True, "output": f"fake mrrw: ran {ev.get('cmd')}"})
             if ev.get("kind") == "hint":  # the plugin clamps to 0-9 and answers with the new count
                 FakeBridge.state["hint_floor"] = max(0, min(int(ev["n"]), 9))
                 return self._send(200, {"ok": True, "act": FakeBridge.state["act"], "hint_floor": FakeBridge.state["hint_floor"]})
@@ -431,14 +438,40 @@ def bridge_checks() -> None:
     check(hint(4, 0) in desk_page and hint(4, 1) not in desk_page, "after the release the desk shows hint 1 only")
     set_bridge(hint_floor=0)
 
+    print("bridge: the operator's control room")
+    same = {**auth, "Sec-Fetch-Site": "same-origin"}
+    status, _, raw = get("/backstage", headers=auth, via=v)
+    room = flat(text(raw))
+    check(status == 200 and "Act 4" in room and "Tester" in room and "e2e-journal-marker" in room and "fake mrrw: ran desk" in room,
+          "/backstage shows the plugin's act, the residents, the journal and the desk hand-ins (op desk)")
+    check("MORROW_ACT=1" in room and "follows the plugin" in room, "/backstage shows the site act floor (MORROW_ACT vs the plugin)")
+    ops = lambda: [e.get("cmd") for e in FakeBridge.events if e.get("kind") == "op"]
+    status, _, raw = get("/backstage", {"cmd": "status"}, headers=same, via=v)
+    check(status == 200 and "status" in ops() and "fake mrrw: ran status" in flat(text(raw)),
+          "a command button runs kind=op and shows the plugin's output")
+    get("/backstage", {"op": "act", "arg": "5", "arg2": "", "sure": ""}, headers=same, via=v)
+    check("act 5" not in ops(), "a destructive command (act) without the confirmation is not sent")
+    get("/backstage", {"op": "act", "arg": "5", "arg2": "", "sure": "1"}, headers=same, via=v)
+    check("act 5" in ops(), "confirmed, the act command reaches the plugin as 'act 5'")
+    check(get("/backstage", {"cmd": "status"}, headers=auth, via=v)[0] == 403, "an op POST without Sec-Fetch-Site same-origin is refused")
+    FakeBridge.events.clear()
+    get("/backstage", {"repost": "june_folder", "sure": "1"}, headers=same, via=v)
+    check(event("june_folder") is not None, "re-post a hand-in sends the signed desk event again")
+    if later.HINTS.get(3):
+        set_bridge(act=4, hints_released={"3": 1}, hints_released_at={"3": [1762300800000]})  # 2025-11-04 evening, Chicago
+        desk_page = page("/support/index.php")
+        check(hint(3, 0) in desk_page, "a hint released in Act 3 stays on the desk in Act 4")
+        check("2025-11-04" in desk_page, "the earlier act's hint is dated by its release time")
+        set_bridge(hints_released={}, hints_released_at={})
+
     print("bridge: Act 10 console takes the group's USB winner only")
     set_bridge(act=10, act_started=ago(1), players=3)
     get("/tcadmin/legacy/login", {"u": "rookery", "p": TEMP_PASSWORD}, via=v)
     raw_panel = text(get("/tcadmin/legacy", via=v)[2])
     panel = flat(raw_panel)
     undecided = later.USB_VOTE["undecided"].replace("  ", " ")
-    check("decided by the group" in panel and undecided in panel and 'name="choice"' not in raw_panel,
-          "no winner yet: the console shows the vote and 'The group hasn't decided'")
+    check("residents vote" in panel and undecided in panel and 'name="choice"' not in raw_panel,
+          "no winner yet: the console shows the vote and 'Nobody's agreed yet'")
     form = {"command": ciphers.HALT_COMMAND, "key": ciphers.IONA_TOKEN, "choice": "clean"}
     out = flat(text(get("/tcadmin/legacy/console", form, via=v)[2]))
     check(undecided in out and not re.search(r"[CRW]-[0-9A-F]{4}-[0-9A-F]{4}", out), "no winner yet: the console refuses the stop")
@@ -449,6 +482,7 @@ def bridge_checks() -> None:
     status, url, raw = get("/tcadmin/legacy/console", form, via=v)
     out = flat(text(raw))
     passed = undecided not in out and "choose what to retain" not in out
+    check("MORROW_" not in out, "the console never shows an env variable name to players")
     check(passed, "with a winner the console accepts the stop request (the form's 'clean' is ignored)")
     ticket = re.search(r'href="(/viewticket\.php[^"]+)"', text(raw))
     if ticket:  # the local Paper server was ready, so a code was issued: the stick holds the winner
@@ -484,7 +518,7 @@ def main() -> int:
     act(1)
     s, _, raw = get("/robots.txt")
     check("/forum-import/" in text(raw), "robots names the forum import")
-    check("/forum-import/index.php" in text(get("/community/index.php")[2]), "the Community page points at the forum import (same-night start)")
+    check("/forum-import/" not in text(get("/community/index.php")[2]), "the Community page doesn't link the forum import (robots.txt / page source is the way in)")
     stranger = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
     check(TEMP_PASSWORD not in text(get("/pwreset.php?step=done", via=stranger)[2]), "pwreset.php?step=done alone does not show the new password")
     get("/dopwreset.php", {"username": "rookery"}, via=stranger)
@@ -504,6 +538,37 @@ def main() -> int:
     thread = text(get(f"/forum-import/showthread.php?t={quoted}")[2])
     check("[QUOTE" not in thread and "Originally Posted by" in thread and "vb-quote" in thread,
           "forum [QUOTE=name] renders as a vBulletin quote box, not raw BBCode")
+
+    print("robustness: what a curious player can poke at")
+    check(get("/favicon.ico")[0] == 200, "/favicon.ico exists")
+    with opener.open(urllib.request.Request(BASE + "/support/index.php"), timeout=60) as r:
+        check(r.headers.get("X-Powered-By") is None, "no X-Powered-By: Next.js header")
+    status, _, raw = get("/submitticket.php")
+    check(status == 200 and "Open a request" in text(raw), "GET /submitticket.php lands on the desk, not a blank 405")
+    for path, dest in (("/dologin.php", "Client Area"), ("/dopwreset.php", "Lost Password"), ("/tcadmin/legacy/console", "TCAdmin")):
+        status, _, raw = get(path)
+        check(status == 200 and dest in text(raw), f"GET {path} goes back to its form page")
+    try:
+        req = urllib.request.Request(BASE + "/submitticket.php", data=b'{"x":1}', headers={"Content-Type": "application/json"})
+        with opener.open(req, timeout=60) as r:
+            code = r.status
+    except urllib.error.HTTPError as e:
+        code = e.code
+    check(code < 500, f"a JSON POST to the desk form doesn't 500 ({code})")
+    check(get("/%E0%A4%A")[0] < 500, "a malformed URL escape doesn't 500 the whole site")
+    status, _, raw = get("/desk-file/nope.nope")
+    check(status == 404 and b"Apache" in raw, "a bad file link answers Apache's 404, not a bare 'Not Found'")
+    status, _, raw = get("/viewticket.php?tid=1&c=a&c=b")
+    check(status == 200 and "Ticket not found" in text(raw), "a doubled ?c= shows 'Ticket not found', not an error page")
+    status, _, raw = get("/~mossfield/logblock?player=a&player=b")
+    check(status == 200, f"a doubled LogBlock parameter doesn't throw ({status})")
+    status, _, raw = get("/backstage")
+    check(status == 401 and b"Authorization Required" in raw and b"Apache" in raw, "/backstage asks for a password like any .htaccess folder")
+    _, url, _ = get("/submitticket.php", {"name": "e2e", "subject": "shared link", "message": "who placed the glass on the tower"})
+    other = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    status, _, raw = get(url[len(BASE):] if url.startswith(BASE) else url, via=other)
+    check(status == 200 and "shared link" in text(raw) and "Ticket not found" not in text(raw),
+          "a ticket link pasted into another browser opens there")
 
     act(2)
     home = text(get("/~mossfield/")[2])
@@ -526,6 +591,9 @@ def main() -> int:
         fetch(f"/media/june/{name}", f"june's {name}", [f"media/june/{name}"], headers=basic("juni_lantern", june))
     if linked:
         check_event("june_folder", None, "Act 3 June's folder opened with sambro (the hand-in)", reply_at=False)
+        time.sleep(1.0)
+        n = sum(1 for e in FakeBridge.events if e.get("ref") == "june_folder")
+        check(n == 1, f"opening June's folder (listing + every screenshot) posts the hand-in once, not per file ({n})")
     t = flat(desk("hm", "it'll be back by tomorrow, the glass on the tower is weird"))
     check("That's not anyone" not in t, "'tomorrow' + tower details doesn't count as finding Morrow's name")
     t = flat(desk("logblock", "a player called morrow placed glass on june's tower at 04:11:04"))
@@ -543,7 +611,7 @@ def main() -> int:
     t = desk("who runs this", "CHI-07 is the mossfield node and the invoices say waived")
     check("Keep it billable" in flat(t), "unmasking with waived gets the billable variant (T-04e)")
     t = desk("hm", "who bought lot 14?")
-    check("I'd want two" in t, "one token gets the nudge (two things)")
+    check("Not sure what you mean" in flat(t), "one token gets the unmask partial (not sure what you mean)")
     home = desk_home("Act 4 desk")
     check("copperline-asset-sale-2014.pdf" in home, "Act 4 drop: the auction PDF")
     link = re.search(r'href="(/desk-file/[^"]+)"[^>]*>copperline-asset-sale-2014.pdf', home)
@@ -588,14 +656,14 @@ def main() -> int:
         fetch(f"/media/tvale/{name}", f"~tvale/{name}", [f"files/{name}"])
     s, _, jpg = get("/media/tvale/panel_ok.jpg")
     check(s == 200 and jpg[:2] == b"\xff\xd8" and jpg.count(b"\xff\xd8") >= 2, "panel_ok.jpg carries a second (thumbnail) JPEG")
-    t = desk("the restart", "the panel log says 06:44:10 tvale started CHI-07/mrrw, mid-session")
+    t = desk("the restart", "the panel log says tvale started it at 06:44:10, mid-session")
     check("Kit was" in t and "asleep" in t, "restart evidence gets the confession (T-06a)")
     if linked:
         check_event("restart", "T-06a", "Act 6 restart")
     t = desk("the restart", "tvale started CHI-07/mrrw at 06:44:10")
     check("That's my login" in t, "restart filed with the node name gets the node variant (T-06d)")
     t = desk("the restart", "the panel says it was mid-session on CHI-07/mrrw")
-    check("Read the reason field" in t, "restart without the time gets the nudge")
+    check("what does it say" in t, "restart without the time gets the nudge")
     get("/tcadmin/legacy/console", {"command": "", "key": "nope"})
     _, _, raw = get("/tcadmin/legacy/console", {"command": "", "key": "nope"})
     check("key rejected" in text(raw), "Act 6 console: a wrong key is rejected")
@@ -605,7 +673,7 @@ def main() -> int:
     home = desk_home("Act 7 desk")
     check("copperline-ops.irc.log" in home, "Act 7 drop: Iona's IRC log")
     t = flat(desk("found this", f"it was in the chest: {ciphers.IONA_TOKEN}"))
-    check("That's not for me" in t and "Put it where she'd put it" in t, "filing Iona's key at the desk is refused (key, no advance)")
+    check("That's not for me" in t and "I don't want to know where it goes" in t, "filing Iona's key at the desk is refused (key, no advance)")
     _, _, raw = get("/tcadmin/legacy/console", {"command": "", "key": ciphers.IONA_TOKEN})
     check("key accepted. stop refused: maint=off sessions=1 (lowpath)" in text(raw), "Iona's key in the panel console is the Act 7 hand-in")
     if linked:
@@ -636,6 +704,11 @@ def main() -> int:
     check(md5 in checklist, "the clean backup's MD5 matches Iona's checklist")
     md5b = hashlib.md5(fetch("/ftp/recovery/mossfield_2011-04-20.zip", "FTP recovery/ zip")).hexdigest()
     check(md5b != md5, "the recovery-folder copy is contaminated (different MD5)")
+    nr = text(get("/ftp/notrecovery/")[2])
+    check("Jun 10  2011" in nr, "notrecovery/ lists the clean zip as Jun 10 2011 (Iona hashed it in June)")
+    if on_disk("files/rook.txt"):
+        check("rook.txt" in nr and "Sep 04  2011" in nr, "rook.txt sits beside the zip in notrecovery/, dated Sep 04 2011")
+        fetch("/ftp/notrecovery/rook.txt", "FTP notrecovery/rook.txt")
     rng = urllib.request.Request(BASE + "/ftp/recovery/mossfield_2011-04-20.zip", headers={"Range": "bytes=0-1"})
     try:
         with opener.open(rng, timeout=60) as r:
@@ -654,8 +727,11 @@ def main() -> int:
         hb = text(get(f"/media/tvalebox/{name}", headers=basic("tvale", "chi07-2010"))[2])
         check("down" in hb and "mrrw-01" in hb, f"Theo's box serves {name} (N3)")
     _, _, raw = get("/dobrief.php", {"name": "e2e", "restart": "2011-05-18 06:44:10", "lowpath": "2016-08-03",
-                                     "kit": "2019-03-02", "clean": md5, "joined": joined.group(1) if joined else ""})
+                                     "kit": "2019-03-02", "clean": "dont let it finish our stuff", "joined": joined.group(1) if joined else ""})
     check("one USB stick" in text(raw), "a correct case brief convinces Theo (T-09a)")
+    _, _, raw_md5 = get("/dobrief.php", {"name": "e2e", "restart": "06:44:10", "lowpath": "2016-08-03", "kit": "2019-03-02",
+                                         "clean": md5, "joined": "1999-01-01"})
+    check("Show me." in text(raw_md5), "the clean-copy field no longer takes the MD5 (only rook.txt's line)")
     fetch_links(text(raw), "case brief")
     if linked:
         check_event("brief", "T-09a", "Act 9 accepted brief")
@@ -669,7 +745,7 @@ def main() -> int:
     check(all(f'name="{f["id"]}"' in text(get("/support/brief.php")[2]) for f in later.CASE_BRIEF_FIELDS),
           "the brief form posts the canon field ids")
     _, _, raw = get("/dobrief.php", {"name": "e2e", "restart": "06:44:10", "lowpath": "2016-08-03", "kit": "2019-03-02",
-                                     "clean": "Don't let it finish anything.", "joined": "1999-01-01"})
+                                     "clean": "Dont let it finish our stuff.", "joined": "1999-01-01"})
     check("one USB stick" in text(raw), "the clean-copy field accepts rook.txt's line instead of the MD5")
     _, _, raw = get("/dobrief.php", {"name": "e2e", "restart": "06:44:10", "lowpath": "2016-08-03", "kit": "",
                                      "clean": "", "joined": ""})

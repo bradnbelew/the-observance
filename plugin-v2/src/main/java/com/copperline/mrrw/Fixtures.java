@@ -204,6 +204,12 @@ public final class Fixtures implements Listener {
         if (b.getType() == Material.NOTE_BLOCK && noteIndex(b) >= 0 && !operatorEditing(e.getPlayer())) {
             e.setUseInteractedBlock(Event.Result.DENY);
         }
+        // the Braille shelves (C10) are read by which slots hold books: taking or adding one rewrites "sorry kit"
+        if (b.getType() == Material.CHISELED_BOOKSHELF && state.done("install.reading_room") && !operatorEditing(e.getPlayer())) {
+            int[] r = canon.anchor("theo_reading_room");
+            int i = b.getX() - r[0];
+            if (b.getY() == r[1] && b.getZ() == r[2] && i >= 0 && i < canon.array("braille_shelves").size()) e.setUseInteractedBlock(Event.Result.DENY);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

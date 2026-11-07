@@ -38,6 +38,9 @@ import java.util.concurrent.TimeoutException;
  *   GET  /feed?after=N&max=M           the bot's relay: chat, [Recovery] lines, Theo's replies (after=-1: the end)
  *   GET  /lines                        the residents' own chat lines, which Morrow may quote in Act 7
  *   POST /usb  {"voter":id,"choice":c} one Act 10 vote (open from Act 10 until the stop)
+ *   POST /event {"kind":"op","cmd":"<what you'd type after /mrrw>"}  the site's operator page: runs it as the
+ *                                     console would, answers {"ok":true,"output":"<the lines it printed>"}
+ *   GET  /journal?n=50                 the last n journal entries (1-500), oldest first
  *
  * Requests are read on the HTTP threads and answered on the server thread (nothing races the game).
  */
@@ -51,10 +54,12 @@ public final class Bridge {
     private final ChatListener chat;
     private final Journal journal;
     private final PathRecorder recorder;
+    private final java.util.function.Function<String, String> op;
     private HttpServer server;
     private ExecutorService pool;
 
-    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat, Journal journal, PathRecorder recorder) {
+    public Bridge(Plugin plugin, State state, Canon canon, PlayerRoster roster, Finale finale, Campaign campaign, ChatListener chat, Journal journal, PathRecorder recorder,
+                  java.util.function.Function<String, String> op) {
         this.plugin = plugin;
         this.state = state;
         this.canon = canon;
@@ -64,6 +69,7 @@ public final class Bridge {
         this.chat = chat;
         this.journal = journal;
         this.recorder = recorder;
+        this.op = op;
     }
 
     public void start() {
@@ -97,6 +103,9 @@ public final class Bridge {
     }
 
     private record Resp(int status, JsonObject body) { }
+
+    /** The op runner prefixes its output with this when the command failed: the answer is then {"ok":false,"output":...}. */
+    static final String OP_FAILED = "\u0000";
 
     private void handle(HttpExchange ex) {
         try (ex) {
@@ -158,6 +167,7 @@ public final class Bridge {
             case "/feed" -> method.equals("GET") ? feed(uri.getRawQuery()) : new Resp(405, error("GET only"));
             case "/lines" -> method.equals("GET") ? new Resp(200, lines()) : new Resp(405, error("GET only"));
             case "/usb" -> method.equals("POST") ? vote(body) : new Resp(405, error("POST only"));
+            case "/journal" -> method.equals("GET") ? journalTail(uri.getRawQuery()) : new Resp(405, error("GET only"));
             default -> new Resp(404, error("no such endpoint"));
         };
     }
@@ -187,8 +197,10 @@ public final class Bridge {
         o.addProperty("fingerprint", finale.fingerprint());
         o.add("theo", campaign.theo());
         o.addProperty("auto_advance", campaign.autoAdvance());
-        // /mrrw hint N: the operator releases this act's first N hints early (the site honours it alongside its timers)
+        // /mrrw hint N (or /backstage): hints show only when the operator releases them; this act's count, and every act's
         o.addProperty("hint_floor", state.stamp("hint_floor_act") == state.act() ? state.stamp("hint_floor") : 0);
+        o.add("hints_released", campaign.hintsReleased(false));
+        o.add("hints_released_at", campaign.hintsReleased(true));
         List<String> log = finale.finalLog();
         if (log != null) {
             JsonArray a = new JsonArray();
@@ -198,10 +210,24 @@ public final class Bridge {
         return o;
     }
 
-    /** The residents the USB quorum counts: config usb_quorum when set (players who quit never vote), else everyone who joined. */
+    /** The residents the USB quorum counts: config usb_quorum when set, else the residents seen in the last 14 days (at least 1). */
     static int quorumPlayers(Plugin plugin, PlayerRoster roster) {
-        int q = plugin.getConfig().getInt("usb_quorum", 0);
-        return q > 0 ? q : roster.names().size();
+        return OpsLogic.quorum(roster.names(), roster.lastSeen(), System.currentTimeMillis(), plugin.getConfig().getInt("usb_quorum", 0));
+    }
+
+    private Resp journalTail(String rawQuery) {
+        int n;
+        try {
+            n = Math.max(1, Math.min(500, Integer.parseInt(query(rawQuery).getOrDefault("n", "50").trim())));
+        } catch (NumberFormatException e) {
+            return new Resp(400, error("n must be an integer"));
+        }
+        JsonObject o = new JsonObject();
+        o.addProperty("ok", true);
+        JsonArray a = new JsonArray();
+        journal.tail(n).forEach(a::add);
+        o.add("entries", a);
+        return new Resp(200, o);
     }
 
     BridgeLogic.Usb usb() {
@@ -271,7 +297,17 @@ public final class Bridge {
             o.addProperty("hint_floor", campaign.releaseHints(n.getAsInt(), "op page"));
             return new Resp(200, o);
         }
-        if (!"desk".equals(kind)) return new Resp(400, error("kind must be \"desk\" or \"hint\""));
+        if ("op".equals(kind)) {  // the site's operator page: the same text as after /mrrw, run as the console
+            String cmd = str(in, "cmd");
+            if (cmd == null || cmd.isBlank()) return new Resp(400, error("cmd is required"));
+            String out = op.apply(cmd);
+            boolean ok = !out.startsWith(OP_FAILED);
+            JsonObject o = new JsonObject();
+            o.addProperty("ok", ok);
+            o.addProperty("output", ok ? out : out.substring(1));
+            return new Resp(200, o);
+        }
+        if (!"desk".equals(kind)) return new Resp(400, error("kind must be \"desk\", \"hint\" or \"op\""));
         String ref = str(in, "ref");
         if (ref == null || ref.isBlank()) return new Resp(400, error("ref is required"));
         Long replyAt;

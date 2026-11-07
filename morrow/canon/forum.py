@@ -223,7 +223,7 @@ THREADS = [
          "for the people who keep asking why the chests are 'messy'.\n\n"
          "each row of chests is one of you. each stack is crates you brought back that week. "
          "i count them on sunday and start a new stack. it's not messy, it's the tally\n\n"
-         "if you tidy my chests you're deleting who did the work. leave it uneven"},
+         "if you tidy my chests i lose the count and i have to start over. leave it uneven"},
         {"id": 23655, "author": "kitbag", "at": "2011-03-19 16:02", "body": "sorry cairn that was me. i thought i was helping"},
         {"id": 23660, "author": "cairn", "at": "2011-03-19 16:30", "body": "all good kit. it's fixed"},
         {"id": None, "author": "kitbag", "at": "2011-03-19 16:41", "body": "how do you close it up at night"},

@@ -35,6 +35,16 @@ export async function resolveFile(dir: string[], name: string): Promise<string |
   }
 }
 
+/** Theo's recording of a voice note, if the owner has made it (private-media/theo/<ID>.ogg|mp3|m4a|wav). */
+export async function voiceFileFor(id: string): Promise<{ file: string; name: string } | null> {
+  for (const ext of ["ogg", "mp3", "m4a", "wav"]) {
+    const name = `${id}.${ext}`;
+    const file = await resolveFile(["theo"], name);
+    if (file) return { file, name };
+  }
+  return null;
+}
+
 export async function serveFile(request: Request, file: string, headers: Record<string, string>): Promise<Response | null> {
   let size: number;
   try {

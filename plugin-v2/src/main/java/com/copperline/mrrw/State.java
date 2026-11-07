@@ -45,6 +45,16 @@ public final class State {
         if (done.add(flag)) save();
     }
 
+    /** The operator clears a flag (/mrrw flag NAME off): the one-shot it guards may run again. */
+    public void unmark(String flag) {
+        if (done.remove(flag)) save();
+    }
+
+    /** Every flag that is set, sorted. */
+    public List<String> flags() {
+        return done.stream().sorted().toList();
+    }
+
     /** A remembered moment (epoch ms), e.g. when Morrow ingested Kit's line; 0 if never. */
     public long stamp(String key) {
         return stamps.getOrDefault(key, 0L);
@@ -69,12 +79,17 @@ public final class State {
         y.set("done", List.copyOf(done));
         stamps.forEach((k, v) -> y.set("stamps." + k, v));
         try {
-            file.getParentFile().mkdirs();
-            File tmp = new File(file.getPath() + ".tmp");  // a crash mid-write must never leave an empty state (= Act 1, nothing done)
-            y.save(tmp);
-            java.nio.file.Files.move(tmp.toPath(), file.toPath(), java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            saveAtomic(y, file);  // a crash mid-write must never leave an empty state (= Act 1, nothing done)
         } catch (IOException e) {
             throw new IllegalStateException("could not save " + file, e);
         }
+    }
+
+    /** Writes a temp file, then moves it into place: a crash mid-write leaves the old file, never a torn one. */
+    static void saveAtomic(YamlConfiguration y, File file) throws IOException {
+        file.getParentFile().mkdirs();
+        File tmp = new File(file.getPath() + ".tmp");
+        y.save(tmp);
+        java.nio.file.Files.move(tmp.toPath(), file.toPath(), java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 }

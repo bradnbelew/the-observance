@@ -55,14 +55,16 @@ public final class Campaign implements Listener {
     private final Journal journal;
     private final Canon canon;
     private final Runnable applyAct;
+    private final PlayerRoster roster;
     private final File file;
     private JsonObject data;
 
-    public Campaign(Plugin plugin, Canon canon, State state, Journal journal, Runnable applyAct) {
+    public Campaign(Plugin plugin, Canon canon, State state, Journal journal, PlayerRoster roster, Runnable applyAct) {
         this.plugin = plugin;
         this.canon = canon;
         this.state = state;
         this.journal = journal;
+        this.roster = roster;
         this.applyAct = applyAct;
         this.file = new File(plugin.getDataFolder(), "bridge-state.json");
         load();
@@ -79,7 +81,10 @@ public final class Campaign implements Listener {
             try {
                 data = JsonParser.parseString(Files.readString(file.toPath(), StandardCharsets.UTF_8)).getAsJsonObject();
             } catch (Exception e) {
-                plugin.getLogger().warning("bridge-state.json unreadable, starting empty: " + e);
+                // keep the broken file for the operator (/mrrw rollback restores a good one); never overwrite it
+                File bad = new File(file.getPath() + ".corrupt-" + System.currentTimeMillis());
+                boolean kept = file.renameTo(bad);
+                plugin.getLogger().severe("bridge-state.json unreadable, starting empty" + (kept ? " (kept as " + bad.getName() + ")" : "") + ": " + e);
             }
         }
         if (!data.has("desk")) data.add("desk", new JsonObject());
@@ -89,7 +94,9 @@ public final class Campaign implements Listener {
     private void save() {
         try {
             file.getParentFile().mkdirs();
-            Files.writeString(file.toPath(), new GsonBuilder().setPrettyPrinting().create().toJson(data), StandardCharsets.UTF_8);
+            File tmp = new File(file.getPath() + ".tmp");  // a crash mid-write must not lose every desk ticket and the online minutes
+            Files.writeString(tmp.toPath(), new GsonBuilder().setPrettyPrinting().create().toJson(data), StandardCharsets.UTF_8);
+            Files.move(tmp.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
             plugin.getLogger().warning("could not save bridge-state.json: " + e);
         }
@@ -106,7 +113,18 @@ public final class Campaign implements Listener {
     }
 
     private boolean resident(Player p) {
-        return !p.isOp() || plugin.getConfig().getBoolean("auto_advance_count_ops", false);
+        return roster.resident(plugin, p);
+    }
+
+    /** /mrrw auto on|off: saved to config.yml. Turning it on applies whatever was held meanwhile. */
+    void setAutoAdvance(boolean on, String by) {
+        plugin.getConfig().set("auto_advance", on);
+        plugin.saveConfig();
+        JsonObject d = new JsonObject();
+        d.addProperty("auto_advance", on);
+        d.addProperty("by", by);
+        journal.write("operator.auto", d);
+        if (on) retryEarly();
     }
 
     /** Moves the act to {@code to} if it is exactly the next act. Returns true if it moved. */
@@ -123,6 +141,7 @@ public final class Campaign implements Listener {
             return false;
         }
         long now = System.currentTimeMillis();
+        snapshotBefore(to);
         state.setAct(to);
         state.setStamp("act_started", now);
         JsonObject d = new JsonObject();
@@ -138,8 +157,22 @@ public final class Campaign implements Listener {
         return true;
     }
 
-    /** A ref that arrived before its act (journalled act.advance_early) applies once the act catches up. */
-    private void retryEarly() {
+    /** Every act move first keeps the state as it was (snapshots/before-actN-...): /mrrw rollback undoes a bad move. */
+    void snapshotBefore(int to) {
+        if (plugin instanceof MrrwPlugin m) m.flushForSnapshot();
+        save();  // the desk as it is in memory (the ref moving the act is already marked released)
+        try {
+            OpsLogic.snapshot(plugin.getDataFolder(), "before-act" + to + "-" + System.currentTimeMillis() / 1000);
+        } catch (Exception e) {
+            plugin.getLogger().warning("could not snapshot before act " + to + ": " + e);
+        }
+    }
+
+    /**
+     * A ref that arrived before its act (journalled act.advance_early) applies once the act catches up:
+     * after every advance, after /mrrw act N, and when auto-advance is turned back on.
+     */
+    void retryEarly() {
         for (var entry : desk().entrySet()) {
             JsonObject e = entry.getValue().getAsJsonObject();
             if (e.get("released").getAsBoolean() && !e.get("applied").getAsBoolean()) tryAdvance(entry.getKey(), e);
@@ -150,6 +183,7 @@ public final class Campaign implements Listener {
     /** /mrrw act N [started]: the operator always wins. */
     void operatorSet(int act, String by, long startedMillis) {
         int from = state.act();
+        if (act != from) snapshotBefore(act);
         state.setAct(act);
         state.setStamp("act_started", startedMillis);
         JsonObject d = new JsonObject();
@@ -161,6 +195,36 @@ public final class Campaign implements Listener {
         journal.write("act.advance", d);
     }
 
+    /**
+     * After /mrrw rollback: a released ref that would move the act it rolled back to is the move being undone,
+     * so it is marked applied (re-file it with /mrrw handin to redo it). Refs for later acts keep waiting.
+     */
+    List<String> consumeAfterRollback() {
+        List<String> out = new ArrayList<>();
+        for (var entry : desk().entrySet()) {
+            JsonObject e = entry.getValue().getAsJsonObject();
+            if (e.get("released").getAsBoolean() && !e.get("applied").getAsBoolean() && BridgeLogic.deskTarget(state.act(), entry.getKey()) > 0) {
+                e.addProperty("applied", true);
+                out.add(entry.getKey());
+            }
+        }
+        if (!out.isEmpty()) save();
+        return out;
+    }
+
+    /** GET /state "hints_released": {"5": 2, ...} and "hints_released_at": {"5": [ms, ms], ...}. */
+    JsonObject hintsReleased(boolean times) {
+        JsonObject out = new JsonObject();
+        if (!data.has("hints")) return out;
+        for (var e : data.getAsJsonObject("hints").entrySet()) {
+            JsonArray a = e.getValue().getAsJsonArray();
+            if (a.isEmpty()) continue;
+            if (times) out.add(e.getKey(), a.deepCopy());
+            else out.addProperty(e.getKey(), a.size());
+        }
+        return out;
+    }
+
     public long actStarted() {
         return state.stamp("act_started");
     }
@@ -170,6 +234,17 @@ public final class Campaign implements Listener {
         n = Math.max(0, Math.min(n, 9));
         state.setStamp("hint_floor", n);
         state.setStamp("hint_floor_act", state.act());
+        // kept per act (bridge-state.json "hints"), so a note released in Act 5 is still on the desk in Act 6,
+        // with the moment each hint went up (the site dates each note by it)
+        JsonObject hints = data.has("hints") ? data.getAsJsonObject("hints") : new JsonObject();
+        data.add("hints", hints);
+        String act = String.valueOf(state.act());
+        JsonArray times = hints.has(act) ? hints.getAsJsonArray(act) : new JsonArray();
+        JsonArray kept = new JsonArray();
+        long now = System.currentTimeMillis();
+        for (int i = 0; i < n; i++) kept.add(i < times.size() ? times.get(i).getAsLong() : now);
+        hints.add(act, kept);
+        save();
         JsonObject d = new JsonObject();
         d.addProperty("act", state.act());
         d.addProperty("hints", n);
@@ -193,9 +268,18 @@ public final class Campaign implements Listener {
      * the stop. Each is fed once as "theo.reply" (the bot posts its canon text) and shown on the desk by
      * the site on the same clock.
      */
+    /** The ask follows the booking reply by 20 s: the skip reason is theirs to give. */
+    private void askIfDue() {
+        long askAt = state.stamp("theo_ask_at");
+        if (askAt <= 0 || System.currentTimeMillis() < askAt || state.done("theo.timed.ask") || !canon.raw.has("theo_ask_voice")) return;
+        state.markDone("theo.timed.ask");
+        JsonObject booking = desk().getAsJsonObject("booking");
+        feedTheo(canon.string("theo_ask_voice"), booking == null ? null : str(booking.get("subject")), askAt);
+    }
+
     private void theoTimed() {
-        if (!canon.raw.has("theo_timed")) return;
         long now = System.currentTimeMillis();
+        if (!canon.raw.has("theo_timed")) return;
         for (JsonElement e : canon.array("theo_timed")) {
             JsonObject t = e.getAsJsonObject();
             String voice = t.get("voice").getAsString();
@@ -304,6 +388,7 @@ public final class Campaign implements Listener {
 
     /** Releases every desk event whose reply time has come: Theo's reply, then the advance. */
     private void releaseDue() {
+        askIfDue();
         long now = System.currentTimeMillis();
         boolean changed = false;
         for (var entry : desk().entrySet()) {
@@ -324,10 +409,8 @@ public final class Campaign implements Listener {
                 journal.feed("theo.reply", d);  // the Discord bot posts it to #general
             }
             tryAdvance(entry.getKey(), e);
-            if (entry.getKey().equals("booking") && canon.raw.has("theo_ask_voice") && !state.done("theo.timed.ask")) {
-                state.markDone("theo.timed.ask");  // the ask follows the booking reply: the skip reason is theirs to give
-                final long at = now + 20_000;
-                Bukkit.getScheduler().runTaskLater(plugin, () -> feedTheo(canon.string("theo_ask_voice"), str(e.get("subject")), at), 20L * 20);
+            if (entry.getKey().equals("booking") && canon.raw.has("theo_ask_voice")) {
+                state.stampOnce("theo_ask_at", now + 20_000);  // on disk: a restart in the next 20 s still asks (theoTimed sends it)
             }
         }
         if (changed) save();
@@ -348,6 +431,54 @@ public final class Campaign implements Listener {
         } else {
             e.addProperty("applied", true);  // no rule, or its act is already past
         }
+    }
+
+    /**
+     * /mrrw handin REF: the operator files a desk ref as if the site had posted it. A new ref is filed
+     * with no reply delay; one still waiting for its reply time is released now; one already handled is
+     * tried again (an early one applies if its act has come). Returns what happened.
+     */
+    String handIn(String ref, String by) {
+        String key = ref.trim().toLowerCase(Locale.ROOT);
+        int before = state.act();
+        JsonObject e = desk().getAsJsonObject(key);
+        JsonObject j = new JsonObject();
+        j.addProperty("ref", key);
+        j.addProperty("by", by);
+        j.addProperty("act", before);
+        journal.write("operator.handin", j);
+        if (e == null) {
+            desk(key, null, null, null);
+        } else if (!e.get("released").getAsBoolean()) {
+            e.addProperty("reply_at", System.currentTimeMillis());
+            save();
+            releaseDue();
+        } else {
+            e.addProperty("applied", false);
+            tryAdvance(key, e);
+            save();
+        }
+        int after = state.act();
+        if (after != before) return "act " + before + " -> " + after;
+        if (BridgeLogic.deskEarly(after, key)) return "filed; it waits for act " + BridgeLogic.DESK_ADVANCES.get(key) + " (now " + after + ")";
+        if (!autoAdvance() && BridgeLogic.deskTarget(after, key) > 0) return "held: auto-advance is off (/mrrw auto on, or /mrrw act " + (after + 1) + ")";
+        return "filed; it moves nothing at act " + after;
+    }
+
+    /** /mrrw desk: every ref the site (or the operator) filed, in arrival order. */
+    List<String> deskLines() {
+        List<String> out = new ArrayList<>();
+        for (var entry : desk().entrySet()) {
+            JsonObject e = entry.getValue().getAsJsonObject();
+            String key = entry.getKey();
+            Integer needs = BridgeLogic.DESK_ADVANCES.get(key);
+            out.add(key + ": received " + iso(e.get("received").getAsLong())
+                    + (e.get("reply_at") == null || e.get("reply_at").isJsonNull() ? "" : ", reply " + iso(e.get("reply_at").getAsLong()))
+                    + (str(e.get("voice")) == null ? "" : ", " + str(e.get("voice")))
+                    + ", " + (e.get("released").getAsBoolean() ? "released" : "WAITING") + ", " + (e.get("applied").getAsBoolean() ? "applied" : "NOT APPLIED")
+                    + (needs == null ? "" : " (moves " + needs + " -> " + (needs + 1) + ")"));
+        }
+        return out;
     }
 
     private static long replyAt(JsonObject e) {

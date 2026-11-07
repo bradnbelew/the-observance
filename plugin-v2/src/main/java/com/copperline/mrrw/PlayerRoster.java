@@ -22,6 +22,8 @@ public final class PlayerRoster {
     private final File file;
     private final Set<String> names = new LinkedHashSet<>();
     private final List<String> lines = new ArrayList<>();
+    private final Set<String> excluded = new LinkedHashSet<>();          // /mrrw residents remove: never a resident again
+    private final java.util.Map<String, Long> lastSeen = new java.util.LinkedHashMap<>();  // for the USB quorum
     private String firstUnfinished;
 
     public PlayerRoster(File dataFolder) {
@@ -31,7 +33,51 @@ public final class PlayerRoster {
             names.addAll(y.getStringList("names"));
             lines.addAll(y.getStringList("lines"));
             firstUnfinished = y.getString("first_unfinished");
+            excluded.addAll(y.getStringList("excluded"));
+            var seen = y.getConfigurationSection("last_seen");
+            if (seen != null) for (String k : seen.getKeys(false)) lastSeen.put(k, seen.getLong(k));
         }
+    }
+
+    /**
+     * One rule for "resident" everywhere (act triggers, roster, corpus, quorum, figures): a player who
+     * is not op (or any player with auto_advance_count_ops), or one the operator added by name; never
+     * one the operator removed.
+     */
+    public boolean resident(org.bukkit.plugin.Plugin plugin, org.bukkit.entity.Player p) {
+        if (excluded.contains(p.getName())) return false;
+        return !p.isOp() || plugin.getConfig().getBoolean("auto_advance_count_ops", false) || names.contains(p.getName());
+    }
+
+    /** /mrrw residents add: counts from now on, op or not. */
+    public void add(String name) {
+        excluded.remove(name);
+        names.add(name);
+        lastSeen.putIfAbsent(name, System.currentTimeMillis());
+        save();
+    }
+
+    /** /mrrw residents remove: out of the roster and the quorum, and not re-added on the next join. */
+    public boolean remove(String name) {
+        boolean had = names.remove(name);
+        excluded.add(name);
+        save();
+        return had;
+    }
+
+    public Set<String> excluded() {
+        return excluded;
+    }
+
+    public java.util.Map<String, Long> lastSeen() {
+        return lastSeen;
+    }
+
+    /** A resident was on the server just now (join and quit). */
+    public void seen(String name) {
+        if (!names.contains(name)) return;
+        lastSeen.put(name, System.currentTimeMillis());
+        save();
     }
 
     public Set<String> names() {
@@ -71,7 +117,9 @@ public final class PlayerRoster {
     }
 
     public void join(String name) {
-        if (names.add(name)) save();
+        if (excluded.contains(name)) return;
+        names.add(name);
+        seen(name);
     }
 
     public void said(String name, String text) {
@@ -87,9 +135,10 @@ public final class PlayerRoster {
         y.set("names", List.copyOf(names));
         y.set("lines", lines);
         if (firstUnfinished != null) y.set("first_unfinished", firstUnfinished);
+        y.set("excluded", List.copyOf(excluded));
+        lastSeen.forEach((k, v) -> y.set("last_seen." + k, v));
         try {
-            file.getParentFile().mkdirs();
-            y.save(file);
+            State.saveAtomic(y, file);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

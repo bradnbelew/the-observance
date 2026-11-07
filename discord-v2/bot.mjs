@@ -59,6 +59,9 @@ function saveState(s) {
   fs.renameSync(tmp, STATE_FILE);
 }
 
+/** What a voice note is called in Discord: never its file name ("T-09-fake.wav" gave the Act 9 test away). */
+export const attachmentName = (file) => `voice-message${path.extname(file).toLowerCase()}`;
+
 function voiceFile(id) {
   if (!id) return null;
   for (const ext of ["ogg", "mp3", "m4a", "wav"]) {
@@ -185,11 +188,12 @@ export function theoPost(entry) {
 export function feedPosts(entries) {
   const out = [];
   for (const e of entries ?? []) {
-    if (e?.kind === "chat" && e.name && e.text) out.push({ to: "bridge", content: `**${e.name}**: ${e.text}` });
-    else if (e?.kind === "recovery" && e.text) out.push({ to: "bridge", content: `*[Recovery] ${e.text}*` });
+    const n = Number.isFinite(e?.n) ? e.n : undefined;  // the feed number: the cursor moves past each post as it goes out
+    if (e?.kind === "chat" && e.name && e.text) out.push({ n, to: "bridge", content: `**${e.name}**: ${e.text}` });
+    else if (e?.kind === "recovery" && e.text) out.push({ n, to: "bridge", content: `*[Recovery] ${e.text}*` });
     else if (e?.kind === "theo.reply" && e.id) {
       const post = theoPost({ id: String(e.id), subject: String(e.subject ?? "") });
-      if (post) out.push({ to: "general", content: post.content, voice: post.voice, flag: `theo:${e.id}:${e.at ?? ""}` });
+      if (post) out.push({ n, to: "general", content: post.content, voice: post.voice, flag: `theo:${e.id}:${e.at ?? ""}` });
       else console.error(new Date().toISOString(), "theo.reply with no canon text:", e.id);
     }
   }
@@ -197,21 +201,28 @@ export function feedPosts(entries) {
 }
 
 // ---------------------------------------------------------------- the plan: what happens when
-/** Act 7 messages, spread over the act. Each resident gets a different mix; Theo's real ones are among them. */
+/**
+ * Act 7 messages, spread over the act. Each resident gets a different mix; Theo's real ones are among them.
+ * residents: {id, name, i?, from?} (or bare names in the dry run). `i` is the resident's place, fixed when the
+ * bot first saw them (state.act7Order), and `from` the act-7 hour they were first seen: a late joiner gets
+ * the same spread starting then, and nobody's plan shifts when someone joins or leaves. Flags name the
+ * message (dm:<id>:m<k> / quote / theo), so a missing quote (no /lines answer yet) can't renumber the rest
+ * and send one message twice.
+ */
 export function act7Plan(residents, quotes = []) {
   const plan = [];
-  // residents: {id, name} (or bare names in the dry run); ordered by id so a joiner, leaver or nickname change
-  // never re-keys what was already sent (flags are dm:<id>:<slot>, not names and times)
   const list = residents.map((r) => (typeof r === "string" ? { id: r, name: r } : r)).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  list.forEach(({ id, name }, i) => {
-    let slot = 0;
-    const push = (m) => plan.push({ ...m, to: name, id, flag: `dm:${id}:${slot++}` });
-    const morrow = CANON.morrow_dms.filter((_, k) => (k + i) % 2 === 0).slice(0, 2);
-    morrow.forEach((dm, k) => push({ at: 2 + k * 9 + i, kind: "morrow", as: dm.as, text: `${dm.as}: ${dm.text}` }));
+  list.forEach((r, idx) => {
+    const { id, name } = r;
+    const i = Number.isInteger(r.i) ? r.i : idx;
+    const from = Number(r.from) || 0;
+    const push = (key, m) => plan.push({ ...m, at: m.at + from, to: name, id, flag: `dm:${id}:${key}` });
+    const morrow = CANON.morrow_dms.map((dm, k) => ({ dm, k })).filter(({ k }) => (k + i) % 2 === 0).slice(0, 2);
+    morrow.forEach(({ dm, k }, j) => push(`m${k}`, { at: 2 + j * 9 + i, kind: "morrow", as: dm.as, text: `${dm.as}: ${dm.text}` }));
     const other = quotes.find((q) => q.name !== name);
-    if (other) push({ at: 14 + i, kind: "morrow", text: CANON.quote_template.replace("{other}", other.name).replace("{line}", other.text) });
+    if (other) push("quote", { at: 14 + i, kind: "morrow", text: CANON.quote_template.replace("{other}", other.name).replace("{line}", other.text) });
     const theo = CANON.theo_dms[i % CANON.theo_dms.length];
-    push({ at: 6 + i * 3, kind: "theo", text: theo.text, voice: theo.voice });
+    push("theo", { at: 6 + i * 3, kind: "theo", text: theo.text, voice: theo.voice });
   });
   return plan.sort((a, b) => a.at - b.at);
 }
@@ -354,6 +365,24 @@ async function dryBridge() {
     console.log(`theo   #general mirror ${id}: voice ${voiceFile(id) ? "found" : "not recorded yet"}`);
   }
   checks.push([["T-04a", "T-06a", "T-08a", "T-09a", "T-09b"].every((id) => CANON.theo_mirror?.replies?.[id]), "canon has text for every mirrored reply"]);
+  checks.push([posts.every((p, k) => p.n === k + 1), "feed posts carry their entry number (the cursor moves past each one as it goes out)"]);
+  checks.push([attachmentName("/x/T-09-fake.wav") === "voice-message.wav" && attachmentName("/x/T-04a.ogg") === "voice-message.ogg",
+    "voice attachments go out under a neutral name (the file name gave Act 9's fake away)"]);
+
+  // Act 7 plan: stable under a /lines blip, a late joiner, and any group size
+  const quote = [{ name: "ash", text: "the rail looks better unfinished" }];
+  const flagsFor = (plan, id) => plan.filter((m) => m.id === id).map((m) => `${m.flag}|${m.text}`).sort().join();
+  const two = [{ id: "200", name: "b", i: 0, from: 0 }, { id: "300", name: "c", i: 1, from: 0 }];
+  const withQ = act7Plan(two, quote), noQ = act7Plan(two, []);
+  checks.push([noQ.every((m) => withQ.some((w) => w.flag === m.flag && w.text === m.text)), "a missing /lines answer drops the quote only: nothing is renumbered (no double Theo DM)"]);
+  const late = act7Plan([...two, { id: "100", name: "a", i: 2, from: 30 }], quote);
+  checks.push([["200", "300"].every((id) => flagsFor(late, id) === flagsFor(withQ, id)), "a late joiner (smaller id) changes nobody else's messages"]);
+  checks.push([late.filter((m) => m.id === "100").every((m) => m.at >= 32), "a late joiner's messages start after they're first seen, spread out like everyone's"]);
+  const solo = act7Plan([{ id: "1", name: "solo" }], []);
+  const ids = Array.from({ length: 10 }, (_, k) => String(100 + k));
+  const ten = act7Plan(ids.map((id) => ({ id, name: `p${id}` })), quote);
+  checks.push([solo.some((m) => m.kind === "theo") && new Set(ten.map((m) => m.flag)).size === ten.length && ids.every((id) => ten.some((m) => m.id === id && m.kind === "theo")),
+    "group of 1 and of 10: everyone gets Theo's DM, every flag unique"]);
   return checks;
 }
 
@@ -394,7 +423,7 @@ const stopped = () => live.stopped;
 
 async function send(channel, text, voice) {
   const file = voiceFile(voice);
-  await channel.send({ content: text, files: file ? [new AttachmentBuilder(file, { name: path.basename(file) })] : [], allowedMentions: NO_PINGS });
+  await channel.send({ content: text, files: file ? [new AttachmentBuilder(file, { name: attachmentName(file) })] : [], allowedMentions: NO_PINGS });
 }
 
 /**
@@ -438,7 +467,7 @@ function every(ms, name, fn) {
 
 client.on("error", (err) => console.error(new Date().toISOString(), "discord client error:", err?.message || err));
 
-client.once("clientReady", async () => {
+async function start() {
   console.log("mrrw bridge online as", client.user.tag, "| plugin bridge", BRIDGE.url);
   const guild = await client.guilds.fetch(ENV.GUILD_ID);
   const general = await guild.channels.fetch(ENV.GENERAL_CHANNEL_ID);
@@ -456,6 +485,7 @@ client.once("clientReady", async () => {
     if (st) { note(st); quiet = 0; } else if (++quiet === 12) console.error(new Date().toISOString(), "bridge: no answer for a minute (server down, port 25588 closed, or a secret mismatch)");
   });
 
+  let stuck = { n: undefined, tries: 0 };
   // Relay: chat and Morrow's lines into #bridge, Theo's released replies into #general. The cursor is
   // saved in state.json, so a restart carries on where it stopped; a new bot starts at the end.
   every(4000, "feed", async () => {
@@ -465,24 +495,51 @@ client.once("clientReady", async () => {
     if (!page) return;
     note(page);
     for (const p of feedPosts(page.entries)) {
-      if (afterStop && p.to !== "general") continue;
-      if (p.flag && state.done.includes(p.flag)) continue;
-      const channel = p.to === "general" ? general : bridgeChannel;
-      await send(channel, p.content, p.voice).catch((e) => console.error("relay send failed:", e?.message || e));
-      if (p.flag) { state.done.push(p.flag); console.log(new Date().toISOString(), "theo mirror posted", p.voice); }
+      if (!(afterStop && p.to !== "general") && !(p.flag && state.done.includes(p.flag))) {
+        try {
+          await send(p.to === "general" ? general : bridgeChannel, p.content, p.voice);
+          if (p.flag) console.log(new Date().toISOString(), "theo mirror posted", p.voice);
+        } catch (e) {
+          // Theo's mirror used to be marked sent even when Discord refused it: now the cursor stays put and it's retried
+          const tries = stuck.n === p.n ? stuck.tries + 1 : 1;
+          stuck = { n: p.n, tries };
+          console.error(new Date().toISOString(), `relay send failed (entry ${p.n}, try ${tries}/5):`, e?.message || e);
+          if (tries < 5) return;
+        }
+        if (p.flag) state.done.push(p.flag);
+      }
+      // saved per post: a restart mid-page used to post that page's earlier lines a second time
+      if (p.n !== undefined) { state.feed = p.n; saveState(state); }
     }
     if (state.feed !== page.next) { state.feed = page.next; saveState(state); }
   });
+
+  // The Resident members, fetched at most once a minute and shared: Discord rate-limits the full member
+  // request per guild, and the act7 and act9 passes used to ask in the same second (one of them failed).
+  let membersCache = null;
+  const residentsNow = () => {
+    if (!membersCache || Date.now() - membersCache.at > 55_000) {
+      const list = guild.members.fetch().then((ms) => ms.filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot));
+      membersCache = { at: Date.now(), list };
+      list.catch(() => { if (membersCache?.list === list) membersCache = null; });
+    }
+    return membersCache.list;
+  };
 
   // Act 7: the messages, scheduled from the moment the bot first sees Act 7.
   every(60_000, "act7", async () => {
     if (stopped()) return;
     if (live.act >= 7 && !state.act7Start) { state.act7Start = Date.now(); saveState(state); }
     if (live.act < 7 || live.act > 9 || !state.act7Start) return;
-    const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
-    const residents = members.map((m) => ({ id: m.id, name: m.displayName }));
-    const quotes = (await bridgeGet(BRIDGE, "/lines"))?.lines ?? [];
+    const members = await residentsNow();
     const hours = (Date.now() - state.act7Start) / 3_600_000 * Number(ENV.TIME_SCALE || 1);
+    // each resident's place and start hour are fixed the first time the bot sees them (see act7Plan)
+    const order = state.act7Order ?? (state.act7Order = {});
+    const fresh = [...members.keys()].filter((id) => !order[id]).sort();
+    fresh.forEach((id) => { order[id] = { i: Object.keys(order).length, from: Math.floor(hours) }; });
+    if (fresh.length) saveState(state);
+    const residents = members.map((m) => ({ id: m.id, name: m.displayName, ...order[m.id] }));
+    const quotes = (await bridgeGet(BRIDGE, "/lines"))?.lines ?? [];
     for (const m of act7Plan(residents, quotes)) {
       if (hours < m.at) continue;
       const member = members.get(m.id);
@@ -495,7 +552,7 @@ client.once("clientReady", async () => {
   every(60_000, "act9", async () => {
     if (stopped() || live.act < 9) return;
     if (state.done.includes("act9:fake_theo")) return;  // already sent to everyone by an older version
-    const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
+    const members = await residentsNow();
     for (const m of members.values()) await dmOnce(`act9:fake_theo:${m.id}`, m, CANON.fake_theo.text, CANON.fake_theo.voice);
   });
 
@@ -577,6 +634,15 @@ client.once("clientReady", async () => {
     console.log("stopped: the bridge is cut. Exiting.");
     setTimeout(() => process.exit(0), 3000);
   });
-});
+}
 
-client.login(ENV.DISCORD_TOKEN);
+// a wrong GUILD_ID or channel id used to leave the bot online doing nothing: exit, so Railway restarts it and the log says why
+client.once("clientReady", () => start().catch((err) => {
+  console.error(new Date().toISOString(), "startup failed (check GUILD_ID / GENERAL_CHANNEL_ID / BRIDGE_CHANNEL_ID and the bot's access):", err?.stack || err);
+  process.exit(1);
+}));
+
+client.login(ENV.DISCORD_TOKEN).catch((err) => {
+  console.error(new Date().toISOString(), "login failed (DISCORD_TOKEN):", err?.message || err);
+  process.exit(1);
+});

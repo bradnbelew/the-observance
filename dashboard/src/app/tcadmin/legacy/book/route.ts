@@ -4,15 +4,18 @@ import { currentAct, deskReplyAt, eveningAfter, seal, unseal, upcomingSaturdays 
 import { deskEvent, remember, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
 import { bundle } from "@/lib/morrow/canon";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
+
+export const GET = (request: Request) => seeOther(request, "/tcadmin/legacy");
 
 /** Act 10: booking the maintenance window, Saturdays only (Theo: "Saturday then"). Theo answers on the desk (T-10-booked). */
 export async function POST(request: Request) {
   if ((await currentAct()) < 10 || !unseal((await cookies()).get("tcadmin")?.value)) {
     return NextResponse.redirect(new URL("/tcadmin/legacy", request.url), 303);
   }
-  const form = await request.formData();
+  const form = await readForm(request);
   const day = String(form.get("day") ?? "").slice(0, 10);
   const hour = Number(form.get("hour"));
   const saturday = upcomingSaturdays().find((s) => s.value === day);

@@ -102,6 +102,11 @@ export async function bundle(): Promise<Bundle> {
   return (await loaders[await currentAct()]()).default as Bundle;
 }
 
+/** One act's desk hints (each act's bundle carries its own), for hints released in an act that has passed. */
+export async function hintsOf(act: number): Promise<string[]> {
+  return loaders[act] ? ((await loaders[act]()).default as Bundle).desk.hints : [];
+}
+
 /** vBulletin-style date: "05-18-2011, 04:16 AM". */
 export function vbDate(at: string): string {
   const [d, t] = at.split(" ");

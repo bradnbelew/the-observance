@@ -1,11 +1,12 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import { sessionSecret } from "./signing";
+import { sessionSecret, sessionSecrets } from "./signing";
 import { unseal } from "./campaign";
 
 /** WHMCS-style client session for Rookery's account. Signed so it can't be typed in by hand. */
 const COOKIE = "WHMCSsession";
-const secret = sessionSecret;
+/** Long enough to outlast the gaps between sessions (re-logging in is always possible with the reset password). */
+export const SESSION_MAX_AGE = 60 * 60 * 24 * 90;
 
 /** Shown once after a successful reset; also accepted by the login form afterwards. */
 export const TEMP_PASSWORD = "cl-mirror-71e4";
@@ -18,8 +19,8 @@ export function pwresetFlashValid(token: string | undefined, username: string, n
   return !!flash && flash.u === username && typeof flash.exp === "number" && now < flash.exp;
 }
 
-function sign(user: string): string {
-  return `${user}.${createHmac("sha256", secret()).update(user).digest("hex").slice(0, 24)}`;
+function sign(user: string, key = sessionSecret()): string {
+  return `${user}.${createHmac("sha256", key).update(user).digest("hex").slice(0, 24)}`;
 }
 
 export async function sessionUser(): Promise<string | null> {
@@ -27,12 +28,14 @@ export async function sessionUser(): Promise<string | null> {
   if (!raw) return null;
   const user = raw.split(".")[0];
   const a = Buffer.from(raw);
-  const b = Buffer.from(sign(user));
-  return a.length === b.length && timingSafeEqual(a, b) ? user : null;
+  return sessionSecrets().some((key) => {
+    const b = Buffer.from(sign(user, key));
+    return a.length === b.length && timingSafeEqual(a, b);
+  }) ? user : null;
 }
 
 export async function startSession(user: string): Promise<void> {
-  (await cookies()).set(COOKIE, sign(user), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
+  (await cookies()).set(COOKIE, sign(user), { httpOnly: true, sameSite: "lax", path: "/", maxAge: SESSION_MAX_AGE });
 }
 
 export async function endSession(): Promise<void> {

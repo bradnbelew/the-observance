@@ -3,6 +3,8 @@
     python bridge_client.py state
     python bridge_client.py event unmask [--reply-at 2026-10-20T21:00:00-04:00] [--voice T-04a] [--subject "Re: ..."]
     python bridge_client.py corpus "is anyone there" [--persona rookery] [--seed 7]
+    python bridge_client.py op act 5                 (any /mrrw command, run by the plugin: POST /event kind "op")
+    python bridge_client.py journal [50]             (the last N journal entries: GET /journal?n=N)
     python bridge_client.py sign GET /state 1700000000 ""      (print a signature, for cross-checks)
 
 Options (before or after the command):
@@ -50,7 +52,8 @@ def secret_from_config(path: str) -> str | None:
     return None
 
 
-def call(base: str, secret: str, method: str, path_with_query: str, payload: dict | None = None) -> tuple[int, dict | str]:
+def call(base: str, secret: str, method: str, path_with_query: str, payload: dict | None = None,
+         timeout: float = 20) -> tuple[int, dict | list | str]:
     body = b"" if payload is None else json.dumps(payload, separators=(",", ":")).encode("utf-8")
     ts = str(int(time.time()))
     headers = {"X-Mrrw-Ts": ts, "X-Mrrw-Sig": sign(secret, method, path_with_query, ts, body)}
@@ -59,10 +62,12 @@ def call(base: str, secret: str, method: str, path_with_query: str, payload: dic
     req = urllib.request.Request(base.rstrip("/") + path_with_query, data=body if method == "POST" else None,
                                  headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             status, text = r.status, r.read().decode("utf-8")
     except urllib.error.HTTPError as e:
         status, text = e.code, e.read().decode("utf-8", "replace")
+    except (urllib.error.URLError, OSError) as e:
+        return 0, f"bridge not answering at {base} ({e})"
     try:
         return status, json.loads(text)
     except ValueError:
@@ -85,6 +90,10 @@ def main(argv: list[str]) -> int:
     co.add_argument("heard")
     co.add_argument("--persona", default=None)
     co.add_argument("--seed", type=int, default=None)
+    op = sub.add_parser("op")
+    op.add_argument("words", nargs="+", help="the command as typed after /mrrw, e.g. act 5 or flag maint on")
+    jn = sub.add_parser("journal")
+    jn.add_argument("n", nargs="?", type=int, default=50)
     sg = sub.add_parser("sign")
     sg.add_argument("method")
     sg.add_argument("path")
@@ -105,6 +114,24 @@ def main(argv: list[str]) -> int:
 
     if a.cmd == "state":
         status, out = call(a.url, secret, "GET", "/state")
+    elif a.cmd == "op":
+        status, out = call(a.url, secret, "POST", "/event", {"kind": "op", "cmd": " ".join(a.words)}, timeout=60)
+        print(status)
+        print(out.get("output", json.dumps(out, indent=2)) if isinstance(out, dict) else out)
+        return 0 if 200 <= status < 300 and isinstance(out, dict) and out.get("ok") else 1
+    elif a.cmd == "journal":
+        status, out = call(a.url, secret, "GET", f"/journal?n={a.n}")
+        entries = out if isinstance(out, list) else out.get("entries", out.get("journal")) if isinstance(out, dict) else None
+        if not isinstance(entries, list):
+            print(status)
+            print(out)
+            return 1
+        for e in entries:
+            if isinstance(e, dict):
+                print(e.get("at", ""), e.get("kind", ""), json.dumps(e.get("detail", {k: v for k, v in e.items() if k not in ("at", "kind")}), ensure_ascii=False))
+            else:
+                print(e)
+        return 0 if 200 <= status < 300 else 1
     elif a.cmd == "event":
         status, out = call(a.url, secret, "POST", "/event", {
             "kind": "desk", "ref": a.ref, "reply_at": a.reply_at, "voice": a.voice, "subject": a.subject})

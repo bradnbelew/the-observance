@@ -88,6 +88,26 @@ public final class Journal {
         return o;
     }
 
+    /** The last n journal entries, oldest first (a torn line is skipped). shortcut: reads the whole file; fine for an operator's look, not a hot path. */
+    public synchronized List<JsonObject> tail(int n) {
+        List<JsonObject> out = new ArrayList<>();
+        if (!file.isFile() || n <= 0) return out;
+        try {
+            List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            for (String line : lines.subList(Math.max(0, lines.size() - n), lines.size())) {
+                if (line.isBlank()) continue;
+                try {
+                    out.add(JsonParser.parseString(line).getAsJsonObject());
+                } catch (Exception torn) {
+                    // skipped
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("journal read failed", e);
+        }
+        return out;
+    }
+
     private static void append(File f, JsonObject o) {
         try (FileWriter w = new FileWriter(f, StandardCharsets.UTF_8, true)) {
             w.write(o.toString());

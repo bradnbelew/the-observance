@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // a 2011 Apache box doesn't announce "X-Powered-By: Next.js"
+  poweredByHeader: false,
   distDir: process.env.OBSERVANCE_NEXT_DIST_DIR || '.next',
   typescript: { tsconfigPath: process.env.OBSERVANCE_TSCONFIG || 'tsconfig.json' },
   async rewrites() {

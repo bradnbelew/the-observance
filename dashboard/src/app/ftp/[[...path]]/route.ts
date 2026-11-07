@@ -1,5 +1,6 @@
 import { currentAct } from "@/lib/morrow/campaign";
 import { sessionUser } from "@/lib/morrow/session";
+import { stat } from "node:fs/promises";
 import { resolveFile, serveFile } from "@/lib/morrow/serve";
 
 export const dynamic = "force-dynamic";
@@ -68,8 +69,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
     if (lname === "mossfield_2011-04-20.zip") return file(request, ["files", "recovery-mossfield_2011-04-20.zip"], "mossfield_2011-04-20.zip", "application/zip");
   }
   if (dir === "notrecovery" && act >= 9) {
-    if (!name) return listing("/notrecovery/", [{ name: "mossfield_2011-04-20.zip", size: "40 KB", date: "Sep 04  2011" }]);
+    // rook.txt sits beside the zip, not in it: its September date can't be inside a zip Iona hashed in June
+    const rook = await resolveFile(["files"], "rook.txt");
+    if (!name) {
+      const rows: Entry[] = [{ name: "mossfield_2011-04-20.zip", size: "40 KB", date: "Jun 10  2011" }];
+      if (rook) rows.push({ name: "rook.txt", size: String((await stat(rook)).size), date: "Sep 04  2011" });
+      return listing("/notrecovery/", rows);
+    }
     if (lname === "mossfield_2011-04-20.zip") return file(request, ["files", "notrecovery-mossfield_2011-04-20.zip"], "mossfield_2011-04-20.zip", "application/zip");
+    if (lname === "rook.txt" && rook) return file(request, ["files", "rook.txt"], "rook.txt", "text/plain; charset=utf-8");
   }
   return html(`<p>550 ${esc(p.join("/"))}: No such file or directory.</p>`, 404);
 }

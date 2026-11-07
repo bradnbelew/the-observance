@@ -16,7 +16,7 @@ CLIENT_ACCOUNT = {  # WHMCS client area, Act 1
     "service": {"product": "Minecraft - Builder (1 GB, 20 slots)", "label": "Mossfield", "node": NODE,
                 "status": "Running", "players_online": 0, "address": "mossfield.copperlinehosting.com"},
     "invoices": [
-        {"no": 21877, "date": "2011-06-01", "amount": "$6.95", "status": "Waived - T.V. (keep billable till someone comes home)"},
+        {"no": 21877, "date": "2011-06-01", "amount": "$6.95", "status": "Waived - T.V. (keep billable)"},
         {"no": 22410, "date": "2011-09-01", "amount": "$6.95", "status": "Waived - T.V."},
         {"no": 25003, "date": "2012-06-01", "amount": "$6.95", "status": "Waived - T.V."},
         {"no": 28872, "date": "2013-06-01", "amount": "$6.95", "status": "Waived - T.V."},
@@ -115,6 +115,7 @@ THEO_CHANGELOG_2016 = [  # mrrw-changelog-2016.txt: started in 2016, Theo kept a
     "            and the import gave it a profile. didn't do either. leaving it, it's not hurting anything",
     "2018-02-17  chat helper can answer with clips from the support voicemail box + ticket attachments (for the voices)",
     "2019-03-09  fed it the old inbox. all of it. for the voices",
+    "2021-04-02  mirror renders the gallery thumbs from mrrw.db now, not the old screenshots",
     "2023-06-08  skip waxed blocks (so I can keep things)",
 ]
 
@@ -143,10 +144,11 @@ COPPERLINE_HISTORY = [
     ("2008-02", "Copperline Hosting LLC founded in Chicago by Dale Kessler. Two racks at 350 E Cermak."),
     ("2009-01", "Theo Vale joins as support lead (the only support)."),
     ("2009-03", "Iona Bell joins as systems administrator."),
-    ("2010-04", "Game Servers launched: Minecraft Builder and Pro plans on nodes CHI-05 to CHI-07."),
+    ("2010-04", "Game Servers launched: Minecraft Starter and Builder plans on nodes CHI-05 to CHI-07."),
     ("2011-02", "Chicago core switch failure; two days of outages."),
     ("2011-04", "Storage array 2 fails at 02:51 on 21 April. Recovery case 6118 (Mossfield) opened."),
     ("2011-08", "Iona Bell leaves Copperline."),
+    ("2012-05", "Community and Network plans added. Leased game nodes in Dallas and Atlanta."),
     ("2013-11", "Game Servers closed to new orders."),
     ("2014-10", "Notice of closure sent to all clients: services end 30 November 2014."),
     ("2014-12", "Assets sold at auction by Lakeshore Liquidators, 9 December 2014."),

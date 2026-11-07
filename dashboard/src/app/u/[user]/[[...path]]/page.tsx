@@ -24,7 +24,8 @@ type Search = Promise<Record<string, string | undefined>>;
 
 export default async function UserSpace({ params, searchParams }: { params: Params; searchParams: Search }) {
   const { user, path = [] } = await params;
-  const q = await searchParams;
+  // ?player=a&player=b arrives as an array, and .trim() on it threw: keep the first, as PHP would keep one
+  const q = Object.fromEntries(Object.entries(await searchParams).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])) as Record<string, string | undefined>;
   const b = await bundle();
   const act = await currentAct();
   const sub = path.join("/");

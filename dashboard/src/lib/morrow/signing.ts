@@ -34,6 +34,21 @@ export const sessionSecret = () => required("MORROW_SESSION_SECRET", DEV_SESSION
 export const stopSecret = () => required("MORROW_STOP_SECRET", DEV_STOP_SECRET);
 
 /**
+ * Every secret a signed token may carry: the current one, then MORROW_SESSION_SECRET_PREVIOUS. Set
+ * that to the old value when you rotate MORROW_SESSION_SECRET, so ticket links already posted in
+ * Discord, "Your requests" and logins keep working (new tokens are signed with the current one).
+ */
+export const sessionSecrets = (): string[] => {
+  const prev = process.env.MORROW_SESSION_SECRET_PREVIOUS?.trim();
+  return prev ? [sessionSecret(), prev] : [sessionSecret()];
+};
+
+/** Testing switches (act switcher, instant desk) never apply on the real deployment, whatever its env says. */
+const onVercelProduction = () => process.env.VERCEL_ENV === "production";
+export const DEV = process.env.MORROW_DEV === "1" && !onVercelProduction();
+export const deskFast = () => DEV || (process.env.MORROW_DESK_FAST === "1" && !onVercelProduction());
+
+/**
  * Stop-secret fingerprint, for checking the site and the plugin hold the same MORROW_STOP_SECRET
  * before the finale without ever printing the secret itself.
  *

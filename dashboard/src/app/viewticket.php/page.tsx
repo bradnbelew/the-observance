@@ -4,7 +4,7 @@ import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/Lega
 import { bundle } from "@/lib/morrow/canon";
 import { unseal } from "@/lib/morrow/campaign";
 import { after } from "next/server";
-import { deskEvent, fileLink, replyFor, voiceLink, type Ticket } from "@/lib/morrow/desk";
+import { deskEvent, fileLink, replyFor, type Ticket } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
 import { VoiceNote } from "@/components/morrow/VoiceNote";
 
@@ -42,7 +42,7 @@ export default async function ViewTicket({ searchParams }: { searchParams: Promi
         <div className="whmcs-reply staff">
           <div className="whmcs-reply-head"><b>archivist</b><span>{new Date(t.replyAt).toLocaleString("en-US", { timeZone: "America/Chicago" })}</span></div>
           <pre className="whmcs-reply-body">{reply.text}</pre>
-          {reply.voice ? <VoiceNote href={voiceLink(reply.voice)} /> : null}
+          {reply.voice ? <VoiceNote id={reply.voice} /> : null}
           {reply.attach ? <p className="desk-attach">Attachment: <a href={fileLink(reply.attach)}>{reply.attach}</a></p> : null}
         </div>
       ) : (

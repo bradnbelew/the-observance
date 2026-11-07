@@ -1,3 +1,4 @@
+import { notFoundPage } from "@/lib/morrow/http";
 import { bundle, currentAct } from "@/lib/morrow/canon";
 import { resolveFile, serveFile, typeOf } from "@/lib/morrow/serve";
 
@@ -19,10 +20,10 @@ const FOLDERS: Record<string, { act: number; dir: string[] }> = {
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const [folder, name] = (await params).path;
   const f = FOLDERS[folder];
-  if (!f || !name || !/^[\w.-]+$/.test(name) || (await currentAct()) < f.act) return new Response("Not Found", { status: 404 });
-  if (folder === "tvale" && !(await bundle()).tvale_folder.some((x) => x.file === name)) return new Response("Not Found", { status: 404 });
-  if (folder === "tvalebox" && !(await bundle()).tvale_box.includes(name)) return new Response("Not Found", { status: 404 });
+  if (!f || !name || !/^[\w.-]+$/.test(name) || (await currentAct()) < f.act) return notFoundPage(request);
+  if (folder === "tvale" && !(await bundle()).tvale_folder.some((x) => x.file === name)) return notFoundPage(request);
+  if (folder === "tvalebox" && !(await bundle()).tvale_box.includes(name)) return notFoundPage(request);
   const file = await resolveFile(f.dir, name);
   const res = file && await serveFile(request, file, { "Content-Type": typeOf(name) });
-  return res || new Response("Not Found", { status: 404 });
+  return res || notFoundPage(request);
 }

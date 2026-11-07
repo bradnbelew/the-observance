@@ -15,7 +15,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
   return (
     <div className="legacy-site">
       <div className="legacy-preservation" role="note">
-        Preserved customer-site mirror · ordering and payments disabled · last complete snapshot 03 Nov 2014
+        Preserved customer-site mirror · ordering and payments disabled · last complete snapshot 01 Dec 2014
       </div>
       <div className="legacy-utility">
         <div><span>Copperline customer archive</span><span>Chicago · Dallas · Atlanta</span></div>
@@ -67,7 +67,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
 
       <footer className="legacy-footer">
         <div><Link href="/">Home</Link> | <Link href="/about.php">About Copperline</Link> | <Link href="/support/index.php">Terms of Service</Link> | <Link href="/support/index.php">Privacy Policy</Link> | <Link href="/support/index.php">Contact Us</Link></div>
-        <p>Copyright © 2009–2014 Copperline Hosting. Archived pages are provided as-is.</p>
+        <p>Copyright © 2008–2014 Copperline Hosting. Archived pages are provided as-is.</p>
         <small>Powered by WHMCS 5 · TCAdmin 1 · Copperline Hosting is not affiliated with Mojang AB.</small>
       </footer>
     </div>

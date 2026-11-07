@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { bundle } from "@/lib/morrow/canon";
 import { TEMP_PASSWORD, normalise, startSession } from "@/lib/morrow/session";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
 
+export const GET = (request: Request) => seeOther(request, "/clientarea.php");
+
 export async function POST(request: Request) {
-  const form = await request.formData();
+  const form = await readForm(request);
   const user = normalise(form.get("username")?.toString());
   const pass = form.get("password")?.toString() ?? "";
   const b = await bundle();

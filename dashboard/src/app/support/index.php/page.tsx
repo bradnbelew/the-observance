@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
-import { bundle, currentAct } from "@/lib/morrow/canon";
+import { bundle, currentAct, hintsOf } from "@/lib/morrow/canon";
 import { actClock, unseal } from "@/lib/morrow/campaign";
-import { answered, deskNotes, fileLink, voiceLink, type Ticket } from "@/lib/morrow/desk";
+import { answered, deskNotes, fileLink, type Ticket } from "@/lib/morrow/desk";
 import { VoiceNote } from "@/components/morrow/VoiceNote";
 
 export const metadata: Metadata = { title: "Archive Desk - Copperline Hosting" };
@@ -14,7 +14,11 @@ export const dynamic = "force-dynamic";
 export default async function ArchiveDesk() {
   const b = await bundle();
   const mine = ((await cookies()).get("desk_tickets")?.value ?? "").split("~").map((t) => ({ t, v: unseal<Ticket & { c?: string }>(t) })).filter((x) => x.v);
-  const notes = deskNotes(b, await actClock());
+  const clock = await actClock();
+  // hints released in acts that have passed stay up (each act's text lives in that act's bundle)
+  const earlier = Object.keys(clock.hintsReleased).map(Number).filter((a) => a < b.act);
+  const earlierHints = Object.fromEntries(await Promise.all(earlier.map(async (a) => [a, await hintsOf(a)] as const)));
+  const notes = deskNotes(b, clock, earlierHints);
   return (
     <LegacyShell active="support">
       <Breadcrumbs>Archive Desk</Breadcrumbs>
@@ -31,7 +35,7 @@ export default async function ArchiveDesk() {
           <div key={i} className="whmcs-reply">
             <div className="whmcs-reply-head"><b>archivist</b><span>{n.at}</span></div>
             <pre className="whmcs-reply-body">{n.text}</pre>
-            {n.voice ? <VoiceNote href={voiceLink(n.voice)} /> : null}
+            {n.voice ? <VoiceNote id={n.voice} /> : null}
             {n.file ? <p className="desk-attach">Attachment: <a href={fileLink(n.file)}>{n.file}</a></p> : null}
           </div>
         ))}

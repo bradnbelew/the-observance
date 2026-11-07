@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /** Pure-logic checks for Morrow's voice (no server). Run: gradlew selftest */
 public final class SelfTest {
@@ -276,6 +278,78 @@ public final class SelfTest {
         check(Corpus.sourceIs(bryn.fragments().get(0).source(), "bryn"), "player persona from act 7");
         check(pc.reply("hello", 6, 3, Long.MIN_VALUE, "bryn").text().equals(pc.reply("hello", 6, 3, Long.MIN_VALUE).text()), "player persona before act 7 = plain reply");
         check(pc.reply("hello", 7, 3, Long.MIN_VALUE, "nobody").text().equals(pc.reply("hello", 7, 3, Long.MIN_VALUE).text()), "unknown persona = plain reply");
+
+        // ---- the finale speaks only corpus sentences (no invented Morrow lines) ------------------------
+        Corpus.Reply home = baseCorpus().reply(Finale.RETURNED_HEARD, 6, 0);
+        System.out.println("the low path's wrong turn says: " + home.text());
+        check(baseCorpus().obeysLaw(home, 6) && home.text().contains("home"), "the low path's line is a corpus sentence about home: " + home.text());
+
+        // ---- operator tools: snapshot / rollback ------------------------------------------------------
+        File data = java.nio.file.Files.createTempDirectory("mrrw-snap").toFile();
+        java.nio.file.Files.writeString(new File(data, "state.yml").toPath(), "act: 5\n");
+        java.nio.file.Files.writeString(new File(data, "bridge-state.json").toPath(), "{\"desk\":{}}");
+        java.nio.file.Files.writeString(new File(data, "journal.jsonl").toPath(), "{\"kind\":\"a\"}\n");
+        check(OpsLogic.snapshot(data, "before-act6").containsAll(List.of("state.yml", "bridge-state.json")), "snapshot copies the state files");
+        java.nio.file.Files.writeString(new File(data, "state.yml").toPath(), "act: 9\n");
+        java.nio.file.Files.writeString(new File(data, "stopped.flag").toPath(), "{}");
+        java.nio.file.Files.writeString(new File(data, "journal.jsonl").toPath(), "{\"kind\":\"a\"}\n{\"kind\":\"b\"}\n");
+        OpsLogic.rollback(data, "before-act6");
+        check(java.nio.file.Files.readString(new File(data, "state.yml").toPath()).equals("act: 5\n"), "rollback restores state.yml");
+        check(!new File(data, "stopped.flag").exists(), "rollback removes a stop the snapshot didn't have");
+        check(java.nio.file.Files.readString(new File(data, "journal.jsonl").toPath()).contains("\"b\""), "rollback never rewrites the journal");
+        check(OpsLogic.snapshots(data).equals(List.of("before-act6")), "snapshot list " + OpsLogic.snapshots(data));
+        boolean refused = false;
+        try {
+            OpsLogic.rollback(data, "nope");
+        } catch (IllegalArgumentException e) {
+            refused = true;
+        }
+        check(refused, "rollback to a missing snapshot must refuse");
+        check(!OpsLogic.validName("../x") && !OpsLogic.validName(".hidden") && OpsLogic.validName("op-1700000000"), "snapshot names stay inside snapshots/");
+
+        // ---- operator tools: flags, the op command text, pause-when-empty --------------------------------
+        for (String f : new String[] {"act5.maint_on", "lowpath.session_ended", "install.maint_sign", "rail.act4", "theo.timed.T-07d", "tidy.tally.3", "stopped"}) {
+            check(OpsLogic.knownFlag(f), "known flag " + f);
+        }
+        for (String f : new String[] {"act5.maint", "install.", "lowpath.session_end", "", null}) check(!OpsLogic.knownFlag(f), "unknown flag " + f);
+        check(Arrays.equals(OpsLogic.opArgs("/mrrw act 5  2026-10-17T20:00:00-04:00"), new String[] {"act", "5", "2026-10-17T20:00:00-04:00"}), "op args with /mrrw");
+        check(Arrays.equals(OpsLogic.opArgs("  say hello   there "), new String[] {"say", "hello", "there"}), "op args spaces");
+        check(OpsLogic.opArgs("   ").length == 0 && OpsLogic.opArgs(null).length == 0, "blank op command");
+        java.util.Properties sp = new java.util.Properties();
+        check(OpsLogic.pauseWarning(null) == null, "no server.properties: no warning");
+        check(OpsLogic.pauseWarning(sp) != null, "missing pause-when-empty-seconds warns (Paper default 60)");
+        sp.setProperty("pause-when-empty-seconds", "60");
+        check(OpsLogic.pauseWarning(sp) != null, "pause-when-empty-seconds=60 warns");
+        sp.setProperty("pause-when-empty-seconds", "-1");
+        check(OpsLogic.pauseWarning(sp) == null, "pause-when-empty-seconds=-1 is fine");
+
+        // ---- the USB quorum: residents seen lately, never below one, the operator's number wins ---------
+        long nowQ = 1_800_000_000_000L, day = 86_400_000L;
+        java.util.Set<String> res = new java.util.LinkedHashSet<>(List.of("ash", "bryn", "cole", "dee", "eli", "fay"));
+        java.util.Map<String, Long> seen = new java.util.HashMap<>(java.util.Map.of("ash", nowQ - day, "bryn", nowQ - 2 * day,
+                "cole", nowQ - 20 * day, "dee", nowQ - 30 * day, "eli", nowQ - 40 * day, "fay", nowQ - 50 * day));
+        check(OpsLogic.quorum(res, seen, nowQ, 0) == 2, "six joined, four quit: quorum 2");
+        check(BridgeLogic.winner(BridgeLogic.tally(java.util.Map.of("1", "clean")), OpsLogic.quorum(res, seen, nowQ, 0)) != null, "one of the two who still play can carry it");
+        check(OpsLogic.quorum(Set.of("solo"), java.util.Map.of("solo", nowQ - 90 * day), nowQ, 0) == 1, "a group of one always counts one");
+        check(OpsLogic.quorum(Set.of(), java.util.Map.of(), nowQ, 0) == 1, "nobody on the roster: quorum 1");
+        check(OpsLogic.quorum(res, java.util.Map.of(), nowQ, 0) == 6, "no visits recorded yet (old roster): everyone counts");
+        check(OpsLogic.quorum(res, seen, nowQ, 4) == 4, "usb_quorum wins");
+        java.util.Set<String> ten = new java.util.LinkedHashSet<>();
+        for (int i = 0; i < 10; i++) ten.add("p" + i);
+        check(OpsLogic.quorum(ten, java.util.Map.of(), nowQ, 0) == 10, "ten residents: quorum 10, five ballots carry it");
+
+        // ---- the journal tail (/mrrw journal, GET /journal) ---------------------------------------------
+        File jd = java.nio.file.Files.createTempDirectory("mrrw-journal").toFile();
+        Journal jt = new Journal(jd);
+        for (int i = 0; i < 5; i++) {
+            JsonObject d = new JsonObject();
+            d.addProperty("i", i);
+            jt.write("t", d);
+        }
+        java.nio.file.Files.writeString(new File(jd, "journal.jsonl").toPath(), "{torn\n", java.nio.file.StandardOpenOption.APPEND);
+        var last = jt.tail(3);
+        check(last.size() == 2 && last.get(1).getAsJsonObject("detail").get("i").getAsInt() == 4, "journal tail skips a torn line, oldest first");
+        check(jt.tail(0).isEmpty() && new Journal(java.nio.file.Files.createTempDirectory("mrrw-j2").toFile()).tail(5).isEmpty(), "empty tails");
 
         System.out.println(fails == 0 ? "all plugin self-tests passed" : fails + " FAILURES");
         if (fails > 0) System.exit(1);

@@ -197,6 +197,7 @@ public final class ActDirector {
         flasher = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (state.done("stopped")) return;
             if (!w.isChunkLoaded(lamp.getX() >> 4, lamp.getZ() >> 4)) return;  // never load chunks just to blink
+            if (lamp.getType() != Material.REDSTONE_LAMP) lamp.setType(Material.REDSTONE_LAMP, false);  // broken or built over: C4 must keep flashing
             if (!(lamp.getBlockData() instanceof Lightable data)) return;
             boolean on = tick[0]++ % 100 < 20;  // 1 s on, 4 s off, every 100 ticks = 5 s
             if (data.isLit() != on) {

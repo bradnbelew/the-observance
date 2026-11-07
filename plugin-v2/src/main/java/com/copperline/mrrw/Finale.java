@@ -67,11 +67,10 @@ public final class Finale implements Listener {
         this.roster = roster;
         this.recorder = recorder;
         if (state.done("stop_pending") && !state.done("stopped")) {  // a restart mid-scene: the stop stands, the scene is skipped
-            state.markDone("stopped");
-            state.setStamp("stopped_at", System.currentTimeMillis());
-            JsonObject d = new JsonObject();
-            d.addProperty("by", "resumed after a restart mid-scene");
-            journal.write("morrow.stopped", d);
+            JsonObject d = readJson(new File(plugin.getDataFolder(), PENDING));
+            if (d == null) d = new JsonObject();
+            d.addProperty("resumed", "after a restart mid-scene");
+            finish(d);  // the same record, stopped.flag (the bot) and stop log (the site) as an uninterrupted stop
         }
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 100L, 100L);
     }
@@ -136,7 +135,8 @@ public final class Finale implements Listener {
                     if (state.done(flag) || p.getLocation().distanceSquared(new Location(w, lp[0], lp[1], lp[2])) > 40 * 40) continue;
                     int[] sp = canon.anchor("spawn");
                     p.teleport(new Location(w, sp[0] + .5, sp[1] + 1, sp[2] + .5));
-                    p.sendActionBar(Component.text("the low path brings you home", NamedTextColor.GRAY));
+                    // Morrow only says what someone said: the base corpus's best sentence for "someone comes home"
+                    p.sendActionBar(Component.text(canon.corpus.reply(RETURNED_HEARD, 6, 0).text(), NamedTextColor.GRAY));
                     state.markDone(flag);
                     break;
                 }
@@ -161,8 +161,16 @@ public final class Finale implements Listener {
         int[] annex = canon.anchor("maintenance_annex");
         Location console = new Location(p.getWorld(), annex[0], annex[1], annex[2]);
         if (p.getWorld() != console.getWorld() || p.getLocation().distanceSquared(console) > 24 * 24) {
-            // a chat line, not a passing action bar: say where the console is
-            p.sendMessage(Component.text("[mrrw] no console here. the console's at the maintenance annex", NamedTextColor.GRAY));
+            // Morrow says nothing it wasn't given (the site already says "at the maintenance annex"): the
+            // console answers from its own direction instead, a relay click a few blocks toward the annex
+            if (p.getWorld() == console.getWorld()) {
+                org.bukkit.util.Vector toward = console.toVector().subtract(p.getLocation().toVector()).normalize().multiply(6);
+                p.playSound(p.getLocation().add(toward), org.bukkit.Sound.BLOCK_COMPARATOR_CLICK, org.bukkit.SoundCategory.BLOCKS, 1f, 0.6f);
+            }
+            JsonObject d = new JsonObject();
+            d.addProperty("by", p.getName());
+            d.addProperty("code_away_from_annex", code);
+            journal.write("morrow.stop_code_elsewhere", d);
             return;
         }
         if (devSecret()) {
@@ -253,10 +261,35 @@ public final class Finale implements Listener {
         return new Location(w, a[0] + 0.5, a[1], a[2] - 1.5);
     }
 
+    /** What the low path's wrong turn "heard": the reply is a whole 2011 sentence about coming home (SelfTest checks it). */
+    static final String RETURNED_HEARD = "someone comes home";
+    private static final String PENDING = "stop-pending.json";
+
+    private static JsonObject readJson(File f) {
+        try {
+            return com.google.gson.JsonParser.parseString(Files.readString(f.toPath(), StandardCharsets.UTF_8)).getAsJsonObject();
+        } catch (Exception missing) {
+            return null;
+        }
+    }
+
+    /** The stop's last step: flags, the journal record, stopped.flag for the bot. Also the resume after a restart mid-scene. */
+    private void finish(JsonObject d) {
+        state.markDone("stopped");
+        state.setStamp("stopped_at", System.currentTimeMillis());
+        ghosts.clearAll();
+        if (d.has("stop_log")) finalLog = Canon.strings(d.getAsJsonArray("stop_log"));
+        journal.write("morrow.stopped", d);
+        try {  // the Discord bot watches for this file and cuts the bridge
+            Files.writeString(new File(plugin.getDataFolder(), "stopped.flag").toPath(), d.toString(), StandardCharsets.UTF_8);
+        } catch (IOException ignored) {
+            // the journal already records the stop
+        }
+    }
+
     private void stop(String byName, char choice) {
         if (stopping || stopped()) return;
         stopping = true;
-        state.markDone("stop_pending");  // on disk at once: a crash in the next three minutes must not un-stop the game
         // the south branch is the one thing Morrow leaves unfinished; the log must always say so,
         // and if a resident ever asked for it, the reason is theirs (else finch's own 2011 sign)
         BridgeLogic.Said asked = roster.firstUnfinished();
@@ -264,6 +297,27 @@ public final class Finale implements Listener {
         List<String> log = BridgeLogic.stopLog(Canon.strings(canon.array("stop_log")), skip);
         finalLog = List.copyOf(log);
         BridgeLogic.Usb usb = BridgeLogic.readUsb(new File(plugin.getDataFolder(), "usb-votes.json"), Bridge.quorumPlayers(plugin, roster));
+        JsonObject d = new JsonObject();
+        d.addProperty("by", byName);
+        d.addProperty("retained", switch (choice) { case 'C' -> "clean"; case 'R' -> "recovered"; default -> "corpus"; });
+        if (usb.winner() == null) d.add("usb_winner", com.google.gson.JsonNull.INSTANCE);
+        else d.addProperty("usb_winner", usb.winner());
+        d.add("usb_votes", usb.json().get("votes"));
+        d.addProperty("skipped", "mossfield:south_rail");
+        d.addProperty("skip_line", skip);
+        if (asked != null) {
+            d.addProperty("skip_reason_by", asked.name());
+            d.addProperty("skip_reason", asked.text());
+        }
+        com.google.gson.JsonArray lines = new com.google.gson.JsonArray();
+        log.forEach(lines::add);
+        d.add("stop_log", lines);
+        try {  // the record first, then the flag: a crash in the next three minutes finishes this same stop on restart
+            Files.writeString(new File(plugin.getDataFolder(), PENDING).toPath(), d.toString(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            plugin.getLogger().warning("could not write " + PENDING + ": " + e);
+        }
+        state.markDone("stop_pending");  // on disk at once: a crash in the next three minutes must not un-stop the game
         World w = Bukkit.getWorlds().get(0);
         // Morrow's last words: the code echoed, then the one fresh sentence it has that matches "stop"
         announce(engine("stop_requested").replace("{code}", byName.equals("operator") ? "console" : lastCode == null ? "" : lastCode));
@@ -276,32 +330,7 @@ public final class Finale implements Listener {
         }
         // June's lamp: one last flash, dark as the last line ("exit 0") prints
         if (director != null) Bukkit.getScheduler().runTaskLater(plugin, director::lastFlash, logStart + Math.max(1L, 40L * log.size() - 30L));
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            state.markDone("stopped");
-            state.setStamp("stopped_at", System.currentTimeMillis());
-            ghosts.clearAll();
-            JsonObject d = new JsonObject();
-            d.addProperty("by", byName);
-            d.addProperty("retained", switch (choice) { case 'C' -> "clean"; case 'R' -> "recovered"; default -> "corpus"; });
-            if (usb.winner() == null) d.add("usb_winner", com.google.gson.JsonNull.INSTANCE);
-            else d.addProperty("usb_winner", usb.winner());
-            d.add("usb_votes", usb.json().get("votes"));
-            d.addProperty("skipped", "mossfield:south_rail");
-            d.addProperty("skip_line", skip);
-            if (asked != null) {
-                d.addProperty("skip_reason_by", asked.name());
-                d.addProperty("skip_reason", asked.text());
-            }
-            com.google.gson.JsonArray lines = new com.google.gson.JsonArray();
-            log.forEach(lines::add);
-            d.add("stop_log", lines);
-            journal.write("morrow.stopped", d);
-            try {  // the Discord bot watches for this file and cuts the bridge
-                Files.writeString(new File(plugin.getDataFolder(), "stopped.flag").toPath(), d.toString(), StandardCharsets.UTF_8);
-            } catch (IOException ignored) {
-                // the journal already records the stop
-            }
-        }, logStart + 40L * (log.size() + 1));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> finish(d), logStart + 40L * (log.size() + 1));
     }
 
     private String lastCode;

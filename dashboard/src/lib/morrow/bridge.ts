@@ -33,8 +33,14 @@ export type BridgeState = {
   usb: { votes: Record<UsbChoice, number>; winner: UsbChoice | null; open: boolean };
   fingerprint: string | null;
   theo: { id: string; at: string; subject: string }[];
-  /** How many of this act's hints the operator has released (/op page or /mrrw hint N); 0 = none. Hints never release by themselves. */
+  /** How many of this act's hints the operator has released (/backstage or /mrrw hint N); 0 = none. Hints never release by themselves. */
   hintFloor: number;
+  /** config auto_advance (null if the plugin didn't say). */
+  autoAdvance: boolean | null;
+  /** Hints released per act (/state hints_released {"4": 2}), so earlier acts' hints stay on the desk; {} from an older plugin. */
+  hintsReleased: Record<number, number>;
+  /** When each was released, epoch ms per act (/state hints_released_at {"4": [ms, ms]}, or one ms for the act); {} if absent. */
+  hintTimes: Record<number, number[]>;
 };
 
 export type DeskEvent = {
@@ -64,7 +70,13 @@ function warnOnce(key: string, message: string) {
 }
 
 /** One signed request. Resolves to the parsed JSON, or null for any failure (never rejects). */
-async function call(method: "GET" | "POST", pathWithQuery: string, body = ""): Promise<unknown | null> {
+async function call(method: "GET" | "POST", pathWithQuery: string, body = "", timeoutMs = TIMEOUT_MS): Promise<unknown | null> {
+  const r = await request(method, pathWithQuery, body, timeoutMs);
+  return r && r.ok ? r.json : null;
+}
+
+/** The signed request itself: status and parsed body (error bodies too, for the operator page), or null if nothing answered. */
+async function request(method: "GET" | "POST", pathWithQuery: string, body: string, timeoutMs: number): Promise<{ ok: boolean; status: number; json: unknown } | null> {
   const base = bridgeUrl();
   if (!base) return null;
   try {
@@ -79,18 +91,17 @@ async function call(method: "GET" | "POST", pathWithQuery: string, body = ""): P
     if (method === "POST") headers["Content-Type"] = "application/json";
     const res = await fetch(url, {
       method, headers, body: method === "POST" ? body : undefined,
-      signal: AbortSignal.timeout(TIMEOUT_MS), cache: "no-store",
+      signal: AbortSignal.timeout(timeoutMs), cache: "no-store",
     });
     if (res.status === 401 || res.status === 403) {
       warnOnce("auth", `${method} ${url.pathname} refused (${res.status}): MORROW_STOP_SECRET on the site must equal stop-secret in plugins/mrrw/config.yml, and both clocks must be roughly right`);
-      return null;
-    }
-    if (!res.ok) {
+    } else if (!res.ok) {
       warnOnce(`http-${res.status}`, `${method} ${url.pathname} answered ${res.status}`);
-      return null;
+    } else {
+      warned.delete("down");
     }
-    warned.delete("down");
-    return await res.json();
+    const json = await res.json().catch(() => null);
+    return { ok: res.ok && json !== null, status: res.status, json };
   } catch (err) {
     warnOnce("down", `unreachable at ${base} (${(err as Error).message}); using MORROW_ACT / MORROW_ACT_STARTED / MORROW_PLAYERS`);
     return null;
@@ -134,11 +145,29 @@ export function parseState(raw: unknown): BridgeState | null {
       open: usbRaw.open === true,
     },
     fingerprint: typeof o.fingerprint === "string" ? o.fingerprint : null,
+    autoAdvance: typeof o.auto_advance === "boolean" ? o.auto_advance : null,
+    ...hintFields(o),
     theo: theo
       .filter((t): t is Record<string, unknown> => !!t && typeof t === "object")
       .map((t) => ({ id: String(t.id ?? ""), at: String(t.at ?? ""), subject: String(t.subject ?? "") }))
       .filter((t) => t.id),
   };
+}
+
+function hintFields(o: Record<string, unknown>): Pick<BridgeState, "hintsReleased" | "hintTimes"> {
+  const hintsReleased: Record<number, number> = {};
+  const hintTimes: Record<number, number[]> = {};
+  const obj = (v: unknown) => (v && typeof v === "object" && !Array.isArray(v) ? Object.entries(v as Record<string, unknown>) : []);
+  for (const [k, v] of obj(o.hints_released)) {
+    const act = Number(k), n = Number(v);
+    if (Number.isInteger(act) && act >= 1 && act <= 10 && Number.isInteger(n) && n > 0) hintsReleased[act] = n;
+  }
+  for (const [k, v] of obj(o.hints_released_at)) {
+    const act = Number(k);
+    const times = (Array.isArray(v) ? v : [v]).map(Number).filter((t) => Number.isFinite(t) && t > 0);
+    if (Number.isInteger(act) && times.length) hintTimes[act] = times;
+  }
+  return { hintsReleased, hintTimes };
 }
 
 let cached: { at: number; state: BridgeState | null } | null = null;
@@ -202,10 +231,31 @@ export async function postHandIn(ref: string, subject: string | null = null): Pr
   return postDeskEvent({ ref, reply_at: null, voice: null, subject });
 }
 
+/**
+ * The same event within this window is sent once per instance: opening June's folder fetched every
+ * screenshot with her password, and each request posted the hand-in again (3 tries each, a journal
+ * line each, the state cache dropped each time). Later repeats still go out, so a ref that reached
+ * the plugin before its act is re-posted when a ticket is viewed again.
+ */
+const REPEAT_MS = 60_000;
+const recent = new Map<string, { at: number; done: Promise<boolean> }>();
+
 /** Tell the plugin what the desk just filed. Resolves when sent (or failed); never rejects. Idempotent on the plugin side. */
-export async function postDeskEvent(ev: Omit<DeskEvent, "kind">): Promise<boolean> {
+export async function postDeskEvent(ev: Omit<DeskEvent, "kind">, force = false): Promise<boolean> {
   if (!bridgeUrl()) return false;
   const body = JSON.stringify({ kind: "desk", ref: ev.ref, reply_at: ev.reply_at, voice: ev.voice, subject: ev.subject });
+  const now = Date.now();
+  const seen = recent.get(body);
+  if (!force && seen && now - seen.at < REPEAT_MS) return seen.done;
+  for (const [k, v] of recent) if (now - v.at >= REPEAT_MS) recent.delete(k);
+  const done = sendDeskEvent(ev, body);
+  recent.set(body, { at: now, done });
+  // a failed send may be retried at once (the next view, the operator's re-post)
+  done.then((ok) => { if (!ok && recent.get(body)?.done === done) recent.delete(body); });
+  return done;
+}
+
+async function sendDeskEvent(ev: Omit<DeskEvent, "kind">, body: string): Promise<boolean> {
   // a hand-in is posted once from after(); the plugin dedups per ref, so retry a blip rather than lose the act
   let res: unknown = null;
   for (let attempt = 0; attempt < 3 && !res; attempt++) {
@@ -229,4 +279,45 @@ export async function postHint(n: number): Promise<number | null> {
   forgetBridgeState();
   const floor = res && typeof res === "object" ? (res as { hint_floor?: unknown }).hint_floor : undefined;
   return typeof floor === "number" ? floor : null;
+}
+
+/** The plugin's /state asked now, past the cache (the operator page): the parsed state and the raw answer, or nulls. */
+export async function bridgeStateFresh(): Promise<{ state: BridgeState | null; raw: Record<string, unknown> | null }> {
+  const raw = await call("GET", "/state");
+  const state = parseState(raw);
+  if (state) {
+    cached = { at: Date.now(), state };
+    lastGood = state;
+    lastNames = state.names;
+    lastFirstJoins = state.firstJoins;
+  }
+  return { state, raw: state ? (raw as Record<string, unknown>) : null };
+}
+
+/** The last good /state this instance heard (null = never): what the site keeps serving through a blip. */
+export const lastGoodState = () => lastGood;
+
+/**
+ * An operator command, exactly what follows /mrrw in the console ("act 5", "flag maint on"), run by the
+ * plugin (POST /event kind "op"). Never rejects: a failure comes back as ok false with the reason.
+ * Some commands (snapshot, rollback) touch the world on disk, so this waits longer than page calls.
+ */
+export async function postOp(cmd: string, timeoutMs = 25_000): Promise<{ ok: boolean; output: string }> {
+  if (!bridgeUrl()) return { ok: false, output: "MORROW_BRIDGE_URL is not set on the site." };
+  const r = await request("POST", "/event", JSON.stringify({ kind: "op", cmd }), timeoutMs);
+  forgetBridgeState();
+  if (!r) return { ok: false, output: "The bridge didn't answer (server down, port closed, or slow). Run it in the server console instead." };
+  const o = (r.json && typeof r.json === "object" ? r.json : {}) as Record<string, unknown>;
+  const output = typeof o.output === "string" ? o.output : typeof o.error === "string" ? o.error : JSON.stringify(r.json);
+  if (r.status === 401 || r.status === 403) return { ok: false, output: `Refused (${r.status}): the site's MORROW_STOP_SECRET doesn't match the plugin's stop-secret, or a clock is off.` };
+  return { ok: r.ok && o.ok === true, output: output || (r.ok ? "(no output)" : `HTTP ${r.status}`) };
+}
+
+/** The last n journal entries (GET /journal?n=), oldest first, or null when the bridge doesn't answer. */
+export async function bridgeJournal(n = 50): Promise<unknown[] | null> {
+  const raw = await call("GET", `/journal?n=${n}`, "", 5000);
+  if (Array.isArray(raw)) return raw;
+  const o = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : null;
+  const list = o?.entries ?? o?.journal ?? o?.lines;
+  return Array.isArray(list) ? list : null;
 }

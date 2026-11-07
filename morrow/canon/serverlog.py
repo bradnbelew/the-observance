@@ -85,7 +85,8 @@ DAYS = {
         morrow("05:12:15", "cairn is at the farm. no worries at all"),
         chat("05:58:02", "patchcord", "recording this, saving as moss_0518"),
         login("06:01:40", "i_bell", 1213390, "301.0, 64.0, 92.0"),
-        chat("06:02:31", "i_bell", "im putting a key somewhere theo cant reach. later"),
+        # she said "I'll message you" on Mumble; CraftBukkit logged the /tell (she forgot it does)
+        info("06:02:31", "i_bell issued server command: /tell rookery im putting a key somewhere theo cant reach. later"),
         chat("06:09:17", "patchcord", ciphers.build_slipped_line()),
         chat("06:09:30", "juni_lantern", "patch ur hands are on the wrong keys lol"),
         quit_("06:12:44", "i_bell"),

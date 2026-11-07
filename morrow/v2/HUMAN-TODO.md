@@ -70,15 +70,25 @@ RECORDING-SCRIPTS.md. If a note is missing, the page still shows the words.
 
 | ID | Where it plays |
 | --- | --- |
+All 26, in the order players meet them (`T-09-fake` is spliced from your 2011 voicemail by
+`morrow/canon/splice.py`, not recorded):
+
+| ID | Where it plays |
+| --- | --- |
 | `T-01` | Archive Desk welcome (Act 1) |
-| `T-04a`, `T-04b` | unmasking reply, deflection (Act 4) |
+| `T-04a`, `T-04c`, `T-04d`, `T-04e` | the unmasking reply: general, lot number, heartbeat date, waived invoices (Act 4) |
+| `T-04b` | unmasking with only one thing filed (Act 4) |
 | `T-05a` | handing over patchcord's recording (Act 5) |
-| `T-06a` | the 06:44 confession (Act 6) |
+| `T-06a`, `T-06d` | the 06:44 confession: filed with mid-session / with the node name (Act 6) |
+| `T-06b`, `T-06c` | timed drops: waxing the signs; couldn't sleep (Act 6) |
 | `T-07a`, `T-07b`, `T-07c` | his real Discord DMs (Act 7) |
+| `T-07d` | timed drop after the DMs (Act 7) |
 | `T-08a` | after the 36-hour silence, about Kit (Act 8) |
 | `T-09a`, `T-09b` | case brief accepted / not yet (Act 9) |
-| `T-10-booked`, `T-10-cut` | window booked; cutting the bridge (Act 10) |
+| `T-09c` | timed drop, the morning after the brief (Act 9) |
+| `T-10-booked`, `T-10-ask`, `T-10-cut` | window booked; finch's sign; cutting the bridge (Act 10) |
 | `T-10-clean`, `T-10-recovered`, `T-10-corpus` | his last message, per USB choice (Act 10) |
+| `T-10-after` | a week after the stop (Act 10) |
 
 ## 5. Photos
 
@@ -142,7 +152,7 @@ npm --prefix discord-v2 run dry
 | Variable | Value |
 | --- | --- |
 | `MORROW_ACT` | `1` |
-| `MORROW_ACT_STARTED` | game night, ISO format **with your offset**, e.g. `2026-11-14T21:00:00-05:00` |
+| `MORROW_ACT_STARTED` | game night, ISO format **with your offset**, e.g. `2026-11-14T21:00:00-06:00` (Chicago is on CST, -06:00, from 1 November) |
 | `MORROW_SESSION_SECRET` | a long random string |
 | `MORROW_STOP_SECRET` | the same string as `stop-secret` in the plugin config |
 | `MORROW_MC_HOST` | the real `host:port` (not the SRV name; the site's ping doesn't follow SRV) |
@@ -178,7 +188,7 @@ the test server (`TEST-NOW.md`), as a non-op resident:
    and the act moves to 6.
 3. Act 7: open Iona's chest (`-238 61 232`): the counts read top to bottom in the GUI; next dawn
    Morrow merges it.
-4. Act 8 and 9: place a bed on the west wall of lowpath's place (`-214 73 86`). Act 8: queued, then
+4. Act 8 and 9: place a bed in lowpath's place (the gap at `-213 73 86`). Act 8: queued, then
    gone at dawn. Act 9: `bed kept`, and at dusk lowpath walks in and lies down (if the Mannequin
    sleeping pose doesn't take, it stops on the bed for three seconds, which is fine).
 5. June's yard: time the torch clock against the lamp (both 5 s).

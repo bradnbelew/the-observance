@@ -8,8 +8,8 @@ stop-secret: mrrw-dev-stop-secret
 # join / online-time triggers unless auto_advance_count_ops is true.
 auto_advance: true
 auto_advance_count_ops: false
-# The USB vote needs ballots from half the residents. 0 = everyone who ever joined; set a number
-# when players have quit for good, so the finale can't be blocked by people who aren't coming back.
+# The USB vote needs ballots from half the residents. 0 = the residents seen in the last 14 days
+# (never fewer than 1); a number here wins (/mrrw residents quorum N sets it).
 usb_quorum: 0
 
 # The signed bridge the website and the Discord bot read (GET /state, POST /event, GET /corpus).

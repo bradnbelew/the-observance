@@ -248,6 +248,8 @@ def serverlog_line(t: str) -> str:
     for tt, _l, msg in serverlog.DAYS["2011-05-18"]:
         if tt == t and msg.startswith("<"):
             return msg.split("> ", 1)[1]
+        if tt == t and " issued server command: /tell " in msg:  # the replay can't tell a whisper from chat
+            return msg.split(" /tell ", 1)[1].split(" ", 1)[1]
     raise KeyError(t)
 
 
@@ -419,7 +421,8 @@ def main() -> None:
     (OUT / "6118-checklist.txt").write_text(records.checklist(), encoding="utf-8")
     (OUT / "robots.txt").write_text(records.ROBOTS_TXT, encoding="utf-8")
     folders = {"juni_lantern": {"password": people.by_handle("juni_lantern").lwc_password, "act": 3,
-                                "paths": ["/~juni_lantern", "/u/juni_lantern", "/media/june"]},
+                                "paths": ["/~juni_lantern", "/u/juni_lantern", "/media/june"],
+                                "realm": "june's pics - pw is the one at home"},
                "patchcord": {"password": people.by_handle("patchcord").lwc_password, "act": 5,
                              "paths": ["/~patchcord", "/u/patchcord", "/media/patchcord"]},
                "tvale": {"password": later.TVALE_BOX["password"], "act": later.TVALE_BOX["act"],

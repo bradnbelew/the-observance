@@ -9,8 +9,10 @@ can run anywhere: on Railway, next to the server, or on your own PC.
 - **Act 7:** private messages. Morrow's impersonations (corpus fragments, plus quotes of other
   players' real in-game lines from `GET /lines`), and Theo's real ones with his voice notes.
 - **Act 9:** Morrow's spliced "Theo" voice note to every resident.
-- **Theo's big replies** (T-04a, T-06a, T-08a, T-09a, T-09b) are posted to #general, with the voice
-  note, when the plugin releases them (feed entries of kind `theo.reply`).
+- **Theo's big replies** (every desk ticket with a Theo voice, listed in
+  `morrow/v2/OPERATOR-RUNBOOK.md` under the act table; the text is `theo_mirror.replies` in `canon.json`)
+  are posted to #general, with the voice note, when the plugin releases them (feed entries of kind
+  `theo.reply`). Voice notes go out as `voice-message.<ext>`, never under their file name.
 - **Act 7, the Turing test:** when a resident DMs the bot back, Morrow answers as the persona it last
   wrote to them as (or the one they name), using only what the plugin's corpus returns
   (`GET /corpus`). One reply per person per 20 s. No bridge, no reply. Theo's real DMs are unchanged.

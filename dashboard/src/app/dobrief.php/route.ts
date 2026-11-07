@@ -3,11 +3,14 @@ import { bundle } from "@/lib/morrow/canon";
 import { deskReplyAt, eveningAfter } from "@/lib/morrow/campaign";
 import { deskEvent, remember, scoreBrief, ticketLink, type Ticket } from "@/lib/morrow/desk";
 import { postDeskEvent } from "@/lib/morrow/bridge";
+import { readForm, seeOther } from "@/lib/morrow/http";
 
 export const dynamic = "force-dynamic";
 
+export const GET = (request: Request) => seeOther(request, "/support/brief.php");
+
 export async function POST(request: Request) {
-  const form = await request.formData();
+  const form = await readForm(request);
   const b = await bundle();
   if (!b.case_brief) return NextResponse.redirect(new URL("/support/index.php", request.url), 303);
   const answers = Object.fromEntries(b.case_brief.map((f) => [f.id, String(form.get(f.id) ?? "")]));

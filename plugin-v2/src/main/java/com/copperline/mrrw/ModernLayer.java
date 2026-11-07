@@ -58,34 +58,73 @@ public final class ModernLayer {
         return w.getBlockAt(a[0] + dx, a[1] + dy, a[2] + dz);
     }
 
+    /** Every install part, in install order (each a one-shot flag "install.NAME"). */
+    Map<String, Runnable> parts(World w) {
+        Map<String, Runnable> p = new java.util.LinkedHashMap<>();
+        p.put("theo_archive", () -> theoArchive(w));
+        p.put("museum", () -> museum(w));
+        p.put("reading_room", () -> readingRoom(w));
+        p.put("map_wall", () -> mapWall(w));
+        p.put("map_copies", () -> mapCopies(w));
+        p.put("flags", () -> flags(w));
+        p.put("flag_tribute", () -> flagTribute(w));
+        p.put("meadow", () -> meadow(w, null));
+        p.put("lowpath_place", () -> lowpathPlace(w));
+        p.put("dust_corridor", () -> dustCorridor(w));
+        p.put("listening_room", () -> listeningRoom(w));
+        p.put("maint_sign", () -> maintSign(w));
+        p.put("finch_lock", () -> new FinchLock(canon).build(w));
+        p.put("nether_hub_sign", this::netherHubSign);
+        p.put("container_repair", () -> repairContainers(w));
+        if (canon.raw.has("finch_south_sign")) p.put("south_rail_sign", () -> southRailSign(w));
+        if (canon.raw.has("dock")) p.put("dock_removed", () -> removeDock(w));
+        if (canon.raw.has("storehouse_jog")) p.put("barn_squared", () -> squareBarn(w));
+        if (canon.anchors.containsKey("cairn_shed_hatch")) p.put("shed_hatch", () -> shedHatch(w));
+        p.put("gallery_wire", () -> galleryWire(w));
+        if (canon.raw.has("theo_drafts")) p.put("theo_drafts", () -> theoDrafts(w));
+        if (canon.raw.has("iona_chest")) p.put("iona_chest", () -> ionaChest(w));
+        if (canon.raw.has("kit_chest")) p.put("kit_chest", () -> kitChest(w));
+        if (canon.raw.has("visitor_book")) p.put("visitor_book", () -> visitorBook(w));
+        return p;
+    }
+
     public List<String> install(World w) {
         List<String> done = new ArrayList<>();
-        part("install.theo_archive", done, () -> theoArchive(w));
-        part("install.museum", done, () -> museum(w));
-        part("install.reading_room", done, () -> readingRoom(w));
-        part("install.map_wall", done, () -> mapWall(w));
-        part("install.map_copies", done, () -> mapCopies(w));
-        part("install.flags", done, () -> flags(w));
-        part("install.flag_tribute", done, () -> flagTribute(w));
-        part("install.meadow", done, () -> meadow(w, null));
-        part("install.lowpath_place", done, () -> lowpathPlace(w));
-        part("install.dust_corridor", done, () -> dustCorridor(w));
-        part("install.listening_room", done, () -> listeningRoom(w));
-        part("install.maint_sign", done, () -> maintSign(w));
-        part("install.finch_lock", done, () -> new FinchLock(canon).build(w));
-        part("install.nether_hub_sign", done, this::netherHubSign);
-        part("install.container_repair", done, () -> repairContainers(w));
-        if (canon.raw.has("finch_south_sign")) part("install.south_rail_sign", done, () -> southRailSign(w));
-        if (canon.raw.has("dock")) part("install.dock_removed", done, () -> removeDock(w));
-        if (canon.raw.has("storehouse_jog")) part("install.barn_squared", done, () -> squareBarn(w));
-        if (canon.anchors.containsKey("cairn_shed_hatch")) part("install.shed_hatch", done, () -> shedHatch(w));
-        part("install.gallery_wire", done, () -> galleryWire(w));
-        if (canon.raw.has("theo_drafts")) part("install.theo_drafts", done, () -> theoDrafts(w));
-        if (canon.raw.has("iona_chest")) part("install.iona_chest", done, () -> ionaChest(w));
-        if (canon.raw.has("kit_chest")) part("install.kit_chest", done, () -> kitChest(w));
-        if (canon.raw.has("visitor_book")) part("install.visitor_book", done, () -> visitorBook(w));
+        parts(w).forEach((name, r) -> part("install." + name, done, r));
         reattachMaps();
         return done;
+    }
+
+    /**
+     * Parts "/mrrw repair all" re-places: each puts a fixture back as installed and holds no progress.
+     * The others are by name only, because they also undo something the players did or Morrow did:
+     * theo_archive (rebuilds the hall), flags (un-tidies Act 8's order), meadow (drops the Act 9 redraw),
+     * lowpath_place (rebuilds the house: a kept bed is gone), listening_room (re-seals it; reopened if it
+     * was open), maint_sign (back to MAINT OFF, unwaxed), dock_removed, barn_squared, iona_chest (the
+     * unmerged key again). map_wall is never re-run: it would mint new map ids and the C11 numbers would change.
+     */
+    static final java.util.Set<String> REPAIR_ALL = java.util.Set.of("museum", "reading_room", "map_copies", "flag_tribute",
+            "dust_corridor", "finch_lock", "nether_hub_sign", "container_repair", "south_rail_sign", "shed_hatch", "gallery_wire",
+            "theo_drafts", "kit_chest", "visitor_book");
+
+    /** /mrrw repair PART|all: re-places install parts without touching any progress flag. Returns what ran. */
+    public List<String> repair(World w, String which) {
+        Map<String, Runnable> all = parts(w);
+        List<String> ran = new ArrayList<>();
+        for (var e : all.entrySet()) {
+            boolean pick = which.equals("all") ? REPAIR_ALL.contains(e.getKey()) : which.equals(e.getKey());
+            if (!pick) continue;
+            if (e.getKey().equals("map_wall")) throw new IllegalArgumentException("map_wall can't be re-run: new map ids would break C11 (the frames are fixed and can't be taken)");
+            e.getValue().run();
+            state.markDone("install." + e.getKey());
+            ran.add(e.getKey());
+            JsonObject d = new JsonObject();
+            d.addProperty("part", e.getKey());
+            journal.write("operator.repair", d);
+        }
+        if (ran.isEmpty()) throw new IllegalArgumentException("no install part " + which + " (parts: " + String.join(", ", all.keySet()) + ")");
+        reattachMaps();
+        return ran;
     }
 
     // ---- the rework (2026-11): Morrow's "completions" of 2011 things, and Theo's drafts -------------
@@ -501,10 +540,15 @@ public final class ModernLayer {
         refillMapCopies(w);
     }
 
-    /** Returns how many copies it put back. */
+    /** Returns how many copies it put back (the genuine 2015 in Theo's drafts barrel too: it is the only one). */
     public int refillMapCopies(World w) {
         if (!state.done("install.map_copies")) return 0;
         List<Integer> ids = plugin.getConfig().getIntegerList("map_ids");
+        int genuine = 0;
+        if (!ids.isEmpty() && at(w, "theo_reading_room", 4, -2, 2).getState() instanceof org.bukkit.block.Barrel barrel && !holds(barrel.getInventory(), ids.get(0))) {
+            @SuppressWarnings("deprecation") MapView g = Bukkit.getMap(ids.get(0));
+            if (g != null && barrel.getInventory().addItem(mapItem(g, canon.object("genuine_2015_map").get("label").getAsString())).isEmpty()) genuine = 1;
+        }
         JsonArray wall = canon.array("map_wall");
         if (ids.size() < 2 || !(copiesChest(w).getState() instanceof Chest chest)) return 0;
         var inv = chest.getBlockInventory();
@@ -526,7 +570,14 @@ public final class ModernLayer {
             else if (!inv.addItem(copy).isEmpty()) continue;
             put++;
         }
-        return put;
+        return put + genuine;
+    }
+
+    private static boolean holds(org.bukkit.inventory.Inventory inv, int mapId) {
+        for (ItemStack it : inv.getContents()) {
+            if (it != null && it.getItemMeta() instanceof MapMeta mm && mm.hasMapView() && mm.getMapView() != null && mm.getMapView().getId() == mapId) return true;
+        }
+        return false;
     }
 
     /** Map renderers are not saved by the server; reattach the pictures after every restart. */
@@ -719,7 +770,7 @@ public final class ModernLayer {
         Block cairnSign = at(w, "listening_room", 1, 1, 3);
         cairnSign.setType(Material.OAK_WALL_SIGN, false);
         if (cairnSign.getState() instanceof Sign s) {
-            String[] lines = {"cairn's pw", "hingetin", "dont tell rook", ""};
+            String[] lines = {"cairn's pw", "hingetin", "rook asked for", "it -cairn"};
             for (int i = 0; i < 4; i++) s.getSide(Side.FRONT).line(i, Component.text(lines[i]));
             s.update(true, false);
         }

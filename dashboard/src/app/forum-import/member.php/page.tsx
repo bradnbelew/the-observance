@@ -9,7 +9,8 @@ export const metadata: Metadata = { title: "View Profile - Copperline Community 
 export const dynamic = "force-dynamic";
 
 export default async function MemberProfile({ searchParams }: { searchParams: Promise<{ u?: string }> }) {
-  const u = (await searchParams).u ?? "";
+  const raw: unknown = (await searchParams).u;  // ?u=a&u=b is an array: one name, as PHP keeps
+  const u = String((Array.isArray(raw) ? raw[0] : raw) ?? "");
   const b = await bundle();
   const roster = await playersNow();
   const absorbed = b.backdated_posts && roster.find((p) => p.toLowerCase() === u.toLowerCase());

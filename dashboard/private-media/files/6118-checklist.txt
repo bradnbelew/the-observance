@@ -3,6 +3,6 @@
 md5 plaintext A (rook floor):  e86a01ccc89e7b026f50d693ac7ecbed
 md5 token B (my key):          db62e32e53e04053d3b4cf1a192061ec
 md5 command (annex wall):      81e52260505861413ef9a524c9f0d344
-md5 clean backup (04-20 zip):  bdd42105cf9ea6ee6f250c38ab48efba
+md5 clean backup (04-20 zip):  55b1088bef2a51d1b3849e48fc593314
 
 don't let it restart

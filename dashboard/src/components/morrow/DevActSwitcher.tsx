@@ -8,7 +8,7 @@ export async function DevActSwitcher() {
   const pinned = Boolean((await cookies()).get(DEV_ACT_COOKIE)?.value);
   return (
     <div className="dev-acts" aria-label="Testing: act switcher">
-      <b title={pinned ? "pinned by the switcher" : "MORROW_ACT or the bridge"}>TEST act</b>
+      <b title={pinned ? "pinned by the switcher" : "from the env act or the bridge"}>TEST act</b>
       {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
         <a key={n} href={`/dev-act?n=${n}&back=/`} className={n === act ? "on" : ""}>{n}</a>
       ))}

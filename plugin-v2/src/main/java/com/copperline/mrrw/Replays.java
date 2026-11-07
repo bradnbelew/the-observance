@@ -53,6 +53,8 @@ public final class Replays implements Listener {
     private Ghosts.Run lowpath;
     private boolean lowpathPending;
     private long lowpathPendingSince;
+    private boolean dayWalk;
+    private boolean nightSkipped;  // the players slept through the night: lowpath walks in the day instead of never
 
     public Replays(Plugin plugin, Canon canon, State state, Journal journal, Ghosts ghosts, PathRecorder recorder) {
         this.plugin = plugin;
@@ -111,20 +113,29 @@ public final class Replays implements Listener {
             }
         }
         boolean bedKept = state.done("lowpath.bed_kept");
-        if (state.act() >= 8 && night && !state.done("lowpath.session_ended") && (lowpath == null || !lowpath.active()) && !lowpathPending) {
+        boolean walkTime = night || nightSkipped;  // a group that always sleeps still gets its night walk (Act 9's bed scene needs it)
+        if (state.act() >= 8 && walkTime && !state.done("lowpath.session_ended") && (lowpath == null || !lowpath.active()) && !lowpathPending) {
             lowpathPending = true;
             lowpathPendingSince = System.currentTimeMillis();
         }
-        if (lowpathPending && night && (lowpath == null || !lowpath.active())) {
+        if (lowpathPending && walkTime && (lowpath == null || !lowpath.active())) {
             List<Location> start = List.of(bedKept ? routeStart(canon.array("lowpath_last_leg")) : routeStart(canon.array("lowpath_route").get(0).getAsJsonObject().getAsJsonArray("path")));
             if (!w.getPlayers().isEmpty() && (anyoneNear(w, start) || System.currentTimeMillis() - lowpathPendingSince > 60_000)) {
                 lowpathPending = false;
                 startLowpath(w, bedKept);
+                if (!night) {  // this day's walk is the skipped night's: once, and not cut short by daylight
+                    nightSkipped = false;
+                    dayWalk = true;
+                }
             }
         }
-        if (!night) {
+        if (night) {
+            nightSkipped = false;
+            dayWalk = false;
+        }
+        if (!walkTime) {
             lowpathPending = false;
-            if (lowpath != null && lowpath.active() && !bedKept) {
+            if (lowpath != null && lowpath.active() && !bedKept && !dayWalk) {
                 lowpath.cancel();
                 lowpath = null;
             }
@@ -201,6 +212,20 @@ public final class Replays implements Listener {
             journal.write("morrow.replay.player", d);
             if (r != null) return;  // one at a time
         }
+    }
+
+    /** Sleeping skips the night, and with it the incident cue window and lowpath's walk. */
+    @EventHandler
+    public void onSkip(org.bukkit.event.world.TimeSkipEvent e) {
+        if (e.getSkipReason() == org.bukkit.event.world.TimeSkipEvent.SkipReason.NIGHT_SKIP && state.act() >= 8 && !state.done("lowpath.session_ended")) nightSkipped = true;
+    }
+
+    /** /mrrw figures respawn: lowpath now (Act 8+), whatever the time. */
+    public boolean lowpathNow(World w) {
+        if (silent() || state.act() < 8 || state.done("lowpath.session_ended")) return false;
+        if (lowpath != null) lowpath.cancel();
+        startLowpath(w, state.done("lowpath.bed_kept"));
+        return true;
     }
 
     private void startLowpath(World w, boolean lastLegOnly) {
