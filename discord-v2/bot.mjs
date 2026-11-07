@@ -473,6 +473,11 @@ async function start() {
   const general = await guild.channels.fetch(ENV.GENERAL_CHANNEL_ID);
   const bridgeChannel = await guild.channels.fetch(ENV.BRIDGE_CHANNEL_ID);
 
+  // This bridge has no slash commands; a reused bot application may still carry an old project's
+  // (/whisper, /progress...), which players would see in the command menu. Clear them every start.
+  await client.application.commands.set([]).catch((err) => console.error("clearing global commands:", err?.message || err));
+  await guild.commands.set([]).catch((err) => console.error("clearing server commands:", err?.message || err));
+
   await once("welcome", async () => {
     const msg = await general.send({ content: CANON.welcome, allowedMentions: NO_PINGS });
     await msg.pin().catch(() => {});
